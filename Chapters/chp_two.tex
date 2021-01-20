@@ -1,0 +1,180 @@
+% Chapter Template
+
+% Main chapter title
+%\chapter[toc version]{doc version}
+\chapter{Networked data streams}
+
+% Short version of the title for the header
+%\chaptermark{version for header}
+
+% Chapter Label
+% For referencing this chapter elsewhere, use \ref{ChapterTemplate}
+\label{chp:background}
+
+% Write text in here
+% Use \subsection and \subsubsection to organize text
+
+In this chapter, we present our results in networked data streams.
+
+\section{SpaMHMM: Sparse Mixture of Hidden Markov Models}
+\label{sec:spamhmm}
+The proposed model finds intersections with distributed sparse representations.  
+
+\subsection{Overview}
+Sparse representation/coding expresses a signal/model $f$, defined over some independent variable $x$, as a linear combination of a few atoms from a prespecified and overcomplete dictionary of size $M$:
+\begin{equation}
+\label{sparse_coding}
+f(x)=\sum_{m=1}^M s_m \phi_m(x),
+\end{equation}
+where $\phi_m(x)$ are the atoms and only a few of the scalars $s_m$ are non-zero, providing a sparse representation of $f(x)$.
+
+Distributed sparse representation \cite{Baron} is an extension of the standard version that considers networks with $K$ nodes.
+At each node, the signal sensed at the same node has its sparsity property because of its intracorrelation, while, for networks with multiple nodes, signals received at different nodes also exhibit strong intercorrelation.
+The intra- and inter-correlations lead to a joint sparse model. An interesting scenario in distributed sparse representation is when all signals/models share the common support but with different non-zero coefficients.
+
+Inspired by the formulation of \eqref{sparse_coding}, we propose to model the generative distribution of the data coming from each of the $K$ nodes of a network as a sparse mixture obtained from a dictionary of generative distributions. Specifically, we shall model the distribution for each node as a sparse mixture over a `large' shared dictionary of HMMs, where each HMM corresponds to an individual atom from the dictionary.
+The field knowledge about the similarities between nodes is summarized in an affinity matrix. The objective function of the learning process promotes reusing HMM atoms between similar nodes.
+We now formalize these ideas.
+
+\subsection{Model formulation}
+\subsubsection{Definition}
+\label{sec:definition}
+Assume we have a set of nodes $\sY=\{1, ..., K\}$ connected by an undirected weighted graph $\gG$, expressed by a symmetric matrix $\mG \in \R^{K \times K}$. These nodes thus form a network, in which the weights are assumed to represent degrees of affinity between each pair of nodes (i.e. the greater the edge weight, the more the respective nodes \textit{like} to agree). The nodes $\ry$ in the graph produce $D$-dimensional sequences $\rmX = \left(\rvx^{(1)}, ...,\rvx^{(T)} \right)$, $\rvx^{(t)} \in \R^D$, whose conditional distribution we shall model using a mixture of HMMs:
+\begin{equation}
+\label{hmm_mix}
+p(\rmX \mid \ry) = \sum_{\rz} p(\rz\mid\ry) p(\rmX \mid \rz),
+\end{equation}
+where $\rz \in \{1, ..., M\}$ is a latent random variable, being $M$ the size of the mixture. This is a particular realization of \eqref{sparse_coding} where $f$ is the probability density function $p(\rmX \mid \ry)$ and the coefficients $s_m$ correspond to the probabilities $p(\rz = m \mid \ry)$. Here, $p(\rmX \mid \rz)$ is the marginal distribution of observations of a standard first-order homogeneous HMM:
+\begin{equation}
+\label{hmm}
+p(\rmX \mid \rz) = \sum_{\rvh} p(\rh^{(0)}\mid\rz) \prod_t p(\rh^{(t)}\mid\rh^{(t-1)},\rz) p(\rvx^{(t)}\mid\rh^{(t)},\rz),
+\end{equation}
+where $\rvh = \left(\rh^{(0)}, ...,\rh^{(T)} \right)$, $\rh^{(t)} \in \{1, ..., S\}$, is the sequence of hidden states of the HMM, being $S$ the number of hidden states. Note that the factorization in \eqref{hmm_mix} imposes conditional independence between the sequence $\rmX$ and the node $\ry$, given the latent variable $\rz$. This is a key assumption of this model, since this way the distributions for the observations in the nodes in $\sY$ share the same dictionary of HMMs, promoting parameter sharing among the $K$ mixtures.
+
+\subsubsection{Inference}
+\label{sec:inference}
+Given an observed sequence $\mX$ and its corresponding node $y \in \sY$, the inference problem here consists in finding the likelihood $p(\rmX=\mX \mid \ry=y)$ (from now on, abbreviated as $p(\mX \mid y)$) as defined by  \twoeqrefs{hmm_mix}{hmm}. The marginals $p(\mX\mid\rz)$ of each HMM in the mixture may be computed efficiently, in $O(S^2T)$ time, using the Forward algorithm~\cite{Rabiner1986}. Then, $p(\mX \mid y)$ is obtained by applying \eqref{hmm_mix}, so inference in the overall model is done in at most $O(MS^2T)$ time. As we shall see, however, the mixtures we get after learning will often be sparse (see \Secref{sec:learning}), leading to an even smaller time complexity.
+
+\subsubsection{Learning}
+\label{sec:learning}
+Given an i.i.d. dataset consisting of $N$ tuples $(\mX_i, y_i)$ of sequences of observations $\mX_i = \left(\vx_i^{(1)}, ...,\vx_i^{(T_i)} \right)$ and their respective nodes $y_i \in \sY$, the model defined by \twoeqrefs{hmm_mix}{hmm} may be easily trained using the Expectation-Maximization (EM) algorithm \cite{Dempster1977}, (locally) maximizing the usual log-likelihood objective:
+\begin{equation}
+\label{log_likelihood}
+J(\theta) = \sum_{i=1}^N \log p(\mX_i \mid y_i, \theta),
+\end{equation}
+where $\theta$ represents all model parameters, namely:
+\begin{enumerate}
+	\item the $M$-dimensional mixture coefficients, $\valpha_k \coloneqq \left(p(\rz=1\mid\ry=k), ..., p(\rz=M\mid\ry=k)\right)$, for $k = 1,...,K$;
+	\item the $S$-dimensional initial state probabilities, $\vpi_m \coloneqq \left(p(\rh^{(0)}=1 \mid \rz=m),...,p(\rh^{(0)}=S \mid \rz=m)\right)$, for $m = 1,...,M$;
+	\item the $S \times S$ state transition matrices, $\mA^m$, where $\emA^m_{s,u} \coloneqq p(\rh^{(t)}=u \mid \rh^{(t-1)}=s, \rz=m)$, for $s,u = 1,...,S$ and $m = 1,...,M$;
+	\item the emission probability means, $\vmu_{m,s} \in \mathbb{R}^D$, for $m = 1,...,M$ and $s = 1,...,S$;
+	\item the emission probability diagonal covariance matrices, $\mI \vsigma^2_{m,s}$, where $\vsigma^2_{m,s} \in \mathbb{R}^{D}_{+}$, for $m = 1,...,M$ and $s = 1,...,S$.
+\end{enumerate}
+
+Here, we are assuming that the emission probabilities $p(\rx^{(t)}\mid\rh^{(t)},\rz)$ are Gaussian with diagonal covariances. This introduces almost no loss of generality, since the extension of this work to discrete observations or other types of continuous emission distributions is straightforward.
+
+The procedure to maximize objective~\plaineqref{log_likelihood} using EM is described in \Algref{alg:mhmm}. The update formulas follow from the standard EM procedure and can be obtained by viewing this model as a Bayesian network or by following the derivation detailed in \Secref{sec:proof_em_noreg}. However, the objective \plaineqref{log_likelihood} does not take advantage of the known structure of $\gG$. In order to exploit this information, we introduce a regularization term, maximizing the following objective instead:
+\begin{align}
+\label{objective}
+J_r(\theta) &= \frac{1}{N}\sum_{i=1}^N \log p(\mX_i \mid y_i, \theta) \nonumber\\ 
+&\mathbin{\hphantom{=}}{}+ \frac{\reg}{2} \sum_{\substack{j,k=1,\\k\neq j}}^{K} \emG_{j,k} \E_{\rz \sim p(\rz \mid \ry=j, \theta)} [ p(\rz \mid \ry=k, \theta) ] \nonumber\\
+&= \frac{1}{N}\sum_{i=1}^N \log p(\mX_i \mid y_i, \theta) + \frac{\reg}{2} \sum_{\substack{j,k=1,\\k\neq j}}^{K} \emG_{j,k} \valpha_j^\top \valpha_k,
+\end{align}
+where $\reg \geq 0$ controls the relative weight of the two terms in the objective. Note that this regularization term favors nodes connected by edges with large positive weights to have similar mixture coefficients and thus share mixture components. On the other hand, nodes connected by edges with large negative weights will tend to have orthogonal mixture coefficients, being described by disjoint sets of components. These observations agree with our prior assumption that the edge weights express degrees of similarity between each pair of nodes. Proposition \ref{prop_expectations} formalizes these statements and enlightens interesting properties about the expectations $\E_{\rz \sim p(\rz \mid \ry=j, \theta)} [ p(\rz \mid \ry=k, \theta)]$.
+\begin{proposition}
+	\label{prop_expectations}
+	Let $\sP_M$ be the set of all $M$-nomial probability distributions and $M>1$. We have:
+	\begin{enumerate}
+		\item $\min_{p,q \in \sP_M} \E_{\rz\sim p} [ q(\rz) ] = 0$; \label{prop_min}
+		\item $\argmin_{p,q \in \sP_M} \E_{\rz\sim p} [ q(\rz) ] = \{p,q \in \sP_M \mid \forall \, m \in \{1,...,M\}: p(\rz = m)q(\rz = m)=0\}$; \label{prop_argmin}
+		\item $\max_{p,q \in \sP_M} \E_{\rz\sim p} [ q(\rz) ] = 1$; \label{prop_max}
+		\item $\argmax_{p,q \in \sP_M} \E_{\rz\sim p} [ q(\rz) ] = \{p,q \in \sP_M \mid \exists \, m \in \{1,...,M\} : \, p(\rz = m)=q(\rz = m)=1\}$ \label{prop_argmax}.
+	\end{enumerate}
+\end{proposition}
+\begin{proof}
+	By the definition of expectation,
+	\begin{equation}
+	\label{prop_expdef}
+	\E_{\rz\sim p} [ q(\rz) ] = \sum_{m=1}^M p(\rz=m) q(\rz=m).
+	\end{equation}
+	Statements \ref{prop_min} and \ref{prop_argmin} follow immediately from the fact that every term in the right-hand side of \plaineqref{prop_expdef} is non-negative and $M>1$. For the remaining, we rewrite \plaineqref{prop_expdef} as the dot product of two $M$-dimensional vectors $\valpha_p$ and $\valpha_q$, representing the two distributions $p$ and $q$, respectively, and we use the following linear algebra inequalities to build an upper bound for this expectation:
+	\begin{equation}
+	\label{prop_ineq}
+	\E_{\rz\sim p} [ q(\rz) ] = \valpha_p ^\top \valpha_q \leq || \valpha_p ||_2 || \valpha_q ||_2 \leq || \valpha_p ||_1 || \valpha_q ||_1 =1,
+	\end{equation}
+	where $||\bcdot||_1$ and $||\bcdot||_2$ are the $\normlone$ and $\normltwo$ norms, respectively. Clearly, the equality $\E_{\rz\sim p} [ q(\rz) ] = 1$ holds if $p$ and $q$ are chosen from the set defined in statement \ref{prop_argmax}, where the distributions $p$ and $q$ are the same and they are non-zero for a single assignment of $\rz$. This proves statement \ref{prop_max}. Now, to prove statement \ref{prop_argmax}, it suffices to show that there are no other maximizers. The first inequality in \plaineqref{prop_ineq} is transformed into an equality if and only if $\valpha_p = \valpha_q$, which means $p \equiv q$. The second inequality becomes an equality when the $\normlone$ and $\normltwo$ norms of the vectors coincide, which happens if and only if the vectors have only one non-zero component, concluding the proof.
+\end{proof}
+Specifically, given two distinct nodes $j, k \in \sY$ , if $\emG_{j,k} > 0$, the regularization term for these nodes is maximum (and equal to $\emG_{j,k}$) when the mixtures for these two nodes are the same and have one single active component (i.e. one mixture component whose coefficient is non-zero). On the contrary, if $\emG_{j,k} < 0$, the term is maximized (and equal to zero) when the mixtures for the two nodes do not share any active components. In both cases, though, we conclude from Proposition \ref{prop_expectations} that we are favoring sparse mixtures. We see sparsity as an important feature since it allows the size $M$ of the dictionary of models to be large and therefore expressive without compromising our rational that the observations in a given node are well modeled by a mixture of only a few HMMs. This way, some components will specialize on describing the behavior of some nodes, while others will specialize on different nodes. Moreover, sparse mixtures yield faster inference, more interpretable models and (possibly) less overfitting.
+By setting $\reg=0$, we clearly get the initial objective \plaineqref{log_likelihood}, where inter-node correlations are modeled only via parameter sharing. As $\reg \to \infty$, two interesting scenarios may be anticipated. If $\emG_{j,k} > 0, \, \forall j,k \in \sY,$ all nodes will tend do share the same single mixture component, i.e. we would be learning one single HMM to describe the whole network. If $\emG_{j,k} < 0, \, \forall j,k \in \sY,$ and $M \geq K$, each node would tend to learn its own HMM model independently from all the others. Again, in both scenarios, the obtained mixtures are sparse.
+
+The objective function~\plaineqref{objective} can still be maximized via EM (see details in \Secref{sec:proof_em_reg}). However, the introduction of the regularization term in the objective makes it impossible to find a closed form solution for the update formula of the mixture coefficients. Thus, in the M-step, we need to resort to gradient ascent to update these parameters. In order to ensure that the gradient ascent iterative steps lead to admissible solutions, we adopt the following reparameterization from \cite{Yang2018}:
+\begin{equation}
+\label{normalization}
+\alpha_{k,m} = \frac{\sigma \left(\beta_{k,m} \right)^2}{\sum_{l=1}^M \sigma \left( \beta_{k,l} \right)^2}, 
+\end{equation}
+for $k = 1, ..., K$ and $m = 1, ..., M$, and where $\sigma(\bcdot)$ is the rectifier linear (ReLU) function. This reparameterization clearly resembles the softmax function, but, contrarily to that one, admits sparse outputs. The squared terms in \eqref{normalization} aim only to make the optimization more stable. The optimization steps for the objective \plaineqref{objective} using this reparameterization are described in \Algref{alg:spamhmm}.
+
+\begin{algorithm}
+	\caption{EM algorithm for the mixture without regularization (MHMM).}
+	\label{alg:mhmm}
+	\begin{algorithmic}
+		\State Inputs: The training set, consisting of $N$ tuples $(\mX_i,y_i)$, a set of initial parameters $\theta^{(0)}$ and the number of training iterations $\mathcal{I}$.
+		\For{$j = 1, ..., \mathcal{I}$}
+		\State Sufficient statistics:
+		\begin{enumerate}
+			\item $n_k \coloneqq \sum_i \1_{y_i=k}$, where $\1_\mathrm{(\bcdot)}$ is the indicator function, for $k=1,...,K$.
+			\item Obtain the mixture posteriors $\eta_{i,m} \coloneqq p(\rz=m|\mX_i, y_i,\theta^{(j-1)})$, for $i=1,...,N$ and $m=1,...,M$, by computing  $\tilde{\eta}_{i,m} \coloneqq p(\mX_i|\rz=m, \theta^{(j-1)})p(\rz=m|y_i, \theta^{(j-1)})$ and normalizing it.
+			\item Obtain the state posteriors $\gamma_{i,m,s}(t) \coloneqq p(\rh^{(t)}=s | \rz=m, \mX_i, \theta^{(j-1)})$ and $\xi_{i,m,s,u}(t) \coloneqq p(\rh^{(t-1)}=s, \rh^{(t)}=u | \rz=m, \mX_i, \theta^{(j-1)})$, for $i=1,...,N$, $m=1,...,M$ and $s,u=1,...,S$, as done in the Baum-Welch algorithm \cite{Baum1972}.
+		\end{enumerate}
+		\State M-step:
+		\begin{enumerate}
+			\item $\evalpha_{k,m} = \frac{\sum_i \eta_{i,m} \1_{y_i=k}}{n_k}$, for $k=1,...,K$ and $m=1,...,M$, obtaining $\valpha_k$.
+			\item $\evpi_{m,s} = \frac{\sum_i \eta_{i,m} \gamma_{i,m,s}(0)}{\sum_i \eta_{i,m}}$, for $m=1,...,M$ and $s=1,...,S$, obtaining $\vpi_{m}$. 
+			\item $\emA^m_{s,u} = \frac{\sum_i \eta_{i,m} \sum_{t=1}^{T_i} \xi_{i,m,s,u}(t)}{\sum_i \eta_{i,m} \sum_{t=0}^{T_i-1} \gamma_{i,m,s}(t)}$, for $m=1,...,M$ and $s,u=1,...,S$, obtaining $\mA^m$.
+			\item $\vmu_{m,s} = \frac{\sum_i \eta_{i,m} \sum_{t=1}^{T_i} \gamma_{i,m,s}(t) \vx_i^{(t)}} {\sum_i \eta_{i,m} \sum_{t=1}^{T_i} \gamma_{i,m,s}(t)}$, for $m=1,...,M$ and $s=1,...,S$.
+			\item $\vsigma^2_{m,s} = \frac{\sum_i \eta_{i,m} \sum_{t=1}^{T_i} \gamma_{i,m,s}(t) \left(\vx_i^{(t)} - \boldsymbol{\mu}^m_s\right)^2} {\sum_i \eta_{i,m} \sum_{t=1}^{T_i} \gamma_{i,m,s}(t)}$, for $m=1,...,M$ and $s=1,...,S$.
+			\item $\theta^{(j)} = \bigcup_{k,m,s} \left\lbrace \boldsymbol{\alpha}_k, \vpi_{m}, \mA^m, \vmu_{m,s}, \vsigma^2_{m,s} \right\rbrace$.
+		\end{enumerate}
+		\EndFor  
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+	\caption{EM algorithm for the mixture with regularization (SpaMHMM).}
+	\label{alg:spamhmm}
+	\begin{algorithmic}
+		\State Inputs: The training set, consisting of $N$ tuples $(\mX_i,y_i)$, the matrix $\mG$ describing the graph $\gG$, the regularization hyperparameter $\reg$, a set of initial parameters $\theta^{(0)}$, the number of training iterations $\mathcal{I}$, the number of gradient ascent iterations $\mathcal{J}$ to perform on each M-step, the learning rate $\rho$ for the gradient ascent.
+		\For{$j=1,...,\mathcal{I}$}
+		\State Sufficient statistics: same as in \Algref{alg:mhmm}.
+		\State M-step:
+		\For{$l=1,...,\mathcal{J}$}
+		\begin{enumerate}
+			\item $\psi_{k,m} \coloneqq \frac{1}{N}\sum_i (\eta_{i,m} - \alpha_{k,m}) \1_{y_i=k}$, for $k=1,...,K$ and $m=1,...,M$.
+			\item $\omega_{k,m} \coloneqq \alpha_{k,m} \sum_{j \neq k} \emG_{j,k}\left(\alpha_{j,m} - \valpha_j \transp \valpha_k \right)$, for $k=1,...,K$ and $m=1,...,M$.
+			\item $\delta_{k,m} \coloneqq \1_{\beta_{k,m} > 0} \frac{2\sigma'(\beta_{k,m})}{\sigma(\beta_{k,m})}\left(\psi_{k,m} + \reg \omega_{k,m}\right)$, where $\sigma'(\cdot)$ is the derivative of $\sigma(\cdot)$, for $k=1,...,K$ and $m=1,...,M$. 
+			\item $\beta_{k,m} \leftarrow \beta_{k,m} + \rho \delta_{k,m}$, for $k=1,...,K$ and $m=1,...,M$.
+			\item Use \eqref{normalization} to obtain $\alpha_{k,m}$, for $k=1,...,K$ and $m=1,...,M$.
+		\end{enumerate}
+		\EndFor
+		\State Do steps 2) -- 6) in the M-step of \Algref{alg:mhmm}. 
+		\EndFor
+	\end{algorithmic}
+\end{algorithm}
+
+\section{Experimental Evaluation}
+\label{sec:experiments}
+The model was developed on top of the library hmmlearn~\cite{hmmlearn} for Python, which implements inference and unsupervised learning for the standard HMM using a wide variety of emission distributions. Both learning and inference use the hmmlearn API, with the appropriate adjustments for our models. For reproducibility purposes, we make our source code, pre-trained models and the datasets publicly available \footnote{\url{https://github.com/dpernes/spamhmm}}.
+
+We evaluate four different models in our experiments: a model consisting of a single HMM (denoted as 1-HMM) trained on sequences from all graph nodes; a model consisting of $K$ HMMs trained independently (denoted as K-HMM), one for each graph node; a mixture of HMMs (denoted as MHMM) as defined in this work (\twoeqrefs{hmm_mix}{hmm}), trained to maximize the usual log-likelihood objective~\plaineqref{log_likelihood}; a mixture of HMMs (denoted as SpaMHMM) as the previous one, trained to maximize our regularized objective~\plaineqref{objective}.
+
+Models 1-HMM, K-HMM and MHMM will be our baselines. We shall compare the performance of these models with that of SpaMHMM and, for the case of MHMM, we shall also verify if SpaMHMM actually produces sparser mixtures in general, as argued in \Secref{sec:learning}. In order to ensure a fair comparison, we train models with approximately the same number of possible state transitions. Hence, given an MHMM or SpaMHMM with $M$ mixture components and $S$ states per component, we train a 1-HMM with $\approx S\sqrt[]{M}$ states and a K-HMM with $\approx S\sqrt[]{M/K}$ states per HMM. We initialize the mixture coefficients in MHMM and SpaMHMM randomly, while the state transition matrices and the initial state probabilities are initialized uniformly. Means are initialized using $k$-means, with $k$ equal to the number of hidden states in the HMM, and covariances are initialized with the diagonal of the training data covariance. Models 1-HMM and K-HMM are trained using the Baum-Welch algorithm, MHMM is trained using \Algref{alg:mhmm} and SpaMHMM is trained using \Algref{alg:spamhmm}. However, we opted to use Adam \cite{Kingma2014} instead of \textit{vanilla} gradient ascent in the inner loop of \Algref{alg:spamhmm}, since its per-parameter learning rate proved to be beneficial for faster convergence.
+
+\subsection{Anomaly detection in Wi-Fi networks}
+\label{sec:wi_fi}
+A typical Wi-Fi network infrastructure is constituted by $K$ access points (APs) distributed in a given space. The network users may alternate between these APs seamlessly, usually connecting to the closest one. There is a wide variety of anomalies that may happen during the operation of such network and their automatic detection is, therefore, of great importance for future mitigation plans. Some anomalous behaviors are: overloaded APs, failed or crashed APs, persistent radio frequency interference between adjacent APs, authentication failures, etc. However, obtaining reliable ground truth annotation of these anomalies in entire wireless networks is costly and time consuming. Under these circumstances, using data obtained through realistic network simulations is a common practice. 
+
+In order to evaluate our model in the aforementioned scenario, we have followed the procedure of \cite{Anisa2017}, performing extensive network simulations in a typical Wi-Fi network setup (IEEE 802.11 WLANg 2.4 GHz in infrastructure mode) using OMNeT++~\cite{omnetpp} and INET~\cite{inet} simulators. Our network consists of 10 APs and 100 users accessing it. The pairwise distances between APs are known and fixed. Each sequence contains information about the traffic in a given AP during 10 consecutive hours and is divided in time slots of 15 minutes without overlap. Thus, every sequence has the same length, which is equal to 40 samples (time slots). Each sample contains the following 7 features: the number of unique users connected to the AP, the number of sessions within the AP, the total duration (in seconds) of association time of all current users, the number of octets transmitted and received in the AP and the number of packets transmitted and received in the AP. Anomalies typically occur for a limited amount of time within the whole sequence. However, in this experiment, we label a sequence as ``anomalous'' if there is at least one anomaly period in the sequence and we label it as ``normal'' otherwise. One of the simulations includes normal data only, while the remaining include both normal and anomalous sequences. In order to avoid contamination of normal data with anomalies that may occur simultaneously in other APs, we used the data of the normal simulation for training (150 sequences) and the remaining data for testing (378 normal and 42 anomalous sequences). 
+
+In a Wi-Fi network, as users move in the covered area, they disconnect from one AP and they immediately connect to another in the vicinity. As such, the traffic in adjacent APs may be expected to be similar. Following this idea, the weight $\emG_{j,k}$, associated with the edge connecting nodes $j$ and $k$ in graph $\gG$, was set to the inverse distance between APs $j$ and $k$ and normalized so that $\max_{j,k} G_{j,k}=1$. As in \cite{Anisa2017}, sequences were preprocessed by subtracting the mean and dividing by the standard deviation and applying PCA, reducing the number of features to 3. For MHMM, we did 3-fold cross validation of the number of mixture components $M$ and hidden states per component $S$. We ended up using $M=15$ and $S=10$. We then used the same values of $M$ and $S$ for SpaMHMM and we did 3-fold cross validation for the regularization hyperparameter $\reg$ in the range $[10^{-4}, 1]$. The value $\reg=10^{-1}$ was chosen. We also cross-validated the number of hidden states in 1-HMM and K-HMM around the values indicated in \Secref{sec:experiments}. Every model was trained for 100 EM iterations or until the loss plateaus. For SpaMHMM, we did 100 iterations of the inner loop on each M-step, using a learning rate $\rho=10^{-3}$. We repeat training 10 times for each model, starting from different random initializations, in order to reduce the likelihood of erroneous results due to local minima trapping.
+
+Models were evaluated by computing the average log-likelihood per sample on normal and anomalous test data, plotting the receiver operating characteristic (ROC) curves and computing the respective areas under the curves (AUCs). The small standard deviations in \Tableref{tbl:wifi_results} attest the robustness of the adopted initialization scheme and learning algorithms. \Figref{fig:roc} shows that the ROC curves for MHMM and SpaMHMM are very similar and that these models clearly outperform 1-HMM and K-HMM. This is confirmed by the AUC and log-likelihood results in \Tableref{tbl:wifi_results}. Although K-HMM achieved the best (lowest) average log-likelihood on anomalous data, this result is not relevant, since it also achieved the worst (lowest) average log-likelihood on normal data. This is in fact the model with the worst performance, as shown by its ROC and respective AUC.
