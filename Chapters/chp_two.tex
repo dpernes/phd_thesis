@@ -14,23 +14,34 @@
 % Write text in here
 % Use \subsection and \subsubsection to organize text
 
-In this chapter, we present our results in networked data streams.
+\section{Motivation}
+\label{sec:chp1_motivation}
+A broad range of real-life settings can be well modeled by an arbitrary number of network connected entities that share and interact in the same medium and generate data streams in real-time. The streams produced by each of these entities form a set of time series with both intra- and inter-correlations between them. In neuroimaging studies, the brain can be regarded as a network: a connected system where nodes, or units, represent different specialized regions and links, or connections, represent communication pathways. From a functional perspective, communication is coded by temporal dependence between the activities of different brain areas~\cite{DeVicoFallani20130521}. Also team sports intrinsically involve fast, complex and interdependent events among a set of entities (the players), which interact as a team~\cite{Tora2017, Theagarajan2018}. The emergence of vehicular networks is also generating an ever-increasing amount of network data~\cite{Cheng2018}, where interactions between neighboring vehicles may be exploited to build more accurate and reliable learning algorithms. Thus, in all these scenarios the behavior of each individual entity is better understood if its context information (i.e. the behavior of the neighboring instances) is leveraged. However, the extraction of knowledge from these streams to support the decision-making process is still challenging. Moreover, conventional algorithms that assume ability to store and centralize all the data in memory at the same time are impractical for many applications~\cite{Gama2007}.
+
+Modeling the generative process of distributed stream data is an unsupervised learning problem and, hence, a model can be learned directly from the large amounts of data that might be continuously produced or gathered at each network connected entity, without the requirement of any special human supervision or annotation. Moreover, generative models are powerful tools for a wide variety of problems that arise naturally in networked data streams, like anomaly and novelty detection, sequence forecasting, clustering, and network simulation. Hence, generative models for stream data have been developed and applied in several previous works~\cite{Laxman2008, Hayat2010, Hofmann2011}. However, to the best of our knowledge, this problem is seldom explored in the  distributed setting.
+
+Given the distributed nature of network data and the high information rate that those streams could have, we argue that such generative model and/or the associated learning algorithm should ideally satisfy the following properties:
+\begin{enumerate}
+	\item Learning and inferring distributedly, i.e. each entity should be able to update its own model and perform inference on it without observing the streams or the models associated with the remaining entities.
+	\item Learning online, i.e. in real-time and without the requirement of storing the whole dataset in memory.
+	\item Leveraging contextual information by incorporating prior knowledge about similarities and dissimilarities among sets of entities.
+	\item Universality, i.e. the model should be applicable to a wide variety of distributed stream data, of diverse nature.
+\end{enumerate}
+In this chapter, we present two solutions for this problem, each with its own advantages and drawbacks. Both are inspired on the concept of sparse representations, which expresses a signal/model $f$, defined over some independent variable $x$, as a linear combination of a few atoms from a prespecified and overcomplete dictionary of size $M$:
+\begin{equation}
+\label{sparse_coding}
+f(x)=\sum_{m=1}^M s_m \phi_m(x),
+\end{equation}
+where $\phi_m(x)$ are the atoms and only a few of the scalars $s_m$ are non-zero, providing a sparse representation of $f(x)$.  Distributed sparse representation \cite{Baron} is an extension of the standard version that considers networks with $K$ nodes. At each node, the signal sensed at the same node has its sparsity property because of its intracorrelation, while, for networks with multiple nodes, signals received at different nodes also exhibit strong intercorrelation.
+The intra- and inter-correlations lead to a joint sparse model. An interesting scenario in distributed sparse representation, which we exploit here, is when all signals/models share the common support but with different non-zero coefficients.
+
+Our contributions in this chapter are summarized as follows: i) we review and extend a model based on a combination of self-organizing maps (SOM) and HMMs; ii) we present a novel algorithm that learns an entity-dependent model based on a mixture of shared HMMs; iii) we discuss how the two models intersect each other and, importantly, how the latter can be viewed as a particular case of a general family of generative models for distributed data.
 
 \section{SpaMHMM: Sparse Mixture of Hidden Markov Models}
 \label{sec:spamhmm}
 The proposed model finds intersections with distributed sparse representations.  
 
 \subsection{Overview}
-Sparse representation/coding expresses a signal/model $f$, defined over some independent variable $x$, as a linear combination of a few atoms from a prespecified and overcomplete dictionary of size $M$:
-\begin{equation}
-\label{sparse_coding}
-f(x)=\sum_{m=1}^M s_m \phi_m(x),
-\end{equation}
-where $\phi_m(x)$ are the atoms and only a few of the scalars $s_m$ are non-zero, providing a sparse representation of $f(x)$.
-
-Distributed sparse representation \cite{Baron} is an extension of the standard version that considers networks with $K$ nodes.
-At each node, the signal sensed at the same node has its sparsity property because of its intracorrelation, while, for networks with multiple nodes, signals received at different nodes also exhibit strong intercorrelation.
-The intra- and inter-correlations lead to a joint sparse model. An interesting scenario in distributed sparse representation is when all signals/models share the common support but with different non-zero coefficients.
 
 Inspired by the formulation of \eqref{sparse_coding}, we propose to model the generative distribution of the data coming from each of the $K$ nodes of a network as a sparse mixture obtained from a dictionary of generative distributions. Specifically, we shall model the distribution for each node as a sparse mixture over a `large' shared dictionary of HMMs, where each HMM corresponds to an individual atom from the dictionary.
 The field knowledge about the similarities between nodes is summarized in an affinity matrix. The objective function of the learning process promotes reusing HMM atoms between similar nodes.
@@ -83,7 +94,7 @@ J_r(\theta) &= \frac{1}{N}\sum_{i=1}^N \log p(\mX_i \mid y_i, \theta) \nonumber\
 where $\reg \geq 0$ controls the relative weight of the two terms in the objective. Note that this regularization term favors nodes connected by edges with large positive weights to have similar mixture coefficients and thus share mixture components. On the other hand, nodes connected by edges with large negative weights will tend to have orthogonal mixture coefficients, being described by disjoint sets of components. These observations agree with our prior assumption that the edge weights express degrees of similarity between each pair of nodes. Proposition \ref{prop_expectations} formalizes these statements and enlightens interesting properties about the expectations $\E_{\rz \sim p(\rz \mid \ry=j, \theta)} [ p(\rz \mid \ry=k, \theta)]$.
 \begin{proposition}
 	\label{prop_expectations}
-	Let $\sP_M$ be the set of all $M$-nomial probability distributions and $M>1$. We have:
+	Let $\sP_M$ be the set of all probability distributions over the set $\{1,2\cdots,m\}$ and $M>1$. We have:
 	\begin{enumerate}
 		\item $\min_{p,q \in \sP_M} \E_{\rz\sim p} [ q(\rz) ] = 0$; \label{prop_min}
 		\item $\argmin_{p,q \in \sP_M} \E_{\rz\sim p} [ q(\rz) ] = \{p,q \in \sP_M \mid \forall \, m \in \{1,...,M\}: p(\rz = m)q(\rz = m)=0\}$; \label{prop_argmin}
@@ -178,3 +189,144 @@ In order to evaluate our model in the aforementioned scenario, we have followed 
 In a Wi-Fi network, as users move in the covered area, they disconnect from one AP and they immediately connect to another in the vicinity. As such, the traffic in adjacent APs may be expected to be similar. Following this idea, the weight $\emG_{j,k}$, associated with the edge connecting nodes $j$ and $k$ in graph $\gG$, was set to the inverse distance between APs $j$ and $k$ and normalized so that $\max_{j,k} G_{j,k}=1$. As in \cite{Anisa2017}, sequences were preprocessed by subtracting the mean and dividing by the standard deviation and applying PCA, reducing the number of features to 3. For MHMM, we did 3-fold cross validation of the number of mixture components $M$ and hidden states per component $S$. We ended up using $M=15$ and $S=10$. We then used the same values of $M$ and $S$ for SpaMHMM and we did 3-fold cross validation for the regularization hyperparameter $\reg$ in the range $[10^{-4}, 1]$. The value $\reg=10^{-1}$ was chosen. We also cross-validated the number of hidden states in 1-HMM and K-HMM around the values indicated in \Secref{sec:experiments}. Every model was trained for 100 EM iterations or until the loss plateaus. For SpaMHMM, we did 100 iterations of the inner loop on each M-step, using a learning rate $\rho=10^{-3}$. We repeat training 10 times for each model, starting from different random initializations, in order to reduce the likelihood of erroneous results due to local minima trapping.
 
 Models were evaluated by computing the average log-likelihood per sample on normal and anomalous test data, plotting the receiver operating characteristic (ROC) curves and computing the respective areas under the curves (AUCs). The small standard deviations in \Tableref{tbl:wifi_results} attest the robustness of the adopted initialization scheme and learning algorithms. \Figref{fig:roc} shows that the ROC curves for MHMM and SpaMHMM are very similar and that these models clearly outperform 1-HMM and K-HMM. This is confirmed by the AUC and log-likelihood results in \Tableref{tbl:wifi_results}. Although K-HMM achieved the best (lowest) average log-likelihood on anomalous data, this result is not relevant, since it also achieved the worst (lowest) average log-likelihood on normal data. This is in fact the model with the worst performance, as shown by its ROC and respective AUC.
+
+The bad performance of K-HMM likely results mostly from the small amount of data that each of the $K$ models is trained with: in K-HMM, each HMM is trained with the data from the graph node (AP) that it is assigned to. The low log-likelihood value of the normal test data in this model confirms that the model does not generalize well to the test data and is probably highly biased towards the training data distribution. On the other hand, in 1-HMM there is a single HMM that is trained with the whole training set. However, the same HMM needs to capture the distribution of the data coming from all APs. Since each AP has its own typical usage profile, these data distributions are different and one single HMM may not be sufficiently expressive to learn all of them correctly. MHMM and SpaMHMM combine the advantages and avoid the disadvantages of both previous models. Clearly, since the mixtures for each node share the same dictionary of HMMs, every model in the mixture is trained with sequences from all graph nodes, at least in the first few training iterations. Thus, at this stage, the models may capture behaviors that are shared by all APs. As mixtures become sparser during training, some components in the dictionary may specialize on the distribution of a few APs. This avoids the problem observed in 1-HMM, which is unaware of the AP where a sequence comes from. We would also expect SpaMHMM to be sparser and have better performance than MHMM, but only the former supposition was true (see \Figref{fig:sparsity}). The absence of performance gains in SpaMHMM might be explained from the fact that this dataset consists of simulated data, where users are static (i.e. they do not swap between APs unless the AP where they are connected stops working) and so the assumption that closer APs have similar distributions does not bring any advantage.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{ChapterTwo/roc.png}
+	\caption{ROC curves for each model on the Wi-Fi dataset, for one of the 10 runs.}
+	\label{fig:roc}
+\end{figure}
+
+\begin{table}
+	\centering
+	\begin{tabular}{l|r|r r}
+		\multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{c}{Average log-likelihood} \\
+		& \multicolumn{1}{c|}{AUC} & Normal data & Anomalous data \\
+		\hline
+		1-HMM & $0.806~(\pm 0.01)$ & $-6.36~(\pm 0.66)$ & $-129.40~(\pm 22.22)$ \\
+		K-HMM & $0.776~(\pm 0.01)$ & $-22.09~(\pm 1.12)$ & $\mathbf{-130.36}~(\pm 26.30)$ \\
+		MHMM & $\mathbf{0.830}~(\pm 0.01)$ & $-3.31~(\pm 0.21)$ & $-10.99~(\pm 1.10)$ \\
+		SpaMHMM & $0.829~(\pm 0.01)$ & $\mathbf{-3.26}~(\pm 0.12)$ & $-11.29~(\pm 1.39)$ \\
+	\end{tabular}
+	\caption{AUC and average log-likelihood per sample for each model in the Wi-Fi dataset averaged over 10 training runs. Standard deviations are in brackets. Best results are in bold.}
+	\label{tbl:wifi_results}
+\end{table}
+
+\subsection{Human motion forecasting}
+\label{sec:h36m}
+The human body is constituted by several interdependent parts, which interact as a whole producing sensible global motion patterns. These patterns may correspond to multiple activities like walking, eating, etc. Here, we use our model to make short-time prediction of sequences of human joint positions, represented as motion capture (mocap) data. The current state of the art methodologies use architectures based on deep recurrent neural networks (RNNs), achieving remarkable results both in short-time prediction \cite{Fragkiadaki2015, Martinez2017} and in long-term motion generation \cite{Jain2016, Pavllo2018}.
+
+Our experiments were conducted on the Human3.6M dataset from \cite{Ionescu2011, Ionescu2014}, which consists of mocap data from 7 subjects performing 15 distinct actions. In this experiment, we have considered only 4 of those actions, namely ``walking'', ``eating'', ``smoking'' and ``discussion''. There, the human skeleton is represented with 32 joints whose position is recorded at 50 Hz. We build our 32x32-dimensional symmetric matrix $\mG$ representing the graph $\gG$ in the following sensible manner: $G_{j,k}=1$, if there is an actual skeleton connection between joints $j$ and $k$ (e.g. the elbow joint is connected to the wrist joint by the forearm); $G_{j,k}=1$, if joints $j$ and $k$ are symmetric (e.g. left and right elbows); $G_{j,k}=0$, otherwise.
+
+\subsubsection{Forecasting}
+
+We reproduced as much as possible the experimental setup followed in \cite{Fragkiadaki2015}. Specifically, we down-sampled the data by a factor of 2 and transformed the raw 3-D angles into an exponential map representation. We removed joints with constant exponential map, yielding a dataset with 22 distinct joints, and pruned our matrix $\mG$ accordingly. Training was performed using data from 6 subjects, leaving one subject (denoted in the dataset by ``S5'') for testing. We did 3-fold cross-validation on the training data of the action ``walking'' to find the optimal number of mixture components $M$ and hidden states $S$ for the baseline mixture MHMM. Unsurprisingly, since this model can hardly overfit in such a complex task, we ended up with $M=18$ and $S=12$, which were the largest values in the ranges we defined. Larger values are likely to improve the results, but the training time would become too large to be practical. For SpaMHMM, we used these same values of $M$ and $S$ and we did 3-fold cross validation on the training data of the action ``walking'' to fine-tune the value of $\reg$ in the range $[10^{-4}, 1]$. We ended up using $\reg=0.05$. The number of hidden states in 1-HMM was set to 51 and in K-HMM it was set to 11 hidden states per HMM. The same values were then used to train the models for the remaining actions. Every model was trained for 100 iterations of EM  or until the loss plateaus. For SpaMHMM, we did 100 iterations of the inner loop on each M-step, using a learning rate $\rho=10^{-2}$.
+
+In order to generate predictions for a joint (node) $y$ starting from a given prefix sequence $\mX_{\text{pref}}$, we build the distribution $p(\rmX | \mX_{\text{pref}}, y)$ (see details in \Secref{sec:posterior_proof}) and we sample sequences from that posterior. Our evaluation method and metric again followed \cite{Fragkiadaki2015}. We fed our model with 8 prefix subsequences with 50 frames each (corresponding to 2 seconds) for each joint from the test subject and we predicted the following 10 frames (corresponding to 400 miliseconds). Each prediction was built by sampling 100 sequences from the posterior and averaging. We then computed the average mean angle error for the 8 sequences at different time horizons. 
+
+Results are in \Tableref{tbl:h36m_results}. Among our models (1-HMM, K-HMM, MHMM and SpaMHMM), SpaMHMM outperformed the remaining in all actions except ``eating''. For this action in particular, MHMM was slightly better than SpaMHMM, probably due to the lack of symmetry between the right and left sides of the body, which was one of the prior assumptions that we have used to build the graph $\gG$. ``Smoking'' and ``discussion'' activities may also be highly non-symmetric, but results in our and others' models show that these activities are generally harder to predict than ``walking'' and ``eating'. Thus, here, the skeleton structure information encoded in $\gG$ behaves as a useful prior for SpaMHMM, guiding it towards better solutions than MHMM. The worse results for 1-HMM and K-HMM likely result from the same limitations that we have pointed out in \Secref{sec:wi_fi}: each component in K-HMM is inherently trained with less data than the remaining models, while 1-HMM does not make distinction between different graph nodes. Extending the discussion to the state of the art solutions for this problem, we note that SpaMHMM compares favorably with ERD, LSTM-3LR and SRNN, which are all RNN-based architectures. Moreover, ERD and LSTM-3LR were designed specifically for this task, which is not the case for SpaMHMM. This is also true for GRU supervised and QuaterNet, which clearly outperform all remaining models, including ours. This is unsurprising, since RNNs are capable of modeling more complex dynamics than HMMs, due to their intrinsic non-linearity and continuous state representation. This also allows their usage for long-term motion generation, in which HMMs do not behave well due their linear dynamics and lack of long-term memory. However, unlike GRU supervised and QuaterNet, SpaMHMM  models the probability distribution of the data directly, allowing its application in domains like novelty detection. Regarding sparsity, the experiments confirm that the SpaMHMM mixture coefficients are actually sparser than those of MHMM, as shown in \Figref{fig:sparsity}.
+
+\begin{table*}
+	\resizebox{\textwidth}{!}{
+		\begin{tabular}{l|c c c c| c c c c| c c c c | c c c c}
+			\multicolumn{1}{c}{} & \multicolumn{4}{c}{Walking} & \multicolumn{4}{c}{Eating} & \multicolumn{4}{c}{Smoking} & \multicolumn{4}{c}{Discussion} \\
+			miliseconds & 80 & 160 & 320 & 400 & 80 & 160 & 320 & 400 & 80 & 160 & 320 & 400 & 80 & 160 & 320 & 400 \\
+			\hline
+			1-HMM & 0.91 & 1.04 & 1.22 & 1.31 & 1.00 & 1.08 & 1.15 & 1.21 & 1.45 & 1.55 & 1.70 & 1.75 & 1.19 & 1.42 & 1.55 & 1.56 \\
+			K-HMM & 1.29 & 1.33 & 1.34 & 1.38 & 1.16 & 1.22 & 1.28 & 1.34 & 1.70 & 1.77 & 1.90 & 1.95 & 1.47 & 1.61 & 1.68 & 1.63 \\
+			MHMM & \textbf{0.78} & \textbf{0.93} & 1.13 & 1.21 & \textbf{0.77} & \textbf{0.87} & \textbf{0.98} & \textbf{1.06} & 1.44 & 1.53 & 1.69 & 1.77 & 1.14 & 1.36 & 1.52 & 1.54 \\
+			SpaMHMM & 0.80 & \textbf{0.93} & \textbf{1.11} & \textbf{1.18} & 0.81 & 0.90 & 0.99 & \textbf{1.06} & \textbf{1.29} & \textbf{1.39} & \textbf{1.61} & \textbf{1.67} & \textbf{1.09} & \textbf{1.30} & \textbf{1.44} & \textbf{1.49} \\
+			\hline
+			ERD \cite{Fragkiadaki2015} & 0.93 & 1.18 & 1.59 & 1.78 & 1.27 & 1.45 & 1.66 & 1.80 & 1.66 & 1.95 & 2.35 & 2.42 & 2.27 & 2.47 & 2.68 & 2.76 \\
+			LSTM-3LR \cite{Fragkiadaki2015} & 0.77 & 1.00 & 1.29 & 1.47 & 0.89 & 1.09 & 1.35 & 1.46 & 1.34 & 1.65 & 2.04 & 2.16 & 1.88 & 2.12 & 2.25 & 2.23 \\
+			SRNN \cite{Jain2016} & 0.81 & 0.94 & 1.16 & 1.30 & 0.97 & 1.14 & 1.35 & 1.46 & 1.45 & 1.68 & 1.94 & 2.08 & 1.22 & 1.49 & 1.83 & 1.93 \\
+			GRU sup. \cite{Martinez2017} & 0.28 & 0.49 & 0.72 & 0.81 & 0.23 & 0.39 & 0.62 & 0.76 & 0.33 & 0.61 & 1.05 & 1.15 & 0.31 & 0.68 & 1.01 & 1.09 \\
+			QuaterNet \cite{Pavllo2018} & \underline{0.21} & \underline{0.34} & \underline{0.56} & \underline{0.62} & \underline{0.20} & \underline{0.35} & \underline{0.58} & \underline{0.70} & \underline{0.25} & \underline{0.47} & \underline{0.93} & \underline{0.90} & \underline{0.26} & \underline{0.60} & \underline{0.85} & \underline{0.93}
+	\end{tabular}}
+	\caption{Mean angle error for short-term motion prediction on Human3.6M for different actions and time horizons. The results for ERD, LSTM-3LR, SRNN, GRU supervised and QuaterNet were extracted from \cite{Pavllo2018}. Best results among our models are in bold, best overall results are underlined.}
+	\label{tbl:h36m_results}
+\end{table*}
+
+\begin{figure}
+	\centering
+	\begin{minipage}{.3\textwidth}
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+			ybar,
+			bar width=10pt,
+			width=120pt,
+			height=180pt,
+			xmin=Wi-Fi, xmax=Wi-Fi,
+			symbolic x coords={Wi-Fi},
+			xtick=data,
+			ylabel=Sparsity,
+			ymin=0, ymax=1,
+			ymajorgrids,
+			major grid style={dashed},
+			yminorgrids,
+			minor grid style={dashed},
+			minor tick num=1,
+			]
+			\addplot[fill=white, error bars/.cd, y dir=both, y explicit] 
+			coordinates {(Wi-Fi, 0.749) +- (Wi-Fi, 0.017)};
+			\addplot[fill=lightgray, error bars/.cd, y dir=both, y explicit] 
+			coordinates {(Wi-Fi, 0.755) +- (Wi-Fi, 0.022)};
+			\legend{}
+			\end{axis}
+		\end{tikzpicture}
+	\end{minipage}%
+	\begin{minipage}{.7\textwidth}
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+			ybar,
+			bar width=10pt,
+			width=250pt,
+			height=180pt,
+			symbolic x coords={Walking,Eating,Smoking,Discussion},
+			xtick=data,
+			ymin=0, ymax=1,
+			ymajorgrids,
+			major grid style={dashed},
+			yminorgrids,
+			minor grid style={dashed},
+			minor tick num=1,
+			legend style={at={(0.75,0.9)},
+				anchor=north,legend columns=1},
+			]
+			\addplot[fill=white] 
+			coordinates {(Walking,0.535) (Eating,0.465) (Smoking,0.343) (Discussion,0.455)};
+			\addplot[fill=lightgray] 
+			coordinates {(Walking,0.576) (Eating,0.540) (Smoking,0.457) (Discussion,0.533)};
+			\legend{MHMM,SpaMHMM}
+			\end{axis}
+		\end{tikzpicture}
+	\end{minipage} 
+	\caption{Relative sparsity (number of coefficients equal to zero / total number of coefficients) of the obtained MHMM and SpaMHMM models on the Wi-Fi dataset (left) and on the Human3.6M dataset for different actions (right). For the Wi-Fi dataset, the average value over the 10 training runs is shown together with the standard deviation. Both models for the Wi-Fi dataset have 150 coefficients. All models for the Human3.6M dataset have 396 coefficients.}
+	\label{fig:sparsity}
+\end{figure}
+
+\subsubsection{Joint cluster analysis}
+\label{sec:spamhmm_cluster}
+We may roughly divide the human body in four distinct parts: upper body (head, neck and shoulders), arms, torso and legs. Joints that belong to the same part naturally tend to have coherent motion, so we would expect them to be described by more or less the same components in our mixture models (MHMM and SpaMHMM). Since SpaMHMM is trained to exploit the known skeleton structure, this effect should be even more apparent in SpaMHMM than in MHMM. In order to confirm this conjecture, we have trained MHMM and SpaMHMM for the action ``walking'' using four mixture components only, i.e. $M=4$, and we have looked for the most likely component (cluster) for each joint:
+\begin{equation}
+C_k = \argmax_{m \in \{1,...,M\}} p(\rz=m | \ry=k) = \argmax_{m \in \{1,...,M\}} \alpha_{k,m},
+\end{equation}
+where $C_k$ is, therefore, the cluster assigned to joint $k$. The results are in \Figref{fig:clusters}. From there we can see that MHMM somehow succeeds on dividing the body in two main parts, by assigning the joints in the torso and in the upper body mostly to the red/'+' cluster, while those in the hips, legs and feet are almost all assigned to the green/`\SmallTriangleUp' cluster. Besides, we see that in the vast majority of the cases, symmetric joints are assigned to the same cluster. These observations confirm that we have chosen the graph $\gG$ for this problem in an appropriate manner. However, some assignments are unnatural: e.g. one of the joints in the left foot is assigned to the red/`+' cluster and the blue/`$\circ$' cluster is assigned to one single joint, in the left forearm. We also observe that the distribution of joints per clusters is highly uneven, being the green/`\SmallTriangleUp' cluster the most represented by far. SpaMHMM, on the other hand, succeeds on dividing the body in four meaningful regions: upper body and upper spine in the green/`\SmallTriangleUp' cluster; arms in the blue/`$\circ$' cluster; lower spine and hips in the orange/`x' cluster; legs and feet in the red/`+' cluster. Note that the graph $\gG$ used to regularize SpaMHMM does not include any information about the body part that a joint belongs to, but only about the joints that connect to it and that are symmetric to it. Nevertheless, the model is capable of using this information together with the training data in order to divide the skeleton in an intuitive and natural way. Moreover, the distribution of joints per cluster is much more even in this case, what may also help to explain why SpaMHMM outperforms MHMM: by splitting the joints more or less evenly by the different HMMs in the mixture, none of the HMM components is forced to learn too many motion patterns. In MHMM, we see that the green/`+' component, for instance, is the most responsible to model the motion of almost all joints in the legs and hips and also some joints in the arms and the red/`+' component is the prevalent on the prediction of the motion patterns of the neck and left foot, which are presumably very different.
+
+\begin{figure*}
+	\centering
+	\begin{minipage}{.5\textwidth}
+		\centering
+		\includegraphics[width=0.8\linewidth]{ChapterTwo/mhmm_clusters}
+	\end{minipage}%
+	\begin{minipage}{.5\textwidth}
+		\centering
+		\includegraphics[width=0.8\linewidth]{ChapterTwo/spamhmm_clusters}
+	\end{minipage}
+	\caption{Assignments of joints to clusters in MHMM (left) and SpaMHMM (right). The different colors (blue, green, orange, red) and the respective symbols (`$\circ$', `\SmallTriangleUp', `x', `+') on each joint represent the cluster that the joint was assigned to. on each joint represent the cluster that the joint was assigned to.}
+	\label{fig:clusters}
+\end{figure*}
