@@ -54,7 +54,7 @@ In another direction of work in \citet{Caridakis2010}, a SOMM-based architecture
 
 In \citet{Lebbah2015}, a probabilistic self-organizing map called PrSOMS is presented for the clustering and visualization of dependent and non-identically distributed data. In this model, the SOM learning paradigm to produce topology-preserving maps is combined with the probabilistic-learning scheme of the HMM. The SOM is considered to be a grid, forming a discrete topology in which each cell represents a state; the parameters of the model are estimated by maximizing the likelihood of the sequential data set. In another direction of work in \citet{Morimoto2016}, the effects of meteorological factors on the occurrence of strokes are investigated. The authors used the SOM to obtain weather patterns that would serve as states of the HMMs. They showed that HMMs with states given by the SOM are useful for describing a background process of stroke incidence. This approach considers the SOM as a front-end processor.
 
-In \citet{Ferles2008,Ferles2013,Ferles2017}, the fusion and synergy of SOMs and HMMs are employed in biological-molecule studies to meet the increasing requirements imposed by the properties of deoxyribonucleic acid (DNA), ribonucleic acid (RNA), and protein chain molecules. The authors proposed a stochastic unsupervised-learning algorithm based on the integration of the SOM and HMM principles, called SOHMMM. The SOHMMM's characteristics and capabilities are demonstrated through two series of experiments, based on artificial sequence data and splice-junction gene sequences. However, in these papers, only the discrete-observation setting is addressed. Here, we extend the algorithm for multivariate Gaussian in order to fit the requirements of our anomaly-detection project.
+In \citet{Ferles2008,Ferles2013,Ferles2017}, the fusion and synergy of SOMs and HMMs are employed in biological-molecule studies to meet the increasing requirements imposed by the properties of deoxyribonucleic acid (DNA), ribonucleic acid (RNA), and protein chain molecules. The authors proposed a stochastic unsupervised-learning algorithm based on the integration of the SOM and HMM principles, called self-organizing hidden Markov model map (SOHMMM). The SOHMMM characteristics and capabilities are demonstrated through two series of experiments, based on artificial sequence data and splice-junction gene sequences. However, in these papers, only the discrete-observation setting is addressed. Here, we extend the algorithm for multivariate Gaussian in order to fit the requirements of our anomaly-detection project.
 
 Incremental learning of HMM parameters is the core function of the SOHMMM algorithm, which is based on a stochastic gradient-descent technique. The incremental learning of new data sequences allows HMM parameters to adapt as new data become available, without having to retrain from the start on all the accumulated training data. Various techniques in the literature address this topic. These techniques are classified according to the objective function, optimization technique, and target application, involving the block-wise and symbol-wise learning of parameters. The authors in \citet{Khreich2012} presented a comprehensive survey of techniques that are suitable for the incremental learning of HMM parameters, among which, the stochastic gradient-descent technique of the SOHMMM is referred to as one of the numerical-optimization methods.
 
@@ -65,27 +65,40 @@ In this work, we intend to benefit from the collaboration of these two technique
 \subsection{Background: The Self-Organizing Hidden Markov Model Map for Discrete Observations}
 \label{SOHMMM}
 
-We start by reviewing SOHMMM as initially formulated by \citet{Ferles2008}. This model defines a mapping between an observed sequence $\rmX = \left(\rvx^{(1)}, \dots,\rvx^{(T)} \right)$ and a two-dimensional lattice of HMMs, which constitute its nodes. The topology of a 2-D lattice of $m$ HMMs is defined by a function $\vr: \{1, \dots, m\} \mapsto \mathbb{R}^2$, mapping the indices of the $m$ nodes to the respective coordinates in the plane. Given the lattice topology, a neighborhood function $\Delta: \{1, \dots, m\}^2 \mapsto [0, \infty)$ can be defined mapping two nodes in the lattice to a scalar representing how close the two nodes are. In SOHMMM, this function decays exponentially with the Euclidean distance in the lattice:
+We start by reviewing SOHMMM as initially formulated by \citet{Ferles2008}. This model defines a mapping between an observed sequence $\rvx = \left(\rx^{(1)}, \dots, \rx^{(t)} \right)$ and a two-dimensional lattice of HMMs, which constitute its nodes. Each observation is assumed to be discrete, so $\rvx^{(\tau)} \in \{1,\dots,o\}$, being $o$ the size of the dictionary of observations. The topology of a 2-D lattice of $m$ HMMs is defined by a function $\vr: \{1, \dots, m\} \mapsto \mathbb{R}^2$, mapping the indices of the $m$ nodes to the respective coordinates in the plane. Given the lattice topology, a neighborhood function $v: \{1, \dots, m\}^2 \mapsto [0, \infty)$ can be defined mapping two nodes in the lattice to a scalar representing how close the two nodes are. In SOHMMM, $v$ corresponds to the Gaussian kernel:
 \begin{equation}
 \label{eq:sohmmm_distance}
-\Delta(z,z') = \exp(-\beta||\vr(z)-\vr(z')||^{2})),
+v(z,z') = \exp\left(-\beta||\vr(z)-\vr(z')||^{2}\right),
 \end{equation}
 where $\beta > 0$ is a hyperparameter controlling the rate of the decay.
-Given a dataset $\lbrace \mX_i \rbrace_{i=1}^n$, learning is performed by iteratively finding the HMM where the observed sequence $\mX_i$ has the highest likelihood (the so called \textit{winner} node), here denoted $z_i^*$:
-\begin{equation}
-	z^* = \argmax_{z \in \{1,\dots,m\}} \sum_{z'=1}^{m} p(\mX_i | \rz, \theta)\Delta(\rz, z_i^*)
-\end{equation}
-and then updating the parameters of $z_i^*$ and its neighbors in order to minimize the SOHMMM energy function:
+Following the idea of SOMs, the SOHMMM algorithm aims to minimize an \emph{energy function}, defined below:
 \begin{equation}
 \label{eq:sohmmm_energy}
-\min_{\theta}~\left\lbrace E(\theta) \triangleq \sum_{i=1}^n \sum_{\rz=1}^m -p(\mX_i | \rz, \theta)\Delta(\rz, z_i^*) \right\rbrace,
+E(\vx; \theta) \triangleq \sum_{\rz} -p(\vx \mid \rz, \theta)v(\rz, z^*),
 \end{equation}
-where $\theta$ summarizes all parameters of the HMMs, $\rz$ indexes the $m$ HMMs in the lattice, and the term $p(\rmX | \rz)$ is the marginal distribution of observations of a standard HMM:
+where $\theta$ summarizes all parameters of the HMMs, $\rz$ indexes the $m$ HMMs in the lattice, and $p(\rvx | \rz)$ is the marginal distribution of observations of a standard HMM:
 \begin{equation}
 \label{eq:sohmmm_hmm}
-p(\rmX | \rz) = \sum_{\rvh} p(\rh^{(0)}|\rz) \prod_t p(\rh^{(t)}|\rh^{(t-1)},\rz) p(\rx^{(t)}|\rh^{(t)},\rz),
+p(\rvx \mid \rz) = \sum_{\rvh} p(\rh^{(0)} \mid \rz) \prod_{\tau=1}^t p(\rh^{(\tau)} \mid \rh^{(\tau-1)},\rz) p(\rx^{(\tau)} \mid \rh^{(\tau)},\rz),
 \end{equation}
-where $\rx^{(t)} \in \{1, \dots, o\}$, $\rh^{(t)} \in \{1, \dots, s\}$, and $\rvh = \left(\rh^{(0)}, \dots,\rh^{(T)} \right)$ is the sequence of hidden states of the HMM. Here, $o$ and $s$ are the size of the discrete set of possible observations and the number of hidden states of the HMM, respectively.
+where $\rvh = \left(\rh^{(0)},\dots,\rh^{(t)}\right)$ is the sequence of hidden states of the HMM and $\rh^{(\tau)} \in \{1, \dots, s\}$, being $s$ the number of hidden states. Finally, $z^*$ corresponds to the index of the \emph{winner node} for the observation $\vx$:
+\begin{equation}
+\label{eq:sohmmm_winner}
+z^* \triangleq \argmax_{z' \in \{1,\dots,m\}} \sum_{\rz} p(\vx \mid \rz, \theta)v(\rz, z').
+\end{equation}
+
+The set $\theta$ consists of the following parameters:
+\begin{itemize}
+	\item the $s$-dimensional initial state probabilities, $\vpi^{(z)}$, where $\evpi_h^{(z)} \triangleq p(\rh^{(0)}=h \mid \rz=z)$, for $h \in \{1,\dots,s\}$ and $z \in \{1,\dots,m\}$;
+	\item the $s \times s$ state transition matrices, $\mA^{(z)}$, where $\emA^{(z)}_{h,h'} \triangleq p(\rh^{(t)}=h' \mid \rh^{(t-1)}=h, \rz=z)$, for $h,h' \in \{1,\dots,s\}$ and $z \in \{1,\dots,m\}$;
+	\item the $s \times o$ emission probability matrices, $\mB^{(z)}$, where $\emB^{(z)}_{h,x} \triangleq p(\rx^{(\tau)}=x \mid \rh^{(\tau)}=h, \rz=z)$, for $h \in \{1,\dots,s\}$, $x \in \{1,\dots,o\}$, and $z \in \{1,\dots,m\}$.
+\end{itemize}
+Thus, $\theta = \{(\vpi^{(z)}, \mA^{(z)}, \mB^{(z)})\}_{z=1}^m$, where each triplet $(\vpi^{(z)}, \mA^{(z)}, \mB^{(z)})$ defines one HMM in the lattice. The SOHMMM online learning algorithm corresponds to stochastic gradient descent over the energy function~\plaineqref{eq:sohmmm_energy}. Constrained optimization is avoided by reparameterizing the model using softmax functions and performing unconstrained stochastic gradient descent over the new parameters $\vu^{(z)}$, $\mW^{(z)}$, and $\mR^{(z)}$:
+\begin{equation}
+\vpi_h^{(z)} = \frac{\exp(\evu_h^{(z)})}{\sum_{h'=1}^{s}\exp(\evu_{h'}^{(z)})}, \quad
+\emA^{(z)}_{h,h'} = \frac{\exp(\emW^{(z)}_{h,h'})}{\sum_{h''=1}^{s} \exp(\emW^{(z)}_{h,h''})}, \quad
+\emB^{(z)}_{h,x} = \frac{\exp(\emR^{(z)}_{h,x})}{\sum_{x'=1}^{o} \exp(\emR^{(z)}_{h,x'})}.
+\end{equation}
 
 \section{SpaMHMM: Sparse Mixture of Hidden Markov Models}
 \label{sec:spamhmm}
