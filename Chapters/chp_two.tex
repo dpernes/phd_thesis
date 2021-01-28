@@ -118,7 +118,7 @@ The full algorithm, comprising the update equations for each parameter, can be f
 \subsection{Extending SOHMMM for Gaussian Observations}
 \label{sec:sohmmm_gaussian}
 
-For the purpose of modeling AP usage data, we should consider a slightly different setting where each observation $x^{(\tau)}$ takes values on the $d$-dimensional plane $\sR^d$, rather than being drawn from a discrete dictionary. 
+For the purpose of modeling AP usage data, we should consider a slightly different setting where each observation $\rvx^{(\tau)}$ takes values on the $d$-dimensional plane $\sR^d$, rather than being drawn from a discrete and finite set. A sensible option, which may be useful in a broad range of applications, is considering the case of Gaussian emissions, i.e. $\rvx^{(\tau)} \mid (\rh^{(\tau)}, \rz) \sim \mathcal{N}\left(\rvx^{(\tau)}; \vmu^{(z)}(\rh^{(\tau)}), \mSigma^{(z)}(\rh^{(\tau)})\right)$, where $\vmu^{(z)}(\rh^{(\tau)}) \in \sR^d$ is the mean and $\mSigma^{(z)}(\rh^{(\tau)}) \in \sR^{d \times d}$ is the covariance for the Gaussian component corresponding to state $\rh^{(\tau)}$ in the lattice node $\rz$. These means and covariances replace the emission probability matrices $\mB^{(z)}$, defined for the case of discrete observations.
 
 \section{SpaMHMM: Sparse Mixture of Hidden Markov Models for Graph Connected Entities}
 \label{sec:spamhmm}
