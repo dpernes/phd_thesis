@@ -116,10 +116,10 @@ Thus, $\Theta \triangleq \{(\vpi^{(z)}, \mA^{(z)}, \mB^{(z)})\}_{z=1}^m$, where 
 The full algorithm, comprising the update equations for each parameter, is presented in \Algref{alg:sohmmm_discrete} and its derivation can be found in \citet{Ferles2008}.
 
 \begin{algorithm}
-	\caption{SOHMMM Learning Algorithm for Discrete HMMs \cite{Ferles2008}}
+	\caption{SOHMMM Learning Algorithm for Discrete Observations \cite{Ferles2008}}
 	\label{alg:sohmmm_discrete}
 	
-	\begin{algorithmic}
+	\begin{algorithmic}[1]
 		\State \textbf{Inputs:} the lattice $r$ with $m$ nodes, the hyperparameter $\lambda$ of the neighborhood function $v$, the set of initial parameters $\Theta^{(0)}$, the learning rate $\eta$, and the number of training iterations \texttt{trainIter}.
 		\vspace{0.3cm}
 		\For{$i = 1, \dots,$\texttt{trainIter}} 
@@ -148,12 +148,12 @@ The full algorithm, comprising the update equations for each parameter, is prese
 		\vspace{0.3cm}
 		\State $ \emR^{(z)}_{h,x'} \coloneqq \emR^{(z)}_{h,x'} + \eta v(z,z^*) \sum_{\tau=1}^{t}\left[\1_{x^{(\tau)}=x'}\alpha_{\tau}^{(z)}(h)\beta_{\tau}(h) - \emB^{(z)}_{h,x'}\alpha_{\tau}^{(z)}(h)\beta_{\tau}^{(z)}(h) \right], \quad h = 1, \dots, s, \quad x' = 1,\dots,o;$
 		\vspace{0.3cm}
-		\State $\evpi_h^{(z)} \coloneqq \exp(\evu_h^{(z)}) \big/ \sum_{h'=1}^{s}\exp(\evu_{h'}^{(z)}), \quad h = 1, \dots, s.$
+		\State $\evpi_h^{(z)} \coloneqq \exp(\evu_h^{(z)}) \big/ \sum_{h'=1}^{s}\exp(\evu_{h'}^{(z)}), \quad h = 1, \dots, s;$
 		\vspace{0.3cm}
 		\State $ \emA^{(z)}_{h,h'} \coloneqq \exp(\emW^{(z)}_{h,h'}) \big/ \sum_{h''=1}^{s} \exp(\emW^{(z)}_{h,h''}), \quad h,h' = 1, \dots, s;$
-		\vspace{0.2cm}
-		\State $\emB^{(z)}_{h,x'} \coloneqq \exp(\emR^{(z)}_{h,x'}) \big/ \sum_{x''=1}^{o} \exp(\emR^{(z)}_{h,x''}), \quad h = 1, \dots, s, \quad x' = 1,\dots,o;$
-		\vspace{0.2cm}
+		\vspace{0.3cm}
+		\State $\emB^{(z)}_{h,x'} \coloneqq \exp(\emR^{(z)}_{h,x'}) \big/ \sum_{x''=1}^{o} \exp(\emR^{(z)}_{h,x''}), \quad h = 1, \dots, s, \quad x' = 1,\dots,o.$
+		\vspace{0.3cm}
 		\EndFor
 		\vspace{0.3cm}
 		\State $\Theta^{(i)} \coloneqq \lbrace (\vu^{(z)}, \mW^{(z)}, \mR^{(z)}) \rbrace_{z=1}^m$.
@@ -166,9 +166,9 @@ The full algorithm, comprising the update equations for each parameter, is prese
 \subsection{Extending SOHMMM to Gaussian Observations}
 \label{sec:sohmmm_gaussian}
 
-For the purpose of modeling AP usage data, we should consider a slightly different setting where each observation $\rvx^{(\tau)}$ takes values on the $d$-dimensional plane $\sR^d$, rather than being drawn from a discrete and finite set. Hence, now, sequences $\rmX \triangleq \left(\rvx^{(1)}, \dots, \rvx^{(t)} \right)$ take values on $\sR^{d \times t}$. A sensible option, which may be useful in a broad range of applications, is considering the case of multivariate Gaussian emissions, i.e. $\rvx^{(\tau)} \mid (\rh^{(\tau)}, \rz) \sim \mathcal{N}\left(\vx; \vmu^{(z)}(h), \mSigma^{(z)}(h)\right)$, where $\vmu^{(z)}(h) \in \sR^d$ is the mean and $\mSigma^{(z)}(h) \in \sR^{d \times d}$ is the covariance of the Gaussian component corresponding to state $h$ in the lattice node $z$. These means and covariances replace the emission probability matrices $\mB^{(z)}$ defined for the case of discrete observations.
+For the purpose of modeling AP usage data, we should consider a slightly different setting where each observation $\rvx^{(\tau)}$ takes values on the $d$-dimensional plane $\sR^d$, rather than being drawn from a discrete and finite set. Hence, now, sequences $\rmX \triangleq \left(\rvx^{(1)}, \dots, \rvx^{(t)} \right)$ take values on $\sR^{d \times t}$. A sensible option, which may be useful in a broad range of applications, is considering the case of multivariate Gaussian emissions, i.e. $\rvx^{(\tau)} \mid (\rh^{(\tau)}, \rz) \sim \mathcal{N}\left(\vx; \vmu^{(z)}_h, \mSigma^{(z)}_h\right)$, where $\vmu^{(z)}_h \in \sR^d$ is the mean and $\mSigma^{(z)}_h \in \sR^{d \times d}$ is the covariance of the Gaussian component corresponding to state $h$ in the lattice node $z$. These means and covariances replace the emission probability matrices $\mB^{(z)}$ defined for the case of discrete observations.
 
-We shall now derive the necessary readjustments in \Algref{alg:sohmmm_discrete}. Let us denote by $\vx$ the observation at a given time $\tau \in \{1,\dots,t\}$ (i.e., $\rvx^{(\tau)}=\vx$) and consider  the state $h \in \{1,\dots,s\}$ and the node $z \in \{1,\dots,m\}$ as fixed. Thus, we use the notation $p(\vx \mid h, z)$ as a short for $p(\rvx^{(\tau)}=\vx \mid \rh^{(\tau)}=h, \rz=z)$. We have:
+We shall now derive the necessary readjustments in \Algref{alg:sohmmm_discrete}. Let us denote by $\vx$ the observation at a given time $\tau$ (i.e., $\rvx^{(\tau)}=\vx$) and consider the corresponding state $\rh^{(\tau)}$ and the node $\rz$ as fixed at $h$ and $z$, respectively. Thus, we use the notation $p(\vx \mid h, z)$ as a short for $p(\rvx^{(\tau)}=\vx \mid \rh^{(\tau)}=h, \rz=z)$. We have:
 \begin{align}
 \frac{\partial p(\mX \mid z)}{\partial p(\vx \mid h, z)} &= \frac{\partial}{\partial p(\vx \mid h, z)} \left[\sum_{\rvh} p(\mX, \rvh \mid z)  \right] \nonumber\\
 &= \frac{\partial}{\partial p(\vx \mid h, z)} \left[\sum_{\rvh} p(\rh^{(0)} \mid \rz) \prod_{\tau'=1}^t p(\rh^{(\tau')} \mid \rh^{(\tau'-1)},\rz) p(\rvx^{(\tau')} \mid \rh^{(\tau')},\rz)\right] \nonumber\\
@@ -178,28 +178,66 @@ We shall now derive the necessary readjustments in \Algref{alg:sohmmm_discrete}.
 \end{align}
 Note that, for discrete observations, $p(x \mid h, z) = \emB^{(z)}_{h,x}$. However, when we consider the multivariate Gaussian case,
 \begin{align}
-p(\vx \mid h, &z) = \mathcal{N}\left(\vx; \vmu^{(z)}(h), \mSigma^{(z)}(h)\right) \nonumber\\
-&= \frac{1}{\sqrt{(2\pi)^d \mathrm{det}(\mSigma^{(z)}(h))}} \exp \left(-\frac{1}{2} (\vx - \vmu^{(z)}(h))\transp \mSigma^{(z)}(h)^{-1} (\vx - \vmu^{(z)}(h))\right),
+p(\vx \mid h, z) &= \mathcal{N}\left(\vx; \vmu^{(z)}_h, \mSigma^{(z)}_h\right) \nonumber\\
+&= \frac{1}{\sqrt{(2\pi)^d \mathrm{det}(\mSigma^{(z)}_h)}} \exp \left(-\frac{1}{2} {(\vx - \vmu^{(z)}_h)}\transp {\mSigma^{(z)}_h}^{-1} (\vx - \vmu^{(z)}_h)\right),
 \end{align}
-where the covariance matrix $\mSigma^{(z)}(h)$ must be positive definite. This constraint can be easily guaranteed by reparametrizing it as $\mSigma^{(z)}(h) = \mS^{(z)}(h) \mS^{(z)}(h)\transp$, where $\mS^{(z)}(h) \in \sR^{d \times d}$ is constraint-free. The required gradients are:
+where the covariance matrix $\mSigma^{(z)}_h$ must be positive definite. This constraint can be easily guaranteed by reparametrizing it as $\mSigma^{(z)}_h = \mS^{(z)}_h {\mS^{(z)}_h}\transp$, where $\mS^{(z)}_h \in \sR^{d \times d}$ is constraint-free. The required gradients are:
 \begin{align}
-&\nabla_{\vmu^{(z)}(h)} p(\vx \mid h, z) = p(\vx \mid h, z) (\mS \mS\transp)^{-1} (\vx - \vmu), \\
-&\nabla_{\mS^{(z)}(h)} p(\vx \mid h, z) = p(\vx \mid h, z) \mS^{-1} \left[ (\vx - \vmu) (\vx - \vmu)\transp (\mS \mS \transp)^{-1} - I_d\right],
+&\nabla_{\vmu^{(z)}_h} p(\vx \mid h, z) = p(\vx \mid h, z) (\mS \mS\transp)^{-1} (\vx - \vmu), \\
+&\nabla_{\mS^{(z)}_h} p(\vx \mid h, z) = p(\vx \mid h, z) \mS^{-1} \left[ (\vx - \vmu) (\vx - \vmu)\transp (\mS \mS \transp)^{-1} - I_d\right],
 \end{align}
-where we have abbreviated $\vmu^{(z)}(h)$ as $\vmu$ and $\mS^{(z)}(h)$ as $\mS$ to alleviate the notation. Now, by the chain rule,
+where we have abbreviated $\vmu^{(z)}_h$ as $\vmu$ and $\mS^{(z)}_h$ as $\mS$ to alleviate the notation. Now, by the chain rule,
 \begin{align}
-\nabla_{\vmu^{(z)}(h)} p(\mX \mid z) &= \sum_{\tau=1}^t \frac{\partial p(\mX \mid z)}{\partial p(\vx^{(\tau)} \mid h, z)} \nabla_{\vmu^{(z)}(h)} p(\vx^{(\tau)} \mid h, z) \nonumber\\
-&= \sum_{\tau=1}^t \frac{\alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h)}{p(\vx^{(\tau)} \mid h, z)} \nabla_{\vmu^{(z)}(h)} p(\vx^{(\tau)} \mid h, z) \nonumber\\
+\nabla_{\vmu^{(z)}_h} p(\mX \mid z) &= \sum_{\tau=1}^t \frac{\partial p(\mX \mid z)}{\partial p(\vx^{(\tau)} \mid h, z)} \nabla_{\vmu^{(z)}_h} p(\vx^{(\tau)} \mid h, z) \nonumber\\
+&= \sum_{\tau=1}^t \frac{\alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h)}{p(\vx^{(\tau)} \mid h, z)} \nabla_{\vmu^{(z)}_h} p(\vx^{(\tau)} \mid h, z) \nonumber\\
 &= \sum_{\tau=1}^t \alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h) (\mS \mS \transp)^{-1} (\vx^{(\tau)} - \vmu), \\
-\nabla_{\mS^{(z)}(h)} p(\mX \mid z) &= \sum_{\tau=1}^t \alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h) \mS^{-1} \left[ (\vx^{(\tau)} - \vmu) (\vx^{(\tau)} - \vmu)\transp (\mS \mS \transp)^{-1} - I_d\right].
+\nabla_{\mS^{(z)}_h} p(\mX \mid z) &= \sum_{\tau=1}^t \alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h) \mS^{-1} \left[ (\vx^{(\tau)} - \vmu) (\vx^{(\tau)} - \vmu)\transp (\mS \mS \transp)^{-1} - I_d\right].
 \end{align}
-Finally, by applying the chain rule once again, we get the desired gradients of the energy function $E$ with respect to $\vmu^{(z)}(h)$ and $\mS^{(z)}(h)$:
+Finally, by applying the chain rule once again, we get the desired gradients of the energy function $E$ with respect to $\vmu^{(z)}_h$ and $\mS^{(z)}_h$:
 \begin{align}
-\nabla_{\vmu^{(z)}(h)} E(\mX) &= \frac{\partial E}{\partial p(\mX \mid z)} \nabla_{\vmu^{(z)}(h)} p(\mX \mid z) \nonumber\\
-&= v(z, z^*) \nabla_{\vmu^{(z)}(h)} p(\mX \mid z) \nonumber\\
-&= v(z, z^*) \sum_{\tau=1}^t \alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h) (\mS \mS \transp)^{-1} (\vx^{(\tau)} - \vmu), \\
-\nabla_{\mS^{(z)}(h)} E(\mX) &= v(z, z^*) \sum_{\tau=1}^t \alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h) \mS^{-1} \left[ (\vx^{(\tau)} - \vmu) (\vx^{(\tau)} - \vmu)\transp (\mS \mS \transp)^{-1} - I_d\right].
+\nabla_{\vmu^{(z)}_h} E(\mX) &= \frac{\partial E}{\partial p(\mX \mid z)} \nabla_{\vmu^{(z)}_h} p(\mX \mid z) \nonumber\\
+&= -v(z, z^*) \nabla_{\vmu^{(z)}_h} p(\mX \mid z) \nonumber\\
+&= -v(z, z^*) \sum_{\tau=1}^t \alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h) (\mS \mS \transp)^{-1} (\vx^{(\tau)} - \vmu), \label{eq:sohmmm_grad_mu}\\
+\nabla_{\mS^{(z)}_h} E(\mX) &= -v(z, z^*) \sum_{\tau=1}^t \alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h) \mS^{-1} \left[ (\vx^{(\tau)} - \vmu) (\vx^{(\tau)} - \vmu)\transp (\mS \mS \transp)^{-1} - I_d\right]. \label{eq:sohmmm_grad_s}
 \end{align}
+Given \twoeqrefs{eq:sohmmm_grad_mu}{eq:sohmmm_grad_s}, it is straightforward to adapt \Algref{alg:sohmmm_discrete} to our setting. For completeness, the full algorithm is provided in \Algref{alg:sohmmm_gaussian}.
+
+\begin{algorithm}
+	\caption{SOHMMM Learning Algorithm for Gaussian Observations}
+	\label{alg:sohmmm_gaussian}
+	
+	\begin{algorithmic}[1]
+		\State \textbf{Inputs:} Same as in \Algref{alg:sohmmm_discrete}.
+		\vspace{0.3cm}
+		\For{$i = 1, \dots,$\texttt{trainIter}} 
+		\vspace{0.3cm}
+		\State Observe $\rmX = \mX$, with length $t$.
+		\vspace{0.3cm}
+		\State Proceed as in lines 4--8 of \Algref{alg:sohmmm_discrete}, replacing all occurrences of $\emB^{(z)}_{h,x^{(\tau)}}$ with $\mathcal{N}\left(\vx^{(\tau)}; \vmu^{(z)}_h, \mS^{(z)}_h {\mS^{(z)}_h}\transp\right)$.
+		\vspace{0.3cm}
+		\State $z^* \coloneqq  \argmax_{z' \in \{1,\dots,m\}} \sum_{z=1}^m p(\mX \mid z, \Theta^{(i-1)})v(z, z')$.
+		\vspace{0.3cm}
+		\For{$z = 1, \dots, m$}
+		\vspace{0.3cm}
+		\State Proceed as in lines 12 and 13 of \Algref{alg:sohmmm_discrete}, replacing all occurrences of $\emB^{(z)}_{h,x^{(\tau)}}$ with $\mathcal{N}\left(\vx^{(\tau)}; \vmu^{(z)}_h, \mS^{(z)}_h {\mS^{(z)}_h}\transp\right)$ and all occurences of $\vx$ with $\mX$;
+		\vspace{0.3cm}
+		\State $\vmu^{(z)}_h \coloneqq \vmu^{(z)}_h + \eta v(z, z^*) \sum_{\tau=1}^t \alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h) (\mS^{(z)}_h {\mS^{(z)}_h} \transp)^{-1} (\vx^{(\tau)} - \vmu^{(z)}_h), \quad h = 1, \dots, s;$
+		\vspace{0.3cm}
+		\State $\begin{aligned}
+			\mS^{(z)}_h \coloneqq \mS^{(z)}_h + \eta &v(z, z^*) \sum_{\tau=1}^t \alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h) {\mS^{(z)}_h}^{-1} \cdot \\
+			&\cdot \left[ (\vx^{(\tau)} - \vmu^{(z)}_h) (\vx^{(\tau)} - \vmu^{(z)}_h)\transp (\mS^{(z)}_h {\mS^{(z)}_h} \transp)^{-1} - I_d\right], \quad h = 1, \dots, s;
+			\end{aligned}$
+		\vspace{0.3cm}
+		\State Proceed as in lines 15 and 16 of \Algref{alg:sohmmm_discrete}.
+		\vspace{0.3cm}
+		\EndFor
+		\vspace{0.3cm}
+		\State $\Theta^{(i)} \coloneqq \lbrace (\vu^{(z)}, \mW^{(z)}, (\vmu^{(z)}_h)_{h=1}^s, (\mS^{(z)}_h)_{h=1}^s) \rbrace_{z=1}^m$.
+		\vspace{0.3cm}
+		\EndFor
+		
+	\end{algorithmic}
+\end{algorithm}
 
 \section{SpaMHMM: Sparse Mixture of Hidden Markov Models for Graph Connected Entities}
 \label{sec:spamhmm}
