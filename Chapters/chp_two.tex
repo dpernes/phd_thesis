@@ -14,6 +14,9 @@
 % Write text in here
 % Use \subsection and \subsubsection to organize text
 
+\algdef{SE}[SUBALG]{Indent}{EndIndent}{}{\algorithmicend\ }%
+\algtext*{Indent}
+\algtext*{EndIndent}
 
 \begin{tcolorbox}
 	\small{
@@ -90,7 +93,7 @@ Following the idea of SOMs, the SOHMMM algorithm aims to minimize an \emph{energ
 \label{eq:sohmmm_energy}
 E(\vx; \Theta) \triangleq -\sum_{\rz} p(\vx \mid \rz, \Theta)v(\rz, z^*),
 \end{equation}
-where $\theta$ summarizes all parameters of the HMMs, $\rz$ indexes the $m$ HMMs in the lattice, and $p(\rvx \mid \rz)$ is the marginal distribution of observations of a standard HMM:
+where $\Theta$ summarizes all parameters of the HMMs, $\rz$ indexes the $m$ HMMs in the lattice, and $p(\rvx \mid \rz)$ is the marginal distribution of observations of a standard HMM:
 \begin{equation}
 \label{eq:sohmmm_hmm}
 p(\rvx \mid \rz) = \sum_{\rvh} p(\rh^{(0)} \mid \rz) \prod_{\tau=1}^t p(\rh^{(\tau)} \mid \rh^{(\tau-1)},\rz) p(\rx^{(\tau)} \mid \rh^{(\tau)},\rz),
@@ -451,11 +454,11 @@ Here, we are assuming that the emission probabilities $p(\rx^{(t)}\mid\rh^{(t)},
 The procedure to maximize objective~\plaineqref{eq:spamhmm_log_likelihood} using EM is described in \Algref{alg:mhmm}. The update formulas follow from the standard EM procedure and can be obtained by viewing this model as a Bayesian network or by following the derivation detailed in \Secref{sec:proof_em_noreg}. However, the objective \plaineqref{eq:spamhmm_log_likelihood} does not take advantage of the known structure of $\gG$. In order to exploit this information, we introduce a regularization term, maximizing the following objective instead:
 \begin{align}
 \label{eq:spamhmm_objective}
-J_r(\theta) &= \frac{1}{n}\sum_{i=1}^n \log p(\mX_i \mid y_i, \theta) \nonumber\\ 
+J_r(\Theta) &= \frac{1}{n}\sum_{i=1}^n \log p(\mX_i \mid y_i; \Theta) \nonumber\\ 
 &\mathbin{\hphantom{=}}{}+ \frac{\reg}{2} \sum_{\substack{y,y'=1,\\y'\neq y}}^{k} \emG_{y,y'} \E_{\rz \sim p(\rz \mid \ry=y; \Theta)} [ p(\rz \mid \ry=y'; \Theta) ] \nonumber\\
-&= \frac{1}{n}\sum_{i=1}^n \log p(\mX_i \mid y_i, \theta) + \frac{\reg}{2} \sum_{\substack{y,y'=1,\\y'\neq y}}^{k} \emG_{y,y'} {\valpha^{(y)}}\transp \valpha^{(y')},
+&= \frac{1}{n}\sum_{i=1}^n \log p(\mX_i \mid y_i; \Theta) + \frac{\reg}{2} \sum_{\substack{y,y'=1,\\y'\neq y}}^{k} \emG_{y,y'} {\valpha^{(y)}}\transp \valpha^{(y')},
 \end{align}
-where $\reg \geq 0$ controls the relative weight of the two terms in the objective. Note that this regularization term favors nodes connected by edges with large positive weights to have similar mixture coefficients and thus share mixture components. On the other hand, nodes connected by edges with large negative weights will tend to have orthogonal mixture coefficients, being described by disjoint sets of components. These observations agree with our prior assumption that the edge weights express degrees of similarity between each pair of nodes. Proposition \ref{prop_expectations} formalizes these statements and enlightens interesting properties about the expectations $\E_{\rz \sim p(\rz \mid \ry=j, \theta)} [ p(\rz \mid \ry=k, \theta)]$.
+where $\reg \geq 0$ controls the relative weight of the two terms in the objective. Note that this regularization term favors nodes connected by edges with large positive weights to have similar mixture coefficients and thus share mixture components. On the other hand, nodes connected by edges with large negative weights will tend to have orthogonal mixture coefficients, being described by disjoint sets of components. These observations agree with our prior assumption that the edge weights express degrees of similarity between each pair of nodes. Proposition \ref{prop_expectations} formalizes these statements and enlightens interesting properties about the expectations $\E_{\rz \sim p(\rz \mid \ry=y)} [ p(\rz \mid \ry=y')]$.
 \begin{proposition}
 	\label{prop_expectations}
 	For any integer $m>1$, let $\sP_m$ be the set of all probability distributions over the set $\{1,\dots,m\}$. We have:
@@ -492,23 +495,37 @@ and so we can treat $\vbeta^{(y)}$ as an unconstrained parameter vector. This re
 \begin{algorithm}
 	\caption{EM algorithm for the mixture without regularization (MHMM).}
 	\label{alg:mhmm}
-	\begin{algorithmic}
-		\State Inputs: The training set, consisting of $n$ tuples $(\mX_i,y_i)$, a set of initial parameters $\Theta^{(0)}$ and the number of training iterations \texttt{trainIter}.
-		\For{$j = 1, \dots,$ \texttt{trainIter}} $\quad$ (computing sufficient statistics):
-		\begin{enumerate}
-			\item $n_k \coloneqq \sum_i \1_{y_i=y}$ for $y=1,\dots,k$.
-			\item Obtain the mixture posteriors $\eta^{(z)}_{i} \coloneqq p(z \mid \mX_i, y_i)$, for $i=1,\dots,n$ and $z=1,\dots,m$, by computing  $\tilde{\eta}^{(z)}_{i} \coloneqq p(\mX_i \mid z)p(z \mid y_i)$ and normalizing it.
-			\item Obtain the state posteriors $\gamma^{(z)}_{i,h}(\tau) \coloneqq p(\rh^{(\tau)}=h \mid z, \mX_i)$ and $\xi^{(z)}_{i,h,h'}(\tau) \coloneqq p(\rh^{(t-1)}=h, \rh^{(t)}=h' \mid z, \mX_i)$, for $i=1,\dots,n$, $\tau=1,\dots,t_i$, $z=1,\dots,m$ and $h,h'=1,\dots,s$, as done in the Baum-Welch algorithm (\citet{Baum1972}).
-		\end{enumerate}
-		\State M-step:
-		\begin{enumerate}
-			\item $\evalpha^{(y)}_{z} := \frac{\sum_i \eta^{(z)}_{i} \1_{y_i=y}}{n_y}$, for $y=1,\dots,k$ and $z=1,\dots,m$, obtaining $\valpha_y$.
-			\item $\evpi^{(z)}_h := \frac{\sum_i \eta^{(z)}_{i} \gamma^{(z)}_{i,h}(0)}{\sum_i \eta^{(z)}_{i}}$, for $z=1,\dots,m$ and $h=1,\dots,s$, obtaining $\vpi^{(z)}$. 
-			\item $\emA^{(z)}_{h,h'} = \frac{\sum_i \eta^{(z)}_{i} \sum_{\tau=1}^{t_i} \xi^{(z)}_{i,h,h'}(\tau)}{\sum_i \eta^{(z)}_{i} \sum_{\tau=0}^{t_i-1} \gamma^{(z)}_{i,h}(\tau)}$, for $z=1,\dots,m$ and $h,h'=1,\dots,s$, obtaining $\mA^{(z)}$.
-			\item $\vmu^{(z)}_h = \frac{\sum_i \eta^{(z)}_{i} \sum_{\tau=1}^{t_i} \gamma^{(z)}_{i,h}(\tau) \vx_i^{(\tau)}} {\sum_i \eta^{(z)}_{i} \sum_{\tau=1}^{t_i} \gamma^{(z)}_{i,h}(\tau)}$, for $z=1,\dots,m$ and $h=1,\dots,s$.
-			\item $\vsigma^2_{m,s} = \frac{\sum_i \eta_{i,m} \sum_{t=1}^{T_i} \gamma_{i,m,s}(t) \left(\vx_i^{(t)} - \boldsymbol{\mu}^m_s\right)^2} {\sum_i \eta_{i,m} \sum_{t=1}^{T_i} \gamma_{i,m,s}(t)}$, for $m=1,\dots,M$ and $s=1,\dots,S$.
-			\item $\theta^{(j)} = \bigcup_{k,m,s} \left\lbrace \boldsymbol{\alpha}_k, \vpi_{m}, \mA^m, \vmu_{m,s}, \vsigma^2_{m,s} \right\rbrace$.
-		\end{enumerate}
+	\begin{algorithmic}[1]
+		\State \textbf{Inputs:} The training set, consisting of $n$ tuples $(\mX_i,y_i)$, a set of initial parameters $\Theta^{(0)}$, and the number of training iterations \texttt{trainIter}.
+		\vspace{0.3cm}
+		\For{$j = 1, \dots,$ \texttt{trainIter}}
+		\vspace{0.3cm}
+		\State \textbf{Sufficient statistics:}
+		\vspace{0.3cm}
+		\Indent
+			\State $n_y \coloneqq \sum_{i=1}^n \1_{y_i=y}$, for $y=1,\dots,k$;
+			\vspace{0.3cm}
+			\State Obtain the mixture posteriors $\eta^{(z)}_{i} \coloneqq p(z \mid \mX_i, y_i)$, for $i=1,\dots,n$ and $z=1,\dots,m$, by computing  $\tilde{\eta}^{(z)}_{i} \coloneqq p(\mX_i \mid z)p(z \mid y_i)$ and normalizing it;
+			\vspace{0.3cm}
+			\State Obtain the state posteriors $\gamma^{(z)}_{i,h}(\tau) \coloneqq p(\rh^{(\tau)}=h \mid z, \mX_i)$ and $\xi^{(z)}_{i,h,h'}(\tau) \coloneqq p(\rh^{(t-1)}=h, \rh^{(t)}=h' \mid z, \mX_i)$, for $i=1,\dots,n$, $\tau=1,\dots,t_i$, $z=1,\dots,m$, and $h,h'=1,\dots,s$, as done in the Baum-Welch algorithm (\citet{Baum1972}).
+			\vspace{0.3cm}
+		\EndIndent
+		\State \textbf{M-step:}
+		\vspace{0.3cm}
+		\Indent
+			\State $\evalpha^{(y)}_{z} := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \1_{y_i=y}}{n_y}$, for $y=1,\dots,k$ and $z=1,\dots,m$, obtaining $\valpha_y$;
+			\vspace{0.3cm}
+			\State $\evpi^{(z)}_h := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \gamma^{(z)}_{i,h}(0)}{\sum_{i=1}^n \eta^{(z)}_{i}}$, for $z=1,\dots,m$ and $h=1,\dots,s$, obtaining $\vpi^{(z)}$;
+			\vspace{0.3cm} 
+			\State $\emA^{(z)}_{h,h'} := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{\tau=1}^{t_i} \xi^{(z)}_{i,h,h'}(\tau)}{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{\tau=0}^{t_i-1} \gamma^{(z)}_{i,h}(\tau)}$, for $z=1,\dots,m$, and $h,h'=1,\dots,s$, obtaining $\mA^{(z)}$;
+			\vspace{0.3cm}
+			\State $\vmu^{(z)}_h := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{\tau=1}^{t_i} \gamma^{(z)}_{i,h}(\tau) \vx_i^{(\tau)}} {\sum_{i=1}^n \eta^{(z)}_{i} \sum_{\tau=1}^{t_i} \gamma^{(z)}_{i,h}(\tau)}$, for $z=1,\dots,m$ and $h=1,\dots,s$;
+			\vspace{0.3cm}
+			\State ${\vsigma^{(z)}_h}^2 := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{\tau=1}^{t_i} \gamma^{(z)}_{i,h}(\tau) \left(\vx_i^{(t)} - \vmu^{(z)}_h\right)^2} {\sum_{i=1}^n \eta^{(z)}_{i} \sum_{\tau=1}^{t_i} \gamma^{(z)}_{i,h}(\tau)}$, for $z=1,\dots,m$ and $h=1,\dots,s$;
+			\vspace{0.3cm}
+			\State $\Theta^{(j)} := \bigcup_{y,z,h} \left\lbrace \valpha^{(y)}, \vpi^{(z)}, \mA^{(z)}, \vmu^{(z)}_h, \vsigma^{(z)}_h \right\rbrace$.
+			\vspace{0.3cm}
+		\EndIndent
 		\EndFor  
 	\end{algorithmic}
 \end{algorithm}
@@ -516,21 +533,35 @@ and so we can treat $\vbeta^{(y)}$ as an unconstrained parameter vector. This re
 \begin{algorithm}
 	\caption{EM algorithm for the mixture with regularization (SpaMHMM).}
 	\label{alg:spamhmm}
-	\begin{algorithmic}
-		\State Inputs: The training set, consisting of $N$ tuples $(\mX_i,y_i)$, the matrix $\mG$ describing the graph $\gG$, the regularization hyperparameter $\reg$, a set of initial parameters $\theta^{(0)}$, the number of training iterations $\mathcal{I}$, the number of gradient ascent iterations $\mathcal{J}$ to perform on each M-step, the learning rate $\rho$ for the gradient ascent.
-		\For{$j=1,\dots,\mathcal{I}$}
-		\State Sufficient statistics: same as in \Algref{alg:mhmm}.
-		\State M-step:
-		\For{$l=1,\dots,\mathcal{J}$}
-		\begin{enumerate}
-			\item $\psi_{k,m} \coloneqq \frac{1}{N}\sum_i (\eta_{i,m} - \alpha_{k,m}) \1_{y_i=k}$, for $k=1,\dots,K$ and $m=1,\dots,M$.
-			\item $\omega_{k,m} \coloneqq \alpha_{k,m} \sum_{j \neq k} \emG_{j,k}\left(\alpha_{j,m} - \valpha_j \transp \valpha_k \right)$, for $k=1,\dots,K$ and $m=1,\dots,M$.
-			\item $\delta_{k,m} \coloneqq \1_{\beta_{k,m} > 0} \frac{2\sigma'(\beta_{k,m})}{\sigma(\beta_{k,m})}\left(\psi_{k,m} + \reg \omega_{k,m}\right)$, where $\sigma'(\cdot)$ is the derivative of $\sigma(\cdot)$, for $k=1,\dots,K$ and $m=1,\dots,M$. 
-			\item $\beta_{k,m} \leftarrow \beta_{k,m} + \rho \delta_{k,m}$, for $k=1,\dots,K$ and $m=1,\dots,M$.
-			\item Use \eqref{normalization} to obtain $\alpha_{k,m}$, for $k=1,\dots,K$ and $m=1,\dots,M$.
-		\end{enumerate}
+	\begin{algorithmic}[1]
+		\State \textbf{Inputs:} The training set, consisting of $n$ tuples $(\mX_i,y_i)$, the matrix $\mG$ describing the graph $\gG$, the regularization hyperparameter $\reg$, a set of initial parameters $\Theta^{(0)}$, the number of training iterations \texttt{trainIter}, the number of gradient ascent iterations \texttt{mIter} to perform on each M-step, and the learning rate $\rho$ to perform gradient ascent over the mixture coefficients.
+		\vspace{0.3cm}
+		\For{$j=1,\dots,$\texttt{trainIter}}
+		\vspace{0.3cm}
+		\State \textbf{Sufficient statistics:} same as in \Algref{alg:mhmm}.
+		\vspace{0.3cm}
+		\State \textbf{M-step:}
+		\vspace{0.3cm}
+		\Indent
+		\For{$l=1,\dots,$\texttt{mIter}}
+		\vspace{0.3cm}
+			\State $\psi^{(y)}_{z} \coloneqq \frac{1}{n}\sum_{i=1}^n (\eta^{(z)}_i - \evalpha^{(y)}_{z}) \1_{y_i=y}$, for $y=1,\dots,k$ and $z=1,\dots,m$;
+			\vspace{0.3cm}
+			\State $\omega^{(y)}_{z} \coloneqq \evalpha^{(y)}_{z} \sum_{y'=1}^k \emG_{y',y}\left(\evalpha^{(y')}_{z} - {\valpha^{(y')}} \transp \valpha^{(y)} \right) \1_{y' \neq y}$, for $y=1,\dots,k$ and $z=1,\dots,m$;
+			\vspace{0.3cm}
+			\State $\delta^{(y)}_z \coloneqq \frac{2}{\evbeta^{(y)}_{z}}\left(\psi^{(y)}_{z} + \reg \omega^{(y)}_{z}\right) \1_{\evbeta^{(y)}_{z} > 0}$, for $y=1,\dots,k$ and $m=1,\dots,z$;
+			\vspace{0.3cm}
+			\State $\evbeta^{(y)}_{z} \coloneqq \evbeta^{(y)}_{z} + \rho \delta^{(y)}_z$, for $y=1,\dots,k$ and $z=1,\dots,m$, obtaining $\vbeta^{(y)}$;
+			\vspace{0.3cm}
+			\State $\evalpha^{(y)}_{z} \coloneqq \frac{\max(0, {\beta^{(y)}_z})^2}{\sum_{z'=1}^m \max(0, {\beta^{(y)}_{z'}})^2}$, for $y=1,\dots,k$ and $z=1,\dots,m$, , obtaining $\valpha^{(y)}$.
+			\vspace{0.3cm}
 		\EndFor
-		\State Do steps 2) -- 6) in the M-step of \Algref{alg:mhmm}. 
+		\vspace{0.3cm}
+		\State Proceed as in lines 9--12 of \Algref{alg:mhmm};
+		\vspace{0.3cm}
+		\State $\Theta^{(j)} := \bigcup_{y,z,h} \left\lbrace \vbeta^{(y)}, \vpi^{(z)}, \mA^{(z)}, \vmu^{(z)}_h, \vsigma^{(z)}_h \right\rbrace$.
+		\vspace{0.3cm}
+		\EndIndent
 		\EndFor
 	\end{algorithmic}
 \end{algorithm}
