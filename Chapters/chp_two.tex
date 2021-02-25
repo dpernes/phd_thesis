@@ -39,7 +39,7 @@ Given the distributed nature of network data and the high information rate that 
 \end{enumerate}
 In this chapter, we present two solutions for this problem, each with its own advantages and drawbacks. Both are inspired on the concept of sparse representations, which expresses a signal/model $f$, defined over some independent variable $x$, as a linear combination of a few atoms from a prespecified and overcomplete dictionary of size $M$:
 \begin{equation}
-\label{sparse_coding}
+\label{eq:sparse_coding}
 f(x)=\sum_{m=1}^M s_m \phi_m(x),
 \end{equation}
 where $\phi_m(x)$ are the atoms and only a few of the scalars $s_m$ are non-zero, providing a sparse representation of $f(x)$.  Distributed sparse representation (\citet{Baron}) is an extension of the standard version that considers networks with $K$ nodes. At each node, the signal sensed at the same node has its sparsity property because of its intracorrelation, while, for networks with multiple nodes, signals received at different nodes also exhibit strong intercorrelation.
@@ -410,7 +410,7 @@ In the analysis regarding the wireless-simulation data, we showed how the SOHMMM
 
 \subsection{Overview}
 
-Inspired by the formulation of \eqref{sparse_coding}, we propose to model the generative distribution of the data coming from each of the $k$ nodes of a network as a sparse mixture obtained from a dictionary of generative distributions. Specifically, we shall model the distribution for each node as a sparse mixture over a `large' shared dictionary of HMMs, where each HMM corresponds to an individual atom from the dictionary.
+Inspired by the formulation of \eqref{eq:sparse_coding}, we propose to model the generative distribution of the data coming from each of the $k$ nodes of a network as a sparse mixture obtained from a dictionary of generative distributions. Specifically, we shall model the distribution for each node as a sparse mixture over a `large' shared dictionary of HMMs, where each HMM corresponds to an individual atom from the dictionary.
 The field knowledge about the similarities between nodes is summarized in an affinity matrix. The objective function of the learning process promotes reusing HMM atoms between similar nodes.
 We now formalize these ideas.
 
@@ -419,15 +419,15 @@ We now formalize these ideas.
 \label{sec:spamhmm_definition}
 Assume we have a set of nodes $\sY=\{1, \dots, k\}$ connected by an undirected weighted graph $\gG$, expressed by a symmetric matrix $\mG \in \R^{k \times k}$. These nodes thus form a network, in which the weights are assumed to represent degrees of affinity between each pair of nodes (i.e.\ the greater the edge weight, the more the respective nodes \textit{like} to agree). The nodes $\ry$ in the graph produce $d$-dimensional sequences $\rmX = \left(\rvx^{(1)}, \dots,\rvx^{(t)} \right)$, $\rvx^{(\tau)} \in \R^d$, whose conditional distribution we shall model using a mixture of HMMs:
 \begin{equation}
-\label{hmm_mix}
+\label{eq:spamhmm_density}
 p(\rmX \mid \ry) = \sum_{\rz} p(\rz\mid\ry) p(\rmX \mid \rz),
 \end{equation}
-where $\rz \in \{1, \dots, m\}$ is a latent random variable, being $m$ the size of the mixture. This is a particular realization of \eqref{sparse_coding} where $f$ is the probability density function $p(\rmX \mid \ry)$ and the coefficients $s_z$ correspond to the probabilities $p(\rz = z \mid \ry)$. Here, $p(\rmX \mid \rz)$ is the marginal distribution of observations of a standard first-order homogeneous HMM:
+where $\rz \in \{1, \dots, m\}$ is a latent random variable, being $m$ the size of the mixture. This is a particular realization of \eqref{eq:sparse_coding} where $f$ is the probability density function $p(\rmX \mid \ry)$ and the coefficients $s_z$ correspond to the probabilities $p(\rz = z \mid \ry)$. Here, $p(\rmX \mid \rz)$ is the marginal distribution of observations of a standard first-order homogeneous HMM:
 \begin{equation}
-\label{hmm}
+\label{eq:spamhmm_hmm}
 p(\rmX \mid \rz) = \sum_{\rvh} p(\rh^{(0)}\mid\rz) \prod_t p(\rh^{(t)}\mid\rh^{(t-1)},\rz) p(\rvx^{(t)}\mid\rh^{(t)},\rz),
 \end{equation}
-where $\rvh = \left(\rh^{(0)}, \dots,\rh^{(t)} \right)$, $\rh^{(\tau)} \in \{1, \dots, s\}$, is the sequence of hidden states of the HMM, being $s$ the number of hidden states. Note that the factorization in \eqref{hmm_mix} imposes conditional independence between the sequence $\rmX$ and the node $\ry$, given the latent variable $\rz$. This is a key assumption of this model, since this way the distributions for the observations in the nodes in $\sY$ share the same dictionary of HMMs, promoting parameter sharing among the $k$ mixtures. The Bayesian network representing this model is presented in \Figref{fig:spamhmm_bayesian_net}.
+where $\rvh = \left(\rh^{(0)}, \dots,\rh^{(t)} \right)$, $\rh^{(\tau)} \in \{1, \dots, s\}$, is the sequence of hidden states of the HMM, being $s$ the number of hidden states. Note that the factorization in \eqref{eq:spamhmm_density} imposes conditional independence between the sequence $\rmX$ and the node $\ry$, given the latent variable $\rz$. This is a key assumption of this model, since this way the distributions for the observations in the nodes in $\sY$ share the same dictionary of HMMs, promoting parameter sharing among the $k$ mixtures. The Bayesian network representing this model is presented in \Figref{fig:spamhmm_bayesian_net}.
 
 \begin{figure}
 	\centering
@@ -460,7 +460,7 @@ where $\rvh = \left(\rh^{(0)}, \dots,\rh^{(t)} \right)$, $\rh^{(\tau)} \in \{1, 
 		(ht) edge (xt);
 		
 		\end{tikzpicture}}
-	\caption{Representation of the model as a Bayesian network. The node $\rz$ is a parent of all nodes inside the dashed box (the connections were omitted for clarity). Grayed nodes represent latent variables.}
+	\caption{Representation of the model as a Bayesian network. The node $\rz$ is a parent of all nodes inside the dashed box (the connections were omitted for clarity). Gray nodes represent latent variables.}
 	\label{fig:spamhmm_bayesian_net}
 \end{figure}
 
@@ -473,7 +473,7 @@ Given an observed sequence $\mX$ and its corresponding node $y \in \sY$, the inf
 Given an i.i.d.\ dataset consisting of $n$ tuples $(\mX_i, y_i)$ of sequences of observations $\mX_i = \left(\vx_i^{(1)}, \dots,\vx_i^{(t_i)} \right)$ and their respective nodes $y_i \in \sY$, the model defined by \twoeqrefs{hmm_mix}{hmm} may be easily trained using the Expectation-Maximization (EM) algorithm (\citet{Dempster1977}), (locally) maximizing the usual log-likelihood objective:
 \begin{equation}
 \label{eq:spamhmm_log_likelihood}
-J(\theta) = \sum_{i=1}^n \log p(\mX_i \mid y_i; \Theta),
+J(\theta) \triangleq \sum_{i=1}^n \log p(\mX_i \mid y_i; \Theta),
 \end{equation}
 where $\Theta$ represents all model parameters, namely:
 \begin{enumerate}
@@ -489,11 +489,12 @@ Here, we are assuming that the emission probabilities $p(\rx^{(t)}\mid\rh^{(t)},
 The procedure to maximize objective~\plaineqref{eq:spamhmm_log_likelihood} using EM is described in \Algref{alg:mhmm}. The update formulas follow from the standard EM procedure and can be obtained by viewing this model as a Bayesian network or by following the derivation detailed in \Secref{sec:proof_em_noreg}. However, the objective \plaineqref{eq:spamhmm_log_likelihood} does not take advantage of the known structure of $\gG$. In order to exploit this information, we introduce a regularization term, maximizing the following objective instead:
 \begin{align}
 \label{eq:spamhmm_objective}
-J_r(\Theta) &= \frac{1}{n}\sum_{i=1}^n \log p(\mX_i \mid y_i; \Theta) \nonumber\\ 
-&\mathbin{\hphantom{=}}{}+ \frac{\reg}{2} \sum_{\substack{y,y'=1,\\y'\neq y}}^{k} \emG_{y,y'} \E_{\rz \sim p(\rz \mid \ry=y; \Theta)} [ p(\rz \mid \ry=y'; \Theta) ] \nonumber\\
+%J_r(\Theta) &\triangleq \frac{1}{n}\sum_{i=1}^n \log p(\mX_i \mid y_i; \Theta) \nonumber\\ 
+%&\mathbin{\hphantom{=}}{}+ \frac{\reg}{2} \sum_{\substack{y,y'=1,\\y'\neq y}}^{k} \emG_{y,y'} \E_{\rz \sim p(\rz \mid \ry=y; \Theta)} [ p(\rz \mid \ry=y'; \Theta) ] \nonumber\\
+J_r(\Theta) &\triangleq \frac{1}{n}\sum_{i=1}^n \log p(\mX_i \mid y_i; \Theta) + \frac{\reg}{2} \sum_{\substack{y,y'=1,\\y'\neq y}}^{k} \emG_{y,y'} \E_{\rz \sim p(\rz \mid y; \Theta)} [ p(\rz \mid y'; \Theta) ] \nonumber\\
 &= \frac{1}{n}\sum_{i=1}^n \log p(\mX_i \mid y_i; \Theta) + \frac{\reg}{2} \sum_{\substack{y,y'=1,\\y'\neq y}}^{k} \emG_{y,y'} {\valpha^{(y)}}\transp \valpha^{(y')},
 \end{align}
-where $\reg \geq 0$ controls the relative weight of the two terms in the objective. Note that this regularization term favors nodes connected by edges with large positive weights to have similar mixture coefficients and thus share mixture components. On the other hand, nodes connected by edges with large negative weights will tend to have orthogonal mixture coefficients, being described by disjoint sets of components. These observations agree with our prior assumption that the edge weights express degrees of similarity between each pair of nodes. Proposition \ref{prop_expectations} formalizes these statements and enlightens interesting properties about the expectations $\E_{\rz \sim p(\rz \mid \ry=y)} [ p(\rz \mid \ry=y')]$.
+where $\reg \geq 0$ controls the relative weight of the two terms in the objective. Note that this regularization term favors nodes connected by edges with large positive weights to have similar mixture coefficients and thus share mixture components. On the other hand, nodes connected by edges with large negative weights will tend to have orthogonal mixture coefficients, being described by disjoint sets of components. These observations agree with our prior assumption that the edge weights express degrees of similarity between each pair of nodes. Proposition \ref{prop_expectations} formalizes these statements and enlightens interesting properties about the expectations $\E_{\rz \sim p(\rz \mid y)} [ p(\rz \mid y')]$.
 \begin{proposition}
 	\label{prop_expectations}
 	For any integer $m>1$, let $\sP_m$ be the set of all probability distributions over the set $\{1,\dots,m\}$. We have:
@@ -742,7 +743,7 @@ Results are in \Tableref{tbl:h36m_results}. Among our models (1-HMM, k-HMM, MHMM
 \label{sec:spamhmm_cluster}
 We may roughly divide the human body in four distinct parts: upper body (head, neck and shoulders), arms, torso and legs. Joints that belong to the same part naturally tend to have coherent motion, so we would expect them to be described by more or less the same components in our mixture models (MHMM and SpaMHMM). Since SpaMHMM is trained to exploit the known skeleton structure, this effect should be even more apparent in SpaMHMM than in MHMM. In order to confirm this conjecture, we have trained MHMM and SpaMHMM for the action ``walking'' using four mixture components only, i.e.\ $m=4$, and we have looked for the most likely component (cluster) for each joint:
 \begin{equation}
-C_y \triangleq \argmax_{z \in \{1,\dots,m\}} p(\rz=z \mid \ry=y) = \argmax_{z \in \{1,\dots,m\}} \evalpha^{(y)}_z,
+C_y \triangleq \argmax_{z \in \{1,\dots,m\}} p(z \mid y) = \argmax_{z \in \{1,\dots,m\}} \evalpha^{(y)}_z,
 \end{equation}
 where $C_y$ is, therefore, the cluster assigned to joint $y$. The results are in \Figref{fig:clusters}. From there we can see that MHMM somehow succeeds on dividing the body in two main parts, by assigning the joints in the torso and in the upper body mostly to the red/'+' cluster, while those in the hips, legs and feet are almost all assigned to the green/`\SmallTriangleUp' cluster. Besides, we see that in the vast majority of the cases, symmetric joints are assigned to the same cluster. These observations confirm that we have chosen the graph $\gG$ for this problem in an appropriate manner. However, some assignments are unnatural: e.g.\  one of the joints in the left foot is assigned to the red/`+' cluster and the blue/`$\circ$' cluster is assigned to one single joint, in the left forearm. We also observe that the distribution of joints per clusters is highly uneven, being the green/`\SmallTriangleUp' cluster the most represented by far. SpaMHMM, on the other hand, succeeds on dividing the body in four meaningful regions: upper body and upper spine in the green/`\SmallTriangleUp' cluster; arms in the blue/`$\circ$' cluster; lower spine and hips in the orange/`x' cluster; legs and feet in the red/`+' cluster. Note that the graph $\gG$ used to regularize SpaMHMM does not include any information about the body part that a joint belongs to, but only about the joints that connect to it and that are symmetric to it. Nevertheless, the model is capable of using this information together with the training data in order to divide the skeleton in an intuitive and natural way. Moreover, the distribution of joints per cluster is much more even in this case, what may also help to explain why SpaMHMM outperforms MHMM: by splitting the joints more or less evenly by the different HMMs in the mixture, none of the HMM components is forced to learn too many motion patterns. In MHMM, we see that the green/`+' component, for instance, is the most responsible to model the motion of almost all joints in the legs and hips and also some joints in the arms and the red/`+' component is the prevalent on the prediction of the motion patterns of the neck and left foot, which are presumably very different.
 
@@ -759,3 +760,18 @@ where $C_y$ is, therefore, the cluster assigned to joint $y$. The results are in
 	\caption{Assignments of joints to clusters in MHMM (left) and SpaMHMM (right). The different colors (blue, green, orange, red) and the respective symbols (`$\circ$', `\SmallTriangleUp', `x', `+') on each joint represent the cluster that the joint was assigned to. on each joint represent the cluster that the joint was assigned to.}
 	\label{fig:clusters}
 \end{figure*}
+
+\subsection{Conclusion}
+In this work we propose a method to model the generative distribution of sequential data coming from nodes connected in a graph with a known fixed topology. The method is based on a mixture of HMMs where its coefficients are regularized during the learning process in such a way that affine nodes will tend to have similar coefficients, exploiting the known graph structure. We also prove that pairwise optimization of the coefficients leads to sparse mixtures. Experimental results suggest that sparsity holds in the general case. We evaluate the method performance in two completely different tasks (anomaly detection in Wi-Fi networks and human motion forecasting), showing its effectiveness and versatility.
+
+\section{Summary and directions for future work}
+\label{sec:summary}
+After a detailed presentation of SOHMMM and SpaMHMM algorithms in sections \ref{sec:sohmmm} and \ref{sec:spamhmm}, respectively, it is instructive to offer a brief comparative overview of the two models. Additionally, we shall discuss how these frameworks could be extended and generalized.
+
+\subsection{SOHMMM vs. SpaMHMM}
+The similarities between SOHMMM and SpaMHMM go beyond the obvious fact that both models use the hidden Markov model as their core component. It should be noted that \twoeqrefs{eq:sohmmm_energy}{eq:spamhmm_density}, which govern the learning dynamics of these models, are both structurally similar to \eqref{eq:sparse_coding} and, therefore, similar to each other. Despite the fact that the former is an energy function and the latter is a proper density, the SOHMMM energy \plaineqref{eq:sohmmm_energy} could also be transformed into a density by normalization:
+\begin{equation}
+\label{eq:sohmmm_normalized}
+p(\rmX; \Theta) = \frac{E(\rmX; \Theta)}{Z(\Theta)}, \quad \text{where} \quad Z(\Theta) = \int E(\rmX; \Theta) d\rmX.
+\end{equation}
+This observation makes it clear that, in the learning stage, SOHMMM can also be regarded as a mixture of HMMs.
