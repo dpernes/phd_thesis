@@ -37,12 +37,12 @@ Given the distributed nature of network data and the high information rate that 
 	\item Leveraging contextual information by incorporating prior knowledge about similarities and dissimilarities among sets of entities.
 	\item Universality, i.e.\ the model should be applicable to a wide variety of distributed stream data, of diverse nature.
 \end{enumerate}
-In this chapter, we present two solutions for this problem, each with its own advantages and drawbacks. Both are inspired on the concept of sparse representations, which expresses a signal/model $f$, defined over some independent variable $x$, as a linear combination of a few atoms from a prespecified and overcomplete dictionary of size $M$:
+In this chapter, we present two solutions for this problem, each with its own advantages and drawbacks. Both are inspired on the concept of sparse representations, which expresses a signal/model $f$, defined over some independent variable $x$, as a linear combination of a few atoms from a prespecified and overcomplete dictionary of size $m$:
 \begin{equation}
 \label{eq:sparse_coding}
-f(x)=\sum_{m=1}^M s_m \phi_m(x),
+f(x)=\sum_{z=1}^M s_z \phi_z(x),
 \end{equation}
-where $\phi_m(x)$ are the atoms and only a few of the scalars $s_m$ are non-zero, providing a sparse representation of $f(x)$.  Distributed sparse representation (\citet{Baron}) is an extension of the standard version that considers networks with $K$ nodes. At each node, the signal sensed at the same node has its sparsity property because of its intracorrelation, while, for networks with multiple nodes, signals received at different nodes also exhibit strong intercorrelation.
+where $\phi_z(x)$ are the atoms and only a few of the scalars $s_z$ are non-zero, providing a sparse representation of $f(x)$.  Distributed sparse representation (\citet{Baron}) is an extension of the standard version that considers networks with $k$ nodes. At each node, the signal sensed at the same node has its sparsity property because of its intracorrelation, while, for networks with multiple nodes, signals received at different nodes also exhibit strong intercorrelation.
 The intra and inter-correlations lead to a joint sparse model. An interesting scenario in distributed sparse representation, which we exploit here, is when all signals/models share the common support but with different non-zero coefficients.
 
 Our contributions in this chapter are summarized as follows: i) we extend an existing model based on a combination of self-organizing maps (SOM) and HMMs and evaluate it in the context of anomaly detection in Wi-Fi networks; ii) we present a novel algorithm that learns an entity-dependent model based on a mixture of shared HMMs; iii) we discuss how the two models intersect each other and, importantly, how the latter can be viewed as a particular case of a general family of generative models for distributed data.
@@ -82,7 +82,7 @@ In this work, we intend to benefit from the collaboration of these two technique
 \subsection{The Self-Organizing Hidden Markov Model Map for Discrete Observations}
 \label{sec:sohmmm_background}
 
-We start by reviewing SOHMMM as initially formulated by \citet{Ferles2008}. This model defines a mapping between an observed sequence $\rvx \triangleq \left(\rx^{(1)}, \dots, \rx^{(t)} \right)$ and a two-dimensional lattice of HMMs, which constitute its nodes. Each observation is assumed to be discrete, so $\rvx^{(\tau)} \in \{1,\dots,o\}$, being $o$ the size of the dictionary of observations. The topology of a 2-D lattice of $m$ HMMs is defined by a function $\vr: \{1, \dots, m\} \mapsto \mathbb{R}^2$, mapping the indices of the $m$ nodes to the respective coordinates in the plane. Given the lattice topology, a neighborhood function $v: \{1, \dots, m\}^2 \mapsto [0, \infty)$ can be defined mapping two nodes in the lattice to a scalar representing how close the two nodes are. In SOHMMM, $v$ is a Gaussian kernel:
+We start by reviewing SOHMMM as initially formulated by \citet{Ferles2008}. This model defines a mapping between an observed sequence $\rvx \triangleq \left(\rx^{(1)}, \dots, \rx^{(T)} \right)$ and a two-dimensional lattice of HMMs, which constitute its atoms. Each observation is assumed to be discrete, so $\rvx^{(t)} \in \{1,\dots,o\}$, being $o$ the size of the dictionary of observations. The topology of a 2-D lattice of $m$ HMMs is defined by a function $\vr: \{1, \dots, m\} \mapsto \mathbb{R}^2$, mapping the indices of the $m$ nodes to the respective coordinates in the plane. Given the lattice topology, a neighborhood function $v: \{1, \dots, m\}^2 \mapsto [0, \infty)$ can be defined mapping two nodes in the lattice to a scalar representing how close the two atoms are. In SOHMMM, $v$ is a Gaussian kernel:
 \begin{equation}
 \label{eq:sohmmm_distance}
 v(z,z') \triangleq \exp\left(-\lambda||\vr(z)-\vr(z')||^{2}\right),
@@ -96,9 +96,9 @@ E(\vx; \Theta) \triangleq -\sum_{\rz} p(\vx \mid \rz, \Theta)v(\rz, z^*),
 where $\Theta$ summarizes all parameters of the HMMs, $\rz$ indexes the $m$ HMMs in the lattice, and $p(\rvx \mid \rz)$ is the marginal distribution of observations of a standard HMM:
 \begin{equation}
 \label{eq:sohmmm_hmm}
-p(\rvx \mid \rz) = \sum_{\rvh} p(\rh^{(0)} \mid \rz) \prod_{\tau=1}^t p(\rh^{(\tau)} \mid \rh^{(\tau-1)},\rz) p(\rx^{(\tau)} \mid \rh^{(\tau)},\rz),
+p(\rvx \mid \rz) = \sum_{\rvh} p(\rh^{(0)} \mid \rz) \prod_{t=1}^T p(\rh^{(t)} \mid \rh^{(t-1)},\rz) p(\rx^{(t)} \mid \rh^{(t)},\rz),
 \end{equation}
-where $\rvh = \left(\rh^{(0)},\dots,\rh^{(t)}\right)$ is the sequence of hidden states of the HMM and $\rh^{(\tau)} \in \{1, \dots, s\}$, being $s$ the number of hidden states. Finally, $z^*$ corresponds to the index of the \emph{winner node} for the observation $\vx$:
+where $\rvh = \left(\rh^{(0)},\dots,\rh^{(T)}\right)$ is the sequence of hidden states of the HMM and $\rh^{(t)} \in \{1, \dots, s\}$, being $s$ the number of hidden states. Finally, $z^*$ corresponds to the index of the \emph{winner node} for the observation $\vx$:
 \begin{equation}
 \label{eq:sohmmm_winner}
 z^* \triangleq \argmax_{z' \in \{1,\dots,m\}} \sum_{\rz} p(\vx \mid \rz, \Theta)v(\rz, z').
@@ -108,7 +108,7 @@ The set $\Theta$ consists of the following parameters:
 \begin{itemize}
 	\item the $s$-dimensional initial state probabilities, $\vpi^{(z)}$, where $\evpi_h^{(z)} \triangleq p(\rh^{(0)}=h \mid \rz=z)$, for $h \in \{1,\dots,s\}$ and $z \in \{1,\dots,m\}$;
 	\item the $s \times s$ state transition matrices, $\mA^{(z)}$, where $\emA^{(z)}_{h,h'} \triangleq p(\rh^{(t)}=h' \mid \rh^{(t-1)}=h, \rz=z)$, for $h,h' \in \{1,\dots,s\}$ and $z \in \{1,\dots,m\}$;
-	\item the $s \times o$ emission probability matrices, $\mB^{(z)}$, where $\emB^{(z)}_{h,x} \triangleq p(\rx^{(\tau)}=x \mid \rh^{(\tau)}=h, \rz=z)$, for $h \in \{1,\dots,s\}$, $x \in \{1,\dots,o\}$, and $z \in \{1,\dots,m\}$.
+	\item the $s \times o$ emission probability matrices, $\mB^{(z)}$, where $\emB^{(z)}_{h,x} \triangleq p(\rx^{(t)}=x \mid \rh^{(t)}=h, \rz=z)$, for $h \in \{1,\dots,s\}$, $x \in \{1,\dots,o\}$, and $z \in \{1,\dots,m\}$.
 \end{itemize}
 Thus, $\Theta \triangleq \{(\vpi^{(z)}, \mA^{(z)}, \mB^{(z)})\}_{z=1}^m$, where each triplet $(\vpi^{(z)}, \mA^{(z)}, \mB^{(z)})$ completely defines one HMM in the lattice. The SOHMMM online learning algorithm corresponds to stochastic gradient descent over the energy function~\plaineqref{eq:sohmmm_energy}. Constrained optimization is avoided by reparametrizing the model using softmax functions, so that standard, unconstrained stochastic gradient descent can be performed over the new parameters $\vu^{(z)}$, $\mW^{(z)}$, and $\mR^{(z)}$:
 \begin{equation}
@@ -133,11 +133,11 @@ The full algorithm, comprising the update equations for each parameter, is prese
 		\vspace{0.3cm}
 		\State $ \alpha_1^{(z)}(h) \coloneqq \pi_{h}^{(z)}\emB^{(z)}_{h,x^{(1)}}, \quad h = 1, \dots, s$;
 		\vspace{0.3cm}
-		\State $ \alpha_{\tau+1}^{(z)}(h) \coloneqq \emB^{(z)}_{h,x^{(\tau+1)}} \sum_{h'=1}^{s}\alpha_{\tau+1}^{(z)}(h')\emA^{(z)}_{h',h}, \quad \tau = 1, \dots, t-1, \quad h = 1, \dots, s;$
+		\State $ \alpha_{t+1}^{(z)}(h) \coloneqq \emB^{(z)}_{h,x^{(t+1)}} \sum_{h'=1}^{s}\alpha_{t+1}^{(z)}(h')\emA^{(z)}_{h',h}, \quad t = 1, \dots, T-1, \quad h = 1, \dots, s;$
 		\vspace{0.3cm}
 		\State $ \beta_{t}^{(z)}(h) \coloneqq 1, \quad h = 1, \dots, s;$
 		\vspace{0.3cm}
-		\State $ \beta_{\tau}^{(z)}(h) \coloneqq \sum_{h'=1}^{s}\emA^{(z)}_{h,h'}\emB^{(z)}_{h,x^{(\tau+1)}}\beta_{\tau+1}^{(z)}(h'), \quad \tau = t-1, \dots,  1, \quad h = 1, \dots, s. $
+		\State $ \beta_{t}^{(z)}(h) \coloneqq \sum_{h'=1}^{s}\emA^{(z)}_{h,h'}\emB^{(z)}_{h,x^{(t+1)}}\beta_{t+1}^{(z)}(h'), \quad t = T-1, \dots,  1, \quad h = 1, \dots, s. $
 		\vspace{0.3cm}
 		\EndFor
 		\vspace{0.3cm}
@@ -147,9 +147,9 @@ The full algorithm, comprising the update equations for each parameter, is prese
 		\vspace{0.3cm}
 		\State $ \evu_h^{(z)} \coloneqq \evu_h^{(z)} + \eta  \evpi_h^{(z)} \left[ \emB^{(z)}_{h,x^{(1)}} \beta_{1}^{(z)}(h) - p(\vx \mid z, \Theta^{(i-1)}) \right], \quad h = 1, \dots, s;$
 		\vspace{0.3cm}
-		\State $ \emW^{(z)}_{h,h'} \coloneqq  \emW^{(z)}_{h,h'} + \eta v(z,z^*) \emA^{(z)}_{h',h}\sum_{\tau=1}^{t-1}\left[\alpha_{\tau}^{(z)}(h) \emB^{(z)}_{h,x^{(\tau+1)}}\beta_{\tau+1}^{(z)}(h') - \alpha_{\tau}^{(z)}(h)\beta_{\tau}^{(z)}(h) \right], \quad h,h' = 1, \dots, s; $
+		\State $ \emW^{(z)}_{h,h'} \coloneqq  \emW^{(z)}_{h,h'} + \eta v(z,z^*) \emA^{(z)}_{h',h}\sum_{t=1}^{T-1}\left[\alpha_{t}^{(z)}(h) \emB^{(z)}_{h,x^{(t+1)}}\beta_{t+1}^{(z)}(h') - \alpha_{t}^{(z)}(h)\beta_{t}^{(z)}(h) \right], \quad h,h' = 1, \dots, s; $
 		\vspace{0.3cm}
-		\State $ \emR^{(z)}_{h,x'} \coloneqq \emR^{(z)}_{h,x'} + \eta v(z,z^*) \sum_{\tau=1}^{t}\left[\1_{x^{(\tau)}=x'}\alpha_{\tau}^{(z)}(h)\beta_{\tau}(h) - \emB^{(z)}_{h,x'}\alpha_{\tau}^{(z)}(h)\beta_{\tau}^{(z)}(h) \right], \quad h = 1, \dots, s, \quad x' = 1,\dots,o;$
+		\State $ \emR^{(z)}_{h,x'} \coloneqq \emR^{(z)}_{h,x'} + \eta v(z,z^*) \sum_{t=1}^{T}\left[\1_{x^{(t)}=x'}\alpha_{t}^{(z)}(h)\beta_{t}(h) - \emB^{(z)}_{h,x'}\alpha_{t}^{(z)}(h)\beta_{t}^{(z)}(h) \right], \quad h = 1, \dots, s, \quad x' = 1,\dots,o;$
 		\vspace{0.3cm}
 		\State $\evpi_h^{(z)} \coloneqq \exp(\evu_h^{(z)}) \big/ \sum_{h'=1}^{s}\exp(\evu_{h'}^{(z)}), \quad h = 1, \dots, s;$
 		\vspace{0.3cm}
@@ -169,15 +169,15 @@ The full algorithm, comprising the update equations for each parameter, is prese
 \subsection{Extending SOHMMM to Gaussian Observations}
 \label{sec:sohmmm_gaussian}
 
-For the purpose of modeling AP usage data, we should consider a slightly different setting where each observation $\rvx^{(\tau)}$ takes values on the $d$-dimensional plane $\sR^d$, rather than being drawn from a discrete and finite set. Hence, now, sequences $\rmX \triangleq \left(\rvx^{(1)}, \dots, \rvx^{(t)} \right)$ take values on $\sR^{d \times t}$. A sensible option, which may be useful in a broad range of applications, is considering the case of multivariate Gaussian emissions, i.e. $\rvx^{(\tau)} \mid (\rh^{(\tau)}, \rz) \sim \mathcal{N}\left(\vx; \vmu^{(z)}_h, \mSigma^{(z)}_h\right)$, where $\vmu^{(z)}_h \in \sR^d$ is the mean and $\mSigma^{(z)}_h \in \sR^{d \times d}$ is the covariance of the Gaussian component corresponding to state $h$ in the lattice node $z$. These means and covariances replace the emission probability matrices $\mB^{(z)}$ defined for the case of discrete observations.
+For the purpose of modeling AP usage data, we should consider a slightly different setting where each observation $\rvx^{(t)}$ takes values on the $d$-dimensional plane $\sR^d$, rather than being drawn from a discrete and finite set. Hence, now, sequences $\rmX \triangleq \left(\rvx^{(1)}, \dots, \rvx^{(T)} \right)$ take values on $\sR^{d \times T}$. A sensible option, which may be useful in a broad range of applications, is considering the case of multivariate Gaussian emissions, i.e. $\rvx^{(t)} \mid (\rh^{(t)}, \rz) \sim \mathcal{N}\left(\vx; \vmu^{(z)}_h, \mSigma^{(z)}_h\right)$, where $\vmu^{(z)}_h \in \sR^d$ is the mean and $\mSigma^{(z)}_h \in \sR^{d \times d}$ is the covariance of the Gaussian component corresponding to state $h$ in the lattice node $z$. These means and covariances replace the emission probability matrices $\mB^{(z)}$ defined for the case of discrete observations.
 
-We shall now derive the necessary readjustments in \Algref{alg:sohmmm_discrete}. Let us denote by $\vx$ the observation at a given time $\tau$ (i.e., $\rvx^{(\tau)}=\vx$) and consider the corresponding state $\rh^{(\tau)}$ and the node $\rz$ as fixed at $h$ and $z$, respectively. Thus, we use the notation $p(\vx \mid h, z)$ as a short for $p(\rvx^{(\tau)}=\vx \mid \rh^{(\tau)}=h, \rz=z)$. We have:
+We shall now derive the necessary readjustments in \Algref{alg:sohmmm_discrete}. Let us denote by $\vx$ the observation at a given time $t$ (i.e., $\rvx^{(t)}=\vx$) and consider the corresponding state $\rh^{(t)}$ and the node $\rz$ as fixed at $h$ and $z$, respectively. Thus, we use the notation $p(\vx \mid h, z)$ as a short for $p(\rvx^{(t)}=\vx \mid \rh^{(t)}=h, \rz=z)$. We have:
 \begin{align}
 \frac{\partial p(\mX \mid z)}{\partial p(\vx \mid h, z)} &= \frac{\partial}{\partial p(\vx \mid h, z)} \left[\sum_{\rvh} p(\mX, \rvh \mid z)  \right] \nonumber\\
-&= \frac{\partial}{\partial p(\vx \mid h, z)} \left[\sum_{\rvh} p(\rh^{(0)} \mid \rz) \prod_{\tau'=1}^t p(\rh^{(\tau')} \mid \rh^{(\tau'-1)},\rz) p(\rvx^{(\tau')} \mid \rh^{(\tau')},\rz)\right] \nonumber\\
-&= \frac{1}{p(\vx \mid h, z)} \sum_{\rvh:\, \rh^{(\tau)}=h} p(\mX, \rvh \mid z) \nonumber\\
+&= \frac{\partial}{\partial p(\vx \mid h, z)} \left[\sum_{\rvh} p(\rh^{(0)} \mid \rz) \prod_{t'=1}^T p(\rh^{(t')} \mid \rh^{(t'-1)},\rz) p(\rvx^{(t')} \mid \rh^{(t')},\rz)\right] \nonumber\\
+&= \frac{1}{p(\vx \mid h, z)} \sum_{\rvh:\, \rh^{(t)}=h} p(\mX, \rvh \mid z) \nonumber\\
 &= \frac{p(\mX, h \mid z)}{p(\vx \mid h, z)} \nonumber\\
-&= \frac{\alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h)}{p(\vx \mid h, z)}.
+&= \frac{\alpha_{t}^{(z)}(h) \beta_{t}^{(z)}(h)}{p(\vx \mid h, z)}.
 \end{align}
 Note that, for discrete observations, $p(x \mid h, z) = \emB^{(z)}_{h,x}$. However, when we consider the multivariate Gaussian case,
 \begin{align}
@@ -191,17 +191,17 @@ where the covariance matrix $\mSigma^{(z)}_h$ must be positive definite. This co
 \end{align}
 where we have abbreviated $\vmu^{(z)}_h$ as $\vmu$ and $\mS^{(z)}_h$ as $\mS$ to alleviate the notation. Now, by the chain rule,
 \begin{align}
-\nabla_{\vmu^{(z)}_h} p(\mX \mid z) &= \sum_{\tau=1}^t \frac{\partial p(\mX \mid z)}{\partial p(\vx^{(\tau)} \mid h, z)} \nabla_{\vmu^{(z)}_h} p(\vx^{(\tau)} \mid h, z) \nonumber\\
-&= \sum_{\tau=1}^t \frac{\alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h)}{p(\vx^{(\tau)} \mid h, z)} \nabla_{\vmu^{(z)}_h} p(\vx^{(\tau)} \mid h, z) \nonumber\\
-&= \sum_{\tau=1}^t \alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h) (\mS \mS \transp)^{-1} (\vx^{(\tau)} - \vmu), \\
-\nabla_{\mS^{(z)}_h} p(\mX \mid z) &= \sum_{\tau=1}^t \alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h) \mS^{-1} \left[ (\vx^{(\tau)} - \vmu) (\vx^{(\tau)} - \vmu)\transp (\mS \mS \transp)^{-1} - I_d\right].
+\nabla_{\vmu^{(z)}_h} p(\mX \mid z) &= \sum_{t=1}^T \frac{\partial p(\mX \mid z)}{\partial p(\vx^{(t)} \mid h, z)} \nabla_{\vmu^{(z)}_h} p(\vx^{(t)} \mid h, z) \nonumber\\
+&= \sum_{t=1}^T \frac{\alpha_{t}^{(z)}(h) \beta_{t}^{(z)}(h)}{p(\vx^{(t)} \mid h, z)} \nabla_{\vmu^{(z)}_h} p(\vx^{(t)} \mid h, z) \nonumber\\
+&= \sum_{t=1}^T \alpha_{t}^{(z)}(h) \beta_{t}^{(z)}(h) (\mS \mS \transp)^{-1} (\vx^{(t)} - \vmu), \\
+\nabla_{\mS^{(z)}_h} p(\mX \mid z) &= \sum_{t=1}^T \alpha_{t}^{(z)}(h) \beta_{t}^{(z)}(h) \mS^{-1} \left[ (\vx^{(t)} - \vmu) (\vx^{(t)} - \vmu)\transp (\mS \mS \transp)^{-1} - I_d\right].
 \end{align}
 Finally, by applying the chain rule once again, we get the desired gradients of the energy function $E$ with respect to $\vmu^{(z)}_h$ and $\mS^{(z)}_h$:
 \begin{align}
 \nabla_{\vmu^{(z)}_h} E(\mX) &= \frac{\partial E}{\partial p(\mX \mid z)} \nabla_{\vmu^{(z)}_h} p(\mX \mid z) \nonumber\\
 &= -v(z, z^*) \nabla_{\vmu^{(z)}_h} p(\mX \mid z) \nonumber\\
-&= -v(z, z^*) \sum_{\tau=1}^t \alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h) (\mS \mS \transp)^{-1} (\vx^{(\tau)} - \vmu), \label{eq:sohmmm_grad_mu}\\
-\nabla_{\mS^{(z)}_h} E(\mX) &= -v(z, z^*) \sum_{\tau=1}^t \alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h) \mS^{-1} \left[ (\vx^{(\tau)} - \vmu) (\vx^{(\tau)} - \vmu)\transp (\mS \mS \transp)^{-1} - I_d\right]. \label{eq:sohmmm_grad_s}
+&= -v(z, z^*) \sum_{t=1}^T \alpha_{t}^{(z)}(h) \beta_{t}^{(z)}(h) (\mS \mS \transp)^{-1} (\vx^{(t)} - \vmu), \label{eq:sohmmm_grad_mu}\\
+\nabla_{\mS^{(z)}_h} E(\mX) &= -v(z, z^*) \sum_{t=1}^T \alpha_{t}^{(z)}(h) \beta_{t}^{(z)}(h) \mS^{-1} \left[ (\vx^{(t)} - \vmu) (\vx^{(t)} - \vmu)\transp (\mS \mS \transp)^{-1} - I_d\right]. \label{eq:sohmmm_grad_s}
 \end{align}
 Given \twoeqrefs{eq:sohmmm_grad_mu}{eq:sohmmm_grad_s}, it is straightforward to adapt \Algref{alg:sohmmm_discrete} to our setting. For completeness, the full algorithm is provided in \Algref{alg:sohmmm_gaussian}.
 
@@ -216,19 +216,19 @@ Given \twoeqrefs{eq:sohmmm_grad_mu}{eq:sohmmm_grad_s}, it is straightforward to 
 		\vspace{0.3cm}
 		\State Observe $\rmX = \mX$, with length $t$.
 		\vspace{0.3cm}
-		\State Proceed as in lines 4--8 of \Algref{alg:sohmmm_discrete}, replacing all occurrences of $\emB^{(z)}_{h,x^{(\tau)}}$ with $\mathcal{N}\left(\vx^{(\tau)}; \vmu^{(z)}_h, \mS^{(z)}_h {\mS^{(z)}_h}\transp\right)$.
+		\State Proceed as in lines 4--8 of \Algref{alg:sohmmm_discrete}, replacing all occurrences of $\emB^{(z)}_{h,x^{(t)}}$ with $\mathcal{N}\left(\vx^{(t)}; \vmu^{(z)}_h, \mS^{(z)}_h {\mS^{(z)}_h}\transp\right)$.
 		\vspace{0.3cm}
 		\State $z^* \coloneqq  \argmax_{z' \in \{1,\dots,m\}} \sum_{z=1}^m p(\mX \mid z, \Theta^{(i-1)})v(z, z')$.
 		\vspace{0.3cm}
 		\For{$z = 1, \dots, m$}
 		\vspace{0.3cm}
-		\State Proceed as in lines 12 and 13 of \Algref{alg:sohmmm_discrete}, replacing all occurrences of $\emB^{(z)}_{h,x^{(\tau)}}$ with $\mathcal{N}\left(\vx^{(\tau)}; \vmu^{(z)}_h, \mS^{(z)}_h {\mS^{(z)}_h}\transp\right)$ and all occurences of $\vx$ with $\mX$;
+		\State Proceed as in lines 12 and 13 of \Algref{alg:sohmmm_discrete}, replacing all occurrences of $\emB^{(z)}_{h,x^{(t)}}$ with $\mathcal{N}\left(\vx^{(t)}; \vmu^{(z)}_h, \mS^{(z)}_h {\mS^{(z)}_h}\transp\right)$ and all occurences of $\vx$ with $\mX$;
 		\vspace{0.3cm}
-		\State $\vmu^{(z)}_h \coloneqq \vmu^{(z)}_h + \eta v(z, z^*) \sum_{\tau=1}^t \alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h) (\mS^{(z)}_h {\mS^{(z)}_h} \transp)^{-1} (\vx^{(\tau)} - \vmu^{(z)}_h), \quad h = 1, \dots, s;$
+		\State $\vmu^{(z)}_h \coloneqq \vmu^{(z)}_h + \eta v(z, z^*) \sum_{t=1}^T \alpha_{t}^{(z)}(h) \beta_{t}^{(z)}(h) (\mS^{(z)}_h {\mS^{(z)}_h} \transp)^{-1} (\vx^{(t)} - \vmu^{(z)}_h), \quad h = 1, \dots, s;$
 		\vspace{0.3cm}
 		\State $\begin{aligned}
-			\mS^{(z)}_h \coloneqq \mS^{(z)}_h + \eta &v(z, z^*) \sum_{\tau=1}^t \alpha_{\tau}^{(z)}(h) \beta_{\tau}^{(z)}(h) {\mS^{(z)}_h}^{-1} \cdot \\
-			&\cdot \left[ (\vx^{(\tau)} - \vmu^{(z)}_h) (\vx^{(\tau)} - \vmu^{(z)}_h)\transp (\mS^{(z)}_h {\mS^{(z)}_h} \transp)^{-1} - I_d\right], \quad h = 1, \dots, s;
+			\mS^{(z)}_h \coloneqq \mS^{(z)}_h + \eta &v(z, z^*) \sum_{t=1}^T \alpha_{t}^{(z)}(h) \beta_{t}^{(z)}(h) {\mS^{(z)}_h}^{-1} \cdot \\
+			&\cdot \left[ (\vx^{(t)} - \vmu^{(z)}_h) (\vx^{(t)} - \vmu^{(z)}_h)\transp (\mS^{(z)}_h {\mS^{(z)}_h} \transp)^{-1} - I_d\right], \quad h = 1, \dots, s;
 			\end{aligned}$
 		\vspace{0.3cm}
 		\State Proceed as in lines 15 and 16 of \Algref{alg:sohmmm_discrete}.
@@ -417,7 +417,7 @@ We now formalize these ideas.
 \subsection{Model formulation}
 \subsubsection{Definition}
 \label{sec:spamhmm_definition}
-Assume we have a set of nodes $\sY=\{1, \dots, k\}$ connected by an undirected weighted graph $\gG$, expressed by a symmetric matrix $\mG \in \R^{k \times k}$. These nodes thus form a network, in which the weights are assumed to represent degrees of affinity between each pair of nodes (i.e.\ the greater the edge weight, the more the respective nodes \textit{like} to agree). The nodes $\ry$ in the graph produce $d$-dimensional sequences $\rmX = \left(\rvx^{(1)}, \dots,\rvx^{(t)} \right)$, $\rvx^{(\tau)} \in \R^d$, whose conditional distribution we shall model using a mixture of HMMs:
+Assume we have a set of nodes $\sY=\{1, \dots, k\}$ connected by an undirected weighted graph $\gG$, expressed by a symmetric matrix $\mG \in \R^{k \times k}$. These nodes thus form a network, in which the weights are assumed to represent degrees of affinity between each pair of nodes (i.e.\ the greater the edge weight, the more the respective nodes \textit{like} to agree). The nodes $\ry$ in the graph produce $d$-dimensional sequences $\rmX = \left(\rvx^{(1)}, \dots,\rvx^{(T)} \right)$, $\rvx^{(t)} \in \R^d$, whose conditional distribution we shall model using a mixture of HMMs:
 \begin{equation}
 \label{eq:spamhmm_density}
 p(\rmX \mid \ry) = \sum_{\rz} p(\rz\mid\ry) p(\rmX \mid \rz),
@@ -425,9 +425,9 @@ p(\rmX \mid \ry) = \sum_{\rz} p(\rz\mid\ry) p(\rmX \mid \rz),
 where $\rz \in \{1, \dots, m\}$ is a latent random variable, being $m$ the size of the mixture. This is a particular realization of \eqref{eq:sparse_coding} where $f$ is the probability density function $p(\rmX \mid \ry)$ and the coefficients $s_z$ correspond to the probabilities $p(\rz = z \mid \ry)$. Here, $p(\rmX \mid \rz)$ is the marginal distribution of observations of a standard first-order homogeneous HMM:
 \begin{equation}
 \label{eq:spamhmm_hmm}
-p(\rmX \mid \rz) = \sum_{\rvh} p(\rh^{(0)}\mid\rz) \prod_t p(\rh^{(t)}\mid\rh^{(t-1)},\rz) p(\rvx^{(t)}\mid\rh^{(t)},\rz),
+p(\rmX \mid \rz) = \sum_{\rvh} p(\rh^{(0)}\mid\rz) \prod_{t=1}^T p(\rh^{(t)}\mid\rh^{(t-1)},\rz) p(\rvx^{(t)}\mid\rh^{(t)},\rz),
 \end{equation}
-where $\rvh = \left(\rh^{(0)}, \dots,\rh^{(t)} \right)$, $\rh^{(\tau)} \in \{1, \dots, s\}$, is the sequence of hidden states of the HMM, being $s$ the number of hidden states. Note that the factorization in \eqref{eq:spamhmm_density} imposes conditional independence between the sequence $\rmX$ and the node $\ry$, given the latent variable $\rz$. This is a key assumption of this model, since this way the distributions for the observations in the nodes in $\sY$ share the same dictionary of HMMs, promoting parameter sharing among the $k$ mixtures. The Bayesian network representing this model is presented in \Figref{fig:spamhmm_bayesian_net}.
+where $\rvh = \left(\rh^{(0)}, \dots,\rh^{(T)} \right)$, $\rh^{(t)} \in \{1, \dots, s\}$, is the sequence of hidden states of the HMM, being $s$ the number of hidden states. Note that the factorization in \eqref{eq:spamhmm_density} imposes conditional independence between the sequence $\rmX$ and the node $\ry$, given the latent variable $\rz$. This is a key assumption of this model, since this way the distributions for the observations in the nodes in $\sY$ share the same dictionary of HMMs, promoting parameter sharing among the $k$ mixtures. The Bayesian network representing this model is presented in \Figref{fig:spamhmm_bayesian_net}.
 
 \begin{figure}
 	\centering
@@ -466,11 +466,11 @@ where $\rvh = \left(\rh^{(0)}, \dots,\rh^{(t)} \right)$, $\rh^{(\tau)} \in \{1, 
 
 \subsubsection{Inference}
 \label{sec:spamhmm_inference}
-Given an observed sequence $\mX$ and its corresponding node $y \in \sY$, the inference problem here consists in finding the likelihood $p(\rmX=\mX \mid \ry=y)$ (from now on, abbreviated as $p(\mX \mid y)$) as defined by  \twoeqrefs{eq:spamhmm_density}{eq:spamhmm_hmm}. The marginals $p(\mX \mid \rz)$ of each HMM in the mixture may be computed efficiently, in $O(s^2t)$ time, using the Forward algorithm~(\citet{Rabiner1986}). Then, $p(\mX \mid y)$ is obtained by applying \eqref{eq:spamhmm_density}, so inference in the overall model is done in at most $O(ms^2t)$ time. As we shall see, however, the mixtures we get after learning will often be sparse (see \Secref{sec:spamhmm_learning}), leading to an even smaller time complexity.
+Given an observed sequence $\mX$ and its corresponding node $y \in \sY$, the inference problem here consists in finding the likelihood $p(\rmX=\mX \mid \ry=y)$ (from now on, abbreviated as $p(\mX \mid y)$) as defined by  \twoeqrefs{eq:spamhmm_density}{eq:spamhmm_hmm}. The marginals $p(\mX \mid \rz)$ of each HMM in the mixture may be computed efficiently, in $O(s^2t)$ time, using the Forward algorithm~(\citet{Rabiner1986}). Then, $p(\mX \mid y)$ is obtained by applying \eqref{eq:spamhmm_density}, so inference in the overall model is done in at most $O(ms^2T)$ time. As we shall see, however, the mixtures we get after learning will often be sparse (see \Secref{sec:spamhmm_learning}), leading to an even smaller time complexity.
 
 \subsubsection{Learning}
 \label{sec:spamhmm_learning}
-Given an i.i.d.\ dataset consisting of $n$ tuples $(\mX_i, y_i)$ of sequences of observations $\mX_i = \left(\vx_i^{(1)}, \dots,\vx_i^{(t_i)} \right)$ and their respective nodes $y_i \in \sY$, the model defined by \twoeqrefs{hmm_mix}{hmm} may be easily trained using the Expectation-Maximization (EM) algorithm (\citet{Dempster1977}), (locally) maximizing the usual log-likelihood objective:
+Given an i.i.d.\ dataset consisting of $n$ tuples $(\mX_i, y_i)$ of sequences of observations $\mX_i = \left(\vx_i^{(1)}, \dots,\vx_i^{(T_i)} \right)$ and their respective nodes $y_i \in \sY$, the model defined by \twoeqrefs{hmm_mix}{hmm} may be easily trained using the Expectation-Maximization (EM) algorithm (\citet{Dempster1977}), (locally) maximizing the usual log-likelihood objective:
 \begin{equation}
 \label{eq:spamhmm_log_likelihood}
 J(\theta) \triangleq \sum_{i=1}^n \log p(\mX_i \mid y_i; \Theta),
@@ -536,14 +536,14 @@ and so we can treat $\vbeta^{(y)}$ as an unconstrained parameter vector. This re
 		\vspace{0.3cm}
 		\For{$j = 1, \dots,$ \texttt{trainIter}}
 		\vspace{0.3cm}
-		\State \textbf{Sufficient statistics:}
+		\State \textbf{E-step:}
 		\vspace{0.3cm}
 		\Indent
 			\State $n_y \coloneqq \sum_{i=1}^n \1_{y_i=y}$, for $y=1,\dots,k$;
 			\vspace{0.3cm}
 			\State Obtain the mixture posteriors $\eta^{(z)}_{i} \coloneqq p(z \mid \mX_i, y_i)$, for $i=1,\dots,n$ and $z=1,\dots,m$, by computing  $\tilde{\eta}^{(z)}_{i} \coloneqq p(\mX_i \mid z)p(z \mid y_i)$ and normalizing it;
 			\vspace{0.3cm}
-			\State Obtain the state posteriors $\gamma^{(z)}_{i,h}(\tau) \coloneqq p(\rh^{(\tau)}=h \mid z, \mX_i)$ and $\xi^{(z)}_{i,h,h'}(\tau) \coloneqq p(\rh^{(t-1)}=h, \rh^{(t)}=h' \mid z, \mX_i)$, for $i=1,\dots,n$, $\tau=1,\dots,t_i$, $z=1,\dots,m$, and $h,h'=1,\dots,s$, as done in the Baum-Welch algorithm (\citet{Baum1972}).
+			\State Obtain the state posteriors $\gamma^{(z)}_{i,h}(t) \coloneqq p(\rh^{(t)}=h \mid z, \mX_i)$ and $\xi^{(z)}_{i,h,h'}(t) \coloneqq p(\rh^{(t-1)}=h, \rh^{(t)}=h' \mid z, \mX_i)$, for $i=1,\dots,n$, $t=1,\dots,T_i$, $z=1,\dots,m$, and $h,h'=1,\dots,s$, as done in the Baum-Welch algorithm (\citet{Baum1972}).
 			\vspace{0.3cm}
 		\EndIndent
 		\State \textbf{M-step:}
@@ -553,11 +553,11 @@ and so we can treat $\vbeta^{(y)}$ as an unconstrained parameter vector. This re
 			\vspace{0.3cm}
 			\State $\evpi^{(z)}_h := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \gamma^{(z)}_{i,h}(0)}{\sum_{i=1}^n \eta^{(z)}_{i}}$, for $z=1,\dots,m$ and $h=1,\dots,s$, obtaining $\vpi^{(z)}$;
 			\vspace{0.3cm} 
-			\State $\emA^{(z)}_{h,h'} := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{\tau=1}^{t_i} \xi^{(z)}_{i,h,h'}(\tau)}{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{\tau=0}^{t_i-1} \gamma^{(z)}_{i,h}(\tau)}$, for $z=1,\dots,m$, and $h,h'=1,\dots,s$, obtaining $\mA^{(z)}$;
+			\State $\emA^{(z)}_{h,h'} := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=1}^{T_i} \xi^{(z)}_{i,h,h'}(t)}{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=0}^{T_i-1} \gamma^{(z)}_{i,h}(t)}$, for $z=1,\dots,m$, and $h,h'=1,\dots,s$, obtaining $\mA^{(z)}$;
 			\vspace{0.3cm}
-			\State $\vmu^{(z)}_h := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{\tau=1}^{t_i} \gamma^{(z)}_{i,h}(\tau) \vx_i^{(\tau)}} {\sum_{i=1}^n \eta^{(z)}_{i} \sum_{\tau=1}^{t_i} \gamma^{(z)}_{i,h}(\tau)}$, for $z=1,\dots,m$ and $h=1,\dots,s$;
+			\State $\vmu^{(z)}_h := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=1}^{T_i} \gamma^{(z)}_{i,h}(t) \vx_i^{(t)}} {\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=1}^{T_i} \gamma^{(z)}_{i,h}(t)}$, for $z=1,\dots,m$ and $h=1,\dots,s$;
 			\vspace{0.3cm}
-			\State ${\vsigma^{(z)}_h}^2 := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{\tau=1}^{t_i} \gamma^{(z)}_{i,h}(\tau) \left(\vx_i^{(t)} - \vmu^{(z)}_h\right)^2} {\sum_{i=1}^n \eta^{(z)}_{i} \sum_{\tau=1}^{t_i} \gamma^{(z)}_{i,h}(\tau)}$, for $z=1,\dots,m$ and $h=1,\dots,s$;
+			\State ${\vsigma^{(z)}_h}^2 := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=1}^{T_i} \gamma^{(z)}_{i,h}(t) (\vx_i^{(t)} - \vmu^{(z)}_h)^2} {\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=1}^{T_i} \gamma^{(z)}_{i,h}(t)}$, for $z=1,\dots,m$ and $h=1,\dots,s$;
 			\vspace{0.3cm}
 			\State $\Theta^{(j)} := \bigcup_{y,z,h} \left\lbrace \valpha^{(y)}, \vpi^{(z)}, \mA^{(z)}, \vmu^{(z)}_h, \vsigma^{(z)}_h \right\rbrace$.
 			\vspace{0.3cm}
@@ -574,7 +574,7 @@ and so we can treat $\vbeta^{(y)}$ as an unconstrained parameter vector. This re
 		\vspace{0.3cm}
 		\For{$j=1,\dots,$\texttt{trainIter}}
 		\vspace{0.3cm}
-		\State \textbf{Sufficient statistics:} same as in \Algref{alg:mhmm}.
+		\State \textbf{E-step:} same as in \Algref{alg:mhmm}.
 		\vspace{0.3cm}
 		\State \textbf{M-step:}
 		\vspace{0.3cm}
@@ -595,7 +595,7 @@ and so we can treat $\vbeta^{(y)}$ as an unconstrained parameter vector. This re
 		\vspace{0.3cm}
 		\State Proceed as in lines 9--12 of \Algref{alg:mhmm};
 		\vspace{0.3cm}
-		\State $\Theta^{(j)} := \bigcup_{y,z,h} \left\lbrace \vbeta^{(y)}, \vpi^{(z)}, \mA^{(z)}, \vmu^{(z)}_h, \vsigma^{(z)}_h \right\rbrace$.
+		\State $\Theta^{(j)} := \bigcup_{h,y,z} \left\lbrace \vbeta^{(y)}, \vpi^{(z)}, \mA^{(z)}, \vmu^{(z)}_h, \vsigma^{(z)}_h \right\rbrace$.
 		\vspace{0.3cm}
 		\EndIndent
 		\EndFor
@@ -608,7 +608,7 @@ The model was developed on top of the library hmmlearn~\citet{hmmlearn} for Pyth
 
 We evaluate four different models in our experiments: a model consisting of a single HMM (denoted as 1-HMM) trained on sequences from all graph nodes; a model consisting of $k$ HMMs trained independently (denoted as k-HMM), one for each graph node; a mixture of HMMs (denoted as MHMM) as defined in this work (\twoeqrefs{hmm_mix}{hmm}), trained to maximize the usual log-likelihood objective~\plaineqref{eq:spamhmm_log_likelihood}; a mixture of HMMs (denoted as SpaMHMM) as the previous one, trained to maximize our regularized objective~\plaineqref{eq:spamhmm_objective}.
 
-Models 1-HMM, k-HMM and MHMM will be our baselines. We shall compare the performance of these models with that of SpaMHMM and, for the case of MHMM, we shall also verify if SpaMHMM actually produces sparser mixtures in general, as argued in \Secref{sec:spamhmm_learning}. In order to ensure a fair comparison, we train models with approximately the same number of possible state transitions. Hence, given an MHMM or SpaMHMM with $m$ mixture components and $s$ states per component, we train a 1-HMM with $\approx s\sqrt{m}$ states and a k-HMM with $\approx s\sqrt{m/k}$ states per HMM. We initialize the mixture coefficients in MHMM and SpaMHMM randomly, while the state transition matrices and the initial state probabilities are initialized uniformly. Means are initialized using k-means, with k equal to the number of hidden states in the HMM, and covariances are initialized with the diagonal of the training data covariance. Models 1-HMM and k-HMM are trained using the Baum-Welch algorithm, MHMM is trained using \Algref{alg:mhmm} and SpaMHMM is trained using \Algref{alg:spamhmm}. However, we opted to use Adam (\citet{Kingma2014}) instead of \textit{vanilla} gradient ascent in the inner loop of \Algref{alg:spamhmm}, since its per-parameter learning rate proved to be beneficial for faster convergence.
+Models 1-HMM, k-HMM and MHMM will be our baselines. We shall compare the performance of these models with that of SpaMHMM and, for the case of MHMM, we shall also verify if SpaMHMM actually sparser mixtures in general, as argued in \Secref{sec:spamhmm_learning}. In order to ensure a fair comparison, we train models with approximately the same number of possible state transitions. Hence, given an MHMM or SpaMHMM with $m$ mixture components and $s$ states per component, we train a 1-HMM with $\approx s\sqrt{m}$ states and a k-HMM with $\approx s\sqrt{m/k}$ states per HMM. We initialize the mixture coefficients in MHMM and SpaMHMM randomly, while the state transition matrices and the initial state probabilities are initialized uniformly. Means are initialized using k-means, with k equal to the number of hidden states in the HMM, and covariances are initialized with the diagonal of the training data covariance. Models 1-HMM and k-HMM are trained using the Baum-Welch algorithm, MHMM is trained using \Algref{alg:mhmm} and SpaMHMM is trained using \Algref{alg:spamhmm}. However, we opted to use Adam (\citet{Kingma2014}) instead of \textit{vanilla} gradient ascent in the inner loop of \Algref{alg:spamhmm}, since its per-parameter learning rate proved to be beneficial for faster convergence.
 
 \subsection{Anomaly detection in Wi-Fi networks}
 \label{sec:wi_fi}
@@ -656,7 +656,7 @@ We reproduced as much as possible the experimental setup followed in \citet{Frag
 
 In order to generate predictions for a joint (node) $y$ starting from a given prefix sequence $\mX_{\text{pref}}$, we compute the posterior distribution $p(\rmX | \mX_{\text{pref}}, y)$ (see details in \Secref{sec:posterior_proof}) and we sample sequences from that posterior. Our evaluation method and metric again followed \citet{Fragkiadaki2015}. We fed our model with 8 prefix subsequences with 50 frames each (corresponding to 2 seconds) for each joint from the test subject and we predicted the following 10 frames (corresponding to 400 miliseconds). Each prediction was built by sampling 100 sequences from the posterior and averaging. We then computed the average mean angle error for the 8 sequences at different time horizons. 
 
-Results are in \Tableref{tbl:h36m_results}. Among our models (1-HMM, k-HMM, MHMM and SpaMHMM), SpaMHMM outperformed the remaining in all actions except ``eating''. For this action in particular, MHMM was slightly better than SpaMHMM, probably due to the lack of symmetry between the right and left sides of the body, which was one of the prior assumptions that we have used to build the graph $\gG$. ``Smoking'' and ``discussion'' activities may also be highly non-symmetric, but results in our and others' models show that these activities are generally harder to predict than ``walking'' and ``eating'. Thus, here, the skeleton structure information encoded in $\gG$ behaves as a useful prior for SpaMHMM, guiding it towards better solutions than MHMM. The worse results for 1-HMM and K-HMM likely result from the same limitations that we have pointed out in \Secref{sec:wi_fi}: each component in k-HMM is inherently trained with less data than the remaining models, while 1-HMM does not make distinction between different graph nodes. Extending the discussion to the state of the art solutions for this problem, we note that SpaMHMM compares favorably with ERD, LSTM-3LR and SRNN, which are all RNN-based architectures. Moreover, ERD and LSTM-3LR were designed specifically for this task, which is not the case for SpaMHMM. This is also true for GRU supervised and QuaterNet, which clearly outperform all remaining models, including ours. This is unsurprising, since RNNs are capable of modeling more complex dynamics than HMMs, due to their intrinsic non-linearity and continuous state representation. This also allows their usage for long-term motion generation, in which HMMs do not behave well due their linear dynamics and lack of long-term memory. However, unlike GRU supervised and QuaterNet, SpaMHMM  models the probability distribution of the data directly, allowing its application in domains like novelty detection. Regarding sparsity, the experiments confirm that the SpaMHMM mixture coefficients are actually sparser than those of MHMM, as shown in \Figref{fig:sparsity}.
+Results are in \Tableref{tbl:h36m_results}. Among our models (1-HMM, k-HMM, MHMM, and SpaMHMM), SpaMHMM outperformed the remaining in all actions except ``eating''. For this action in particular, MHMM was slightly better than SpaMHMM, probably due to the lack of symmetry between the right and left sides of the body, which was one of the prior assumptions that we have used to build the graph $\gG$. ``Smoking'' and ``discussion'' activities may also be highly non-symmetric, but results in our and others' models show that these activities are generally harder to predict than ``walking'' and ``eating'. Thus, here, the skeleton structure information encoded in $\gG$ behaves as a useful prior for SpaMHMM, guiding it towards better solutions than MHMM. The worse results for 1-HMM and K-HMM likely result from the same limitations that we have pointed out in \Secref{sec:wi_fi}: each component in k-HMM is inherently trained with less data than the remaining models, while 1-HMM does not make distinction between different graph nodes. Extending the discussion to the state of the art solutions for this problem, we note that SpaMHMM compares favorably with ERD, LSTM-3LR and SRNN, which are all RNN-based architectures. Moreover, ERD and LSTM-3LR were designed specifically for this task, which is not the case for SpaMHMM. This is also true for GRU supervised and QuaterNet, which clearly outperform all remaining models, including ours. This is unsurprising, since RNNs are capable of modeling more complex dynamics than HMMs, due to their intrinsic non-linearity and continuous state representation. This also allows their usage for long-term motion generation, in which HMMs do not behave well due their linear dynamics and lack of long-term memory. However, unlike GRU supervised and QuaterNet, SpaMHMM  models the probability distribution of the data directly, allowing its application in domains like novelty detection. Regarding sparsity, the experiments confirm that the SpaMHMM mixture coefficients are actually sparser than those of MHMM, as shown in \Figref{fig:sparsity}.
 
 \begin{table*}
 	\resizebox{\textwidth}{!}{
@@ -782,7 +782,7 @@ Another apparent difference between the two models is the fact that SOHMMM was c
 
 \subsection{Generalizing SpaMHMM}
 
-Two obvious limitations of SpaMHMM are its inherent dependency on hidden Markov models, which have limited expressiveness, and the fact that its learning algorithm was conceived to an offline and non-distributed setting. In this section, we discuss how these two drawbacks could be overcome by an extended and generalized framework, of which SpaMHMM is a particular case. Specifically, we consider again the setting where each entity $\ry$ in a set $\sY$ produces sequences $\rmX = \left(\rvx^{(1)}, ...,\rvx^{(t)} \right)$. The prior knowledge about the pairwise affinity degrees between entities in $\sY$ at time $t$ is summarized in an undirected weighted graph $\gG$, where each entity corresponds to a graph node. The ultimate goal is to find the distribution of the observed sequences given the corresponding node, that is, to model the generative distribution $p(\rmX \mid \ry)$. For this purpose, we shall consider models of the form:
+Two obvious limitations of SpaMHMM are its inherent dependency on hidden Markov models, which have limited expressiveness, and the fact that its learning algorithm was conceived to an offline and non-distributed setting. In this section, we discuss how these two drawbacks could be overcome by an extended and generalized framework, of which SpaMHMM is a particular case. Specifically, we consider again the setting where each entity $\ry$ in a set $\sY$ produces sequences $\rmX = \left(\rvx^{(1)}, ...,\rvx^{(T)} \right)$. The prior knowledge about the pairwise affinity degrees between entities in $\sY$ at time $t$ is summarized in an undirected weighted graph $\gG$, where each entity corresponds to a graph node. The ultimate goal is to find the distribution of the observed sequences given the corresponding node, that is, to model the generative distribution $p(\rmX \mid \ry)$. For this purpose, we shall consider models of the form:
 \begin{equation}
 \label{eq:generalized_mixture}
 p(\rmX \mid \ry) = \int_{\gZ} p(\rmX \mid \rvz) p(\rvz \mid \ry) d\rvz.
@@ -791,9 +791,9 @@ This model comprises a latent space $\gZ$ that is shared by all entities and whe
 
 Clearly, the SpaMHMM model is a particular case of \eqref{eq:generalized_mixture}, where the latent space $\gZ$ is discrete and finite and the latent generative model is an HMM parametrized by $\rvz$. The discrete nature of $\gZ$ and the underlying independence assumptions of the HMM allow for efficient exact inference in the resulting model using the Forward algorithm~\cite{Rabiner1986}.
 
-An interesting, more expressive, and still unexplored possibility would be to implement the conditional observation model $p(\rmX \mid \rz)$ through a recurrent mixture density network (RMDN)~\cite{Bishop1994, Graves2013, Bazzani2016}. An RMDN consists of a recurrent neural network (RNN) whose outputs at each time step parameterize a Gaussian mixture model with $c$ components:
+An interesting, more expressive, and still unexplored possibility would be to implement the conditional observation model $p(\rmX \mid \rz)$ through a recurrent mixture density network (RMDN)~\cite{Bishop1994, Graves2013, Bazzani2016}. An RMDN consists of a recurrent neural network (RNN) whose outputs at each time step parametrize a Gaussian mixture model with $c$ components:
 \begin{align}
-& p(\mX \mid \vz) = \prod_{\tau=1}^t p(\vx^{(\tau)} \mid \vx^{(\tau)}, ..., \vx^{(\tau-1)}, \vz) = \prod_\tau \sum_{j=1}^c \alpha_j^{(t)} \mathcal{N}(\vx^{(t)} ; \vmu_j^{(t)}, \Sigma_j^{(t)}),\\
+& p(\mX \mid \vz) = \prod_{t=1}^T p(\vx^{(t)} \mid \vx^{(1)}, ..., \vx^{(t-1)}, \vz) = \prod_{t=1}^T \sum_{j=1}^c \alpha_j^{(t)} \mathcal{N}(\vx^{(t)} ; \vmu_j^{(t)}, \Sigma_j^{(t)}),\\
 & \lbrace \alpha_j^{(t)}, \vmu_j^{(t)}, \Sigma_j^{(t)} \rbrace_{j=1}^c = \text{RNN}(\rvx^{(1)}, ..., \rvx^{(t-1)}; \vz).
 \end{align}
 The latent space may be discrete, in which case we shall end up with a discrete mixture of RMDNs, where exact inference is straightforward. Another possibility is to choose a continuous latent space and, in such scenario, a sensible option is using a Gaussian density for the latent density model:

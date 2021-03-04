@@ -4,35 +4,61 @@
 
 \label{appendix:spamhmm} % Change X to a consecutive letter; for referencing this appendix elsewhere, use \ref{AppendixX}
 
-\section{Derivation of \Algref{alg:mhmm} (MHMM training)}
+\section{Derivation of the EM learning algorithms for MHMM and SpaMHMM}
+
+\subsection{EM for MHMM (\Algref{alg:mhmm})}
 \label{sec:proof_em_noreg}
-\Algref{alg:mhmm} follows straightforwardly from applying EM to the model defined by \twoeqrefs{eq:spamhmm_density}{eq:spamhmm_hmm} with the objective \plaineqref{eq:spamhmm_log_likelihood}. Let us define the following notation: $\tX \coloneqq \left\lbrace \mX_i \right\rbrace_{i=1}^N$, $\vy \coloneqq \left\lbrace y_i \right\rbrace_{i=1}^N$, $\rvz \coloneqq \left\lbrace \rz_i \right\rbrace_{i=1}^N$ and $\rmH \coloneqq \left\lbrace \rvh_i \right\rbrace_{i=1}^N$. After building the usual variational lower bound for the log-likelihood and performing the E-step, we get the following well-known objective:
+\Algref{alg:mhmm} follows straightforwardly from applying EM to the model defined by \twoeqrefs{eq:spamhmm_density}{eq:spamhmm_hmm} with the objective \plaineqref{eq:spamhmm_log_likelihood}. As explained in \secref{sec:background_em}, for table CPDs, the E-step consists in finding expected sufficient statistics $M(x, u)$ and $M(u)$, as defined in \twoeqrefs{eq:?}{eq:?} for each $(x, u) \in \mathrm{Val}(\rx,  \parents_\gG(\rx))$, where $\gG$ is the Bayesian network in \Figref{fig:spamhmm_bayesian_net}. Thus, in our setting, those equations yield:
+\begingroup
+\allowdisplaybreaks
+\begin{align}
+	&M(z,y) = \sum_{i=1}^{n} p(y, z \mid \vx_i, y_i) = \sum_{i=1}^{n} p(z \mid \vx_i, y_i) \1_{y=y_i}, \\
+	&M(y) = \sum_{i=1}^{n} p(y \mid \vx_i, y_i) = \sum_{i=1}^{n} \1_{y=y_i}, \\
+	&M(\rh^{(0)}=h, z) = \sum_{i=1}^{n} p(\rh^{(0)}=h, z \mid \vx_i, y_i) = \sum_{i=1}^{n} p(\rh^{(0)}=h \mid \vx_i, y_i, z) p(z \mid \vx_i, y_i) \nonumber\\
+	&\hphantom{M(\rh^{(0)}=h,z)} = \sum_{i=1}^{n} p(\rh^{(0)}=h \mid \vx_i, y_i) p(z \mid \vx_i, y_i), \\
+	&M(z) = \sum_{i=1}^{n} p(z \mid \vx_i, y_i), \\
+	&M(\rh^{(t)}=h', \rh^{(t-1)}=h, z) = \sum_{i=1}^{n} p(\rh^{(t)}=h', \rh^{(t-1)}=h, z \mid \vx_i, y_i) \nonumber\\
+	&\hphantom{M(\rh^{(t-1)}=h, } = \sum_{i=1}^{n} p(\rh^{(t)}=h' \mid \rh^{(t-1)}=h, \vx_i, z) p(\rh^{(t-1)}=h \mid \vx_i, z) p(z \mid \vx_i, y_i), \\
+	&M(\rh^{(t-1)}=h, z) = \sum_{i=1}^{n} p(\rh^{(t-1)}=h, z \mid \vx_i, y_i) \nonumber\\
+	&\hphantom{M(\rh^{(t-1)}=h, z)} = \sum_{i=1}^{n} p(\rh^{(t-1)}=h \mid \vx_i, z) p(z \mid \vx_i, y_i).
+\end{align}
+\endgroup
+These equations allow us to compute the following updates in the M-step:
+\begin{align}
+	\evalpha^{(y)}_z = \frac{M(y,z)}{M(y)} \quad \text{and} \quad \evpi^{(z)}_h = \frac{M(\rh^{(0)}=h, z)}{M(z)}.
+\end{align}
+For the state transition matrices update, the same idea applies after summing over the sequence length:
 \begin{equation}
-\label{m_step_obj_noreg}
-\tilde{J}(\Theta,\Theta^{(-)}) \triangleq \sum_{\rvz,\rmH} p(\tX,\rvz,\rmH \mid \vy,\Theta^{(-)}) \log p(\tX,\rvz,\rmH \mid \vy,\Theta),
+	\emA^{(z)}_{h,h'} = \frac{\sum_{t=1}^T M(\rh^{(t)}=h', \rh^{(t-1)}=h, z)}{\sum_{t=1}^T M(\rh^{(t-1)}=h, z)}.
 \end{equation}
-which we want to maximize with respect to $\Theta$ and where $\Theta^{(-)}$ are the model parameters that were kept fixed in the E-step. Some of the parameters in the model are constrained to represent valid probabilities, yielding the following Lagrangian:
-\begin{align}
-\label{lagrangian_noreg}
-L(\Theta,\Theta^{(-)},\Lambda) = &\tilde{J}(\Theta,\Theta^{(-)}) + \sum_k \lambda_k^{\text{mix}}\left(1 - ||\boldsymbol{\alpha}_k||_{1}\right) \nonumber\\
-&+ \sum_{m,s} \lambda_{m,s}^\text{state} \left(1 - \sum_u A^m_{s,u}\right) \nonumber\\
-&+ \sum_m \lambda_m^{\text{ini}} \left(1 - ||\boldsymbol{\pi}_m||_{1}\right),
-\end{align}
-where $\Lambda$ summarizes all Lagrange multipliers used here. Differentiating \eqref{lagrangian_noreg} with respect to each model parameter and Lagrange multiplier and solving for the critical points yields:
+Now, defining $n_y$, $\eta^{(z)}_i$, $\gamma^{(z)}_{i,h}(t)$, and $\xi^{(z)}_{i,h,h'}(t)$ as in \Algref{alg:mhmm}, the update formulas for $\evalpha^{(y)}_z$, $\evpi^{(z)}_h$, and $\emA^{(z)}_{h,h'}$ become as defined in that algorithm.
 
+Deriving the update equations for the means and covariances of the Gaussian emission distributions is not so simple, since these are not table CPDs and therefore the procedure we have just used is no longer valid. Nonetheless, the desired equations can be obtained by explicitly maximizing the ELBO with respect to these parameters. As we have seen in \secref{sec:background_em},
+\begin{equation}
+	\mathrm{ELBO} = \sum_{i=1}^{n} \E_{(\rvh_i,\rz_i) \sim q} \log p(\mX_i, \rvh_i, \rz_i \mid y_i; \Theta),
+\end{equation}
+where $q(\rvh_i,\rz_i) = p(\rvh_i, \rz_i \mid \vx_i, y_i; \Theta^{(-)})$, being $\Theta^{(-)}$ the set of current values for all parameters. We are solely interested in maximizing the ELBO with respect to the parameters $\vmu^{(z)}_h$ and $\vsigma^{(z)}_h$, so we can plug in the expression for the joint $p(\vx_i, \rvh_i, \rz_i \mid y_i; \Theta)$ and ignore all terms that do not depend on these parameters:
 \begin{align}
-	& \evalpha_{k,m} = \frac{\sum_i p(\rz_i=m |\mX_i,y_i,\Theta^{(-)}) \1_{y_i=k}}{\sum_i \1_{y_i=k}},\\
-	& \evpi_{m,s} = \frac{\sum_i p(\rz_i=m \mid \mX_i,y_i,\Theta^{(-)}) p(\rh_i^{(0)}=s \mid \rz_i=m,\mX_i,y_i,\Theta^{(-)})}{\sum_i p(\rz_i=m \mid \rmX_i,y_i,\Theta^{(-)})}, \\
-	\lefteqn{\emA^m_{s,u} =} \nonumber\\
-	& \frac{\sum_i p(\rz_i=m \mid \mX_i,y_i,\Theta^{(-)}) \sum_{t=1}^{T_i} p(\rh_i^{(t-1)}=s, \rh_i^{(t)}=u \mid \rz_i=m,\mX_i,y_i,\Theta^{(-)})} {\sum_i p(\rz_i=m \mid \mX_i,y_i,\Theta^{(-)}) \sum_{t=1}^{T_i} p(\rh_i^{(t-1)}=s \mid \rz_i=m,\mX_i,y_i,\Theta^{(-)})}, \\
-	& \vmu_{m,s} = \frac{\sum_i p(\rz_i=m \mid \mX_i,y_i,\Theta^{(-)}) \sum_{t=1}^{T_i} p(\rh_i^{(t)}=s \mid \rz_i=m,\mX_i,y_i,\Theta^{(-)}) \vx_i^{(t)}}{\sum_i p(\rz_i=m \mid \mX_i,y_i,\Theta^{(-)}) \sum_{t=1}^{T_i} p(\rh_i^{(t)}=s \mid \rz_i=m,\mX_i,y_i,\Theta^{(-)})}, \\
-	\lefteqn{\vsigma^2_{m,s} =} \nonumber\\
-	& \frac{\sum_i p(\rz_i=m \mid \mX_i,y_i,\Theta^{(-)}) \sum_{t=1}^{T_i} p(\rh_i^{(t)}=s \mid \rz_i=m,\mX_i,y_i,\Theta^{(-)}) \left(\vx_i^{(t)} - \boldsymbol{\mu}^m_s\right)^2}{\sum_i p(\rz_i=m \mid \mX_i,y_i,\Theta^{(-)}) \sum_{t=1}^{T_i} p(\rh_i^{(t)}=s \mid \rz_i=m,\mX_i,y_i,\Theta^{(-)})}, \\
-	& \forall \, k,m,s,u. \nonumber
+	\mathrm{ELBO} &= \sum_{i=1}^n \sum_{\rvh_i, \rz_i} q(\rvh_i,\rz_i) \log \left[p(\rz_i \mid y_i) p(\rh^{(0)}_i \mid \rz_i) \prod_t p(\rh^{(t)}_i \mid \rh^{(t-1)}_i, \rz_i) p(\vx^{(t)}_i \mid \rh^{(t)}_i, \rz_i) \right] \nonumber\\
+	&= \sum_{i=1}^n \sum_{\rh^{(t)}_i, \rz_i} \sum_{t=1}^{T_i} q(\rh^{(t)}_i, \rz_i) \log p(\vx^{(t)}_i \mid \rh^{(t)}_i, \rz_i) + \text{const}.
 \end{align}
-Defining $n_k$, $\rho_{i,m}$, $\gamma_{i,m,s}$ and $\xi_{i,m,s,u}$ as in \Algref{alg:mhmm} the result follows.
+Now, all that remains is computing the gradient of the ELBO with respect to the parameters and solving for the critical points:
+\begin{align}
+&\nabla_{\vmu^{(z)}_h} \mathrm{ELBO} = \sum_{i=1}^n \sum_{t=1}^{T_i} \frac{q(\rh^{(t)}_i=h, z)}{p(\vx^{(t)}_i \mid \rh^{(t)}_i=h, z)} \nabla_{\vmu^{(z)}_h} p(\vx^{(t)}_i \mid \rh^{(t)}_i=h, z) \nonumber\\
+&\hphantom{\nabla_{\vmu^{(z)}_h} \mathrm{ELBO}} = \sum_{i=1}^n  \sum_{t=1}^{T_i} q(\rh^{(t)}_i=h, z) \frac{\vx^{(t)}_i - \vmu^{(z)}_h}{{\vsigma^{(z)}_h}^2}, \\
+&\nabla_{\vsigma^{(z)}_h} \mathrm{ELBO} = \sum_{i=1}^n \sum_{t=1}^{T_i} \frac{q(\rh^{(t)}_i=h, z)}{p(\vx^{(t)}_i \mid \rh^{(t)}_i=h, z)} \nabla_{\vsigma^{(z)}_h} p(\vx^{(t)}_i \mid \rh^{(t)}_i=h, z) \nonumber\\
+&\hphantom{\nabla_{\vsigma^{(z)}_h} \mathrm{ELBO}} = \sum_{i=1}^n  \sum_{t=1}^{T_i} q(\rh^{(t)}_i=h, z) \left(\frac{(\vx^{(t)}_i - \vmu^{(z)}_h)^2}{{\vsigma^{(z)}_h}^3} - \frac{1}{\vsigma^{(z)}_h}\right),
+\end{align}
+where vector division and exponentiation should be interpreted as elementwise operations. Finally, solving for the critical points yields:
+\begin{align}
+&\vmu^{(z)}_h = \frac{\sum_{i=1}^n  \sum_{t=1}^{T_i} q(\rh^{(t)}_i=h, z) \vx^{(t)}_i}{\sum_{i=1}^n  \sum_{t=1}^{T_i} q(\rh^{(t)}_i=h, z)} \nonumber\\
+&\hphantom{\vmu^{(z)}_h} = \frac{\sum_{i=1}^n p(z \mid \mX_i, y_i; \Theta^{(-)}) \sum_{t=1}^{T_i} p(\rh^{(t)}=h \mid \mX_i, z; \Theta^{(-)}) \vx^{(t)}_i}{\sum_{i=1}^n p(z \mid \mX_i, y_i; \Theta^{(-)}) \sum_{t=1}^{T_i} p(\rh^{(t)}=h \mid \mX_i, z; \Theta^{(-)})}, \\
+&{\vsigma^{(z)}_h}^2 = \frac{\sum_{i=1}^n  \sum_{t=1}^{T_i} q(\rh^{(t)}_i=h, z) (\vx^{(t)}_i - \vmu^{(z)}_h)^2}{\sum_{i=1}^n  \sum_{t=1}^{T_i} q(\rh^{(t)}_i=h, z)} \nonumber\\
+&\hphantom{{\vsigma^{(z)}_h}^2} = \frac{\sum_{i=1}^n p(z \mid \mX_i, y_i; \Theta^{(-)}) \sum_{t=1}^{T_i} p(\rh^{(t)}=h \mid \mX_i, z; \Theta^{(-)}) (\vx^{(t)}_i - \vmu^{(z)}_h)^2}{\sum_{i=1}^n p(z \mid \mX_i, y_i; \Theta^{(-)}) \sum_{t=1}^{T_i} p(\rh^{(t)}=h \mid \mX_i, z; \Theta^{(-)})}.
+\end{align}
+Again, the formulas in \Algref{alg:mhmm} follow by plugging $\gamma^{(z)}_{i,h}(t)$ and $\xi^{(z)}_{i,h,h'}(t)$ into the expressions above. $\quad \square$
 
-\section{Derivation of \Algref{alg:spamhmm} (SpaMHMM training)}
+\subsection{EM for SpaMHMM \Algref{alg:mhmm}}
 \label{sec:proof_em_reg}
 Using the same notation as in \Secref{sec:proof_em_noreg}, we may rewrite \eqref{objective} as:
 \begin{align}
@@ -95,7 +121,7 @@ p(\rmX \mid \mX_\text{pref}, y) &= \sum_{\rz} p(\rmX, \rz \mid \mX_\text{pref}, 
 &= \sum_{\rz} p(\rmX \mid \mX_\text{pref}, y, \rz) p(\rz \mid \mX_\text{pref}, y) \nonumber\\
 &= \sum_{\rz} p(\rmX \mid \mX_\text{pref}, \rz) p(\rz \mid \mX_\text{pref}, y),
 \end{align}
-where the last equality follows from the fact that the observations $\rmX$ are conitionally independent of the graph node $\ry$ given the latent variable $\rz$. The posterior $p(\rz \mid \mX_\text{pref}, y)$ may be obtained as done in \Algref{alg:mhmm}:
+where the last equality follows from the fact that the observations $\rmX$ are conditionally independent of the graph node $\ry$ given the latent variable $\rz$. The posterior $p(\rz \mid \mX_\text{pref}, y)$ may be obtained as done in \Algref{alg:mhmm}:
 \begin{equation}
 p(\rz \mid \mX_\text{pref}, y) \propto p(\mX_\text{pref} \mid z)p(z \mid y).
 \end{equation}
@@ -103,7 +129,7 @@ We now focus on the computation of $p(\rmX \mid \mX_\text{pref}, \rz)$. Let $\rv
 \begin{align}
 p(\rmX \mid \mX_\text{pref}, \rz) &= \sum_{\rvh_\text{pref}, \rvh} p(\rmX, \rvh_\text{pref}, \rvh \mid \mX_\text{pref}, \rz) \nonumber\\
 &= \sum_{\rvh_\text{pref}, \rvh} p(\rmX \mid \rvh_\text{pref}, \rvh, \mX_\text{pref}, \rz) p(\rvh_\text{pref}, \rvh \mid \mX_\text{pref}, \rz) \nonumber\\
-&= \sum_{\rvh_\text{pref}, \rvh} p(\rmX \mid \rvh, \rz) p(\rvh_\text{pref} \mid \rvh, \mX_\text{pref}, \rz) p(\rh \mid \mX_\text{pref}, \rz) \nonumber\\
+&= \sum_{\rvh_\text{pref}, \rvh} p(\rmX \mid \rvh, \rz) p(\rvh_\text{pref} \mid \rvh, \mX_\text{pref}, \rz) p(\rvh \mid \mX_\text{pref}, \rz) \nonumber\\
 &= \sum_{\rvh} p(\rmX \mid \rvh, \rz) p(\rvh \mid \mX_\text{pref}, \rz) \nonumber\\
 &= \sum_{\rvh} p(\rh^{(0)} \mid \mX_\text{pref}, \rz) \prod_{\tau=1}^{t} p(\rh^{(\tau)} \mid \rh^{(\tau-1)}, \rz) p(\rvx^{(\tau)} \mid \rh^{(\tau)}, z),
 \end{align}
