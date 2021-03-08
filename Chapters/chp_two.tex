@@ -489,8 +489,6 @@ Here, we are assuming that the emission probabilities $p(\rx^{(t)}\mid\rh^{(t)},
 The procedure to maximize objective~\plaineqref{eq:spamhmm_log_likelihood} using EM is described in \Algref{alg:mhmm}. The update formulas follow from the standard EM procedure and can be obtained by viewing this model as a Bayesian network or by following the derivation detailed in \Secref{sec:proof_em_noreg}. However, the objective \plaineqref{eq:spamhmm_log_likelihood} does not take advantage of the known structure of $\gG$. In order to exploit this information, we introduce a regularization term, maximizing the following objective instead:
 \begin{align}
 \label{eq:spamhmm_objective}
-%J_r(\Theta) &\triangleq \frac{1}{n}\sum_{i=1}^n \log p(\mX_i \mid y_i; \Theta) \nonumber\\ 
-%&\mathbin{\hphantom{=}}{}+ \frac{\reg}{2} \sum_{\substack{y,y'=1,\\y'\neq y}}^{k} \emG_{y,y'} \E_{\rz \sim p(\rz \mid \ry=y; \Theta)} [ p(\rz \mid \ry=y'; \Theta) ] \nonumber\\
 J_r(\Theta) &\triangleq \frac{1}{n}\sum_{i=1}^n \log p(\mX_i \mid y_i; \Theta) + \frac{\reg}{2} \sum_{\substack{y,y'=1,\\y'\neq y}}^{k} \emG_{y,y'} \E_{\rz \sim p(\rz \mid y; \Theta)} [ p(\rz \mid y'; \Theta) ] \nonumber\\
 &= \frac{1}{n}\sum_{i=1}^n \log p(\mX_i \mid y_i; \Theta) + \frac{\reg}{2} \sum_{\substack{y,y'=1,\\y'\neq y}}^{k} \emG_{y,y'} {\valpha^{(y)}}\transp \valpha^{(y')},
 \end{align}
@@ -523,10 +521,10 @@ By setting $\reg=0$, we clearly get the initial objective \plaineqref{eq:spamhmm
 
 The objective function~\plaineqref{eq:spamhmm_objective} can still be maximized via EM (see details in \Secref{sec:proof_em_reg}). However, the introduction of the regularization term in the objective makes it impossible to find a closed form solution for the update formula of the mixture coefficients. Thus, in the M-step, we need to resort to gradient ascent to update these parameters. In order to ensure that the gradient ascent iterative steps lead to admissible solutions, we adopt the following reparametrization from \citet{Yang2018}:
 \begin{equation}
-\label{normalization}
+\label{eq:spamhmm_normalization}
 \evalpha^{(y)}_{z} = \frac{\max(0, {\beta^{(y)}_z})^2}{\sum_{z'=1}^m \max(0, {\beta^{(y)}_{z'}})^2}, 
 \end{equation}
-and so we can treat $\vbeta^{(y)}$ as an unconstrained parameter vector. This reparametrization clearly resembles the softmax function, but, contrarily to that one, admits sparse outputs. The squared terms in \eqref{normalization} aim only to make the optimization more stable. The optimization steps for the objective \plaineqref{eq:spamhmm_objective} using this reparametrization are described in \Algref{alg:spamhmm}.
+and so we can treat $\vbeta^{(y)}$ as an unconstrained parameter vector. This reparametrization clearly resembles the softmax function, but, contrarily to that one, admits sparse outputs. The squared terms in \eqref{eq:spamhmm_normalization} aim only to make the optimization more stable. The optimization steps for the objective \plaineqref{eq:spamhmm_objective} using this reparametrization are described in \Algref{alg:spamhmm}.
 
 \begin{algorithm}
 	\caption{EM algorithm for the mixture without regularization (MHMM).}

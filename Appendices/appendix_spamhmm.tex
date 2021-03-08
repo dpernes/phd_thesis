@@ -12,8 +12,8 @@
 \begingroup
 \allowdisplaybreaks
 \begin{align}
-	&M(z,y) = \sum_{i=1}^{n} p(y, z \mid \vx_i, y_i) = \sum_{i=1}^{n} p(z \mid \vx_i, y_i) \1_{y=y_i}, \\
-	&M(y) = \sum_{i=1}^{n} p(y \mid \vx_i, y_i) = \sum_{i=1}^{n} \1_{y=y_i}, \\
+	&M(z,y) = \sum_{i=1}^{n} p(y, z \mid \vx_i, y_i) = \sum_{i=1}^{n} p(z \mid \vx_i, y_i) \1_{y_i=y}, \\
+	&M(y) = \sum_{i=1}^{n} p(y \mid \vx_i, y_i) = \sum_{i=1}^{n} \1_{y_i=y}, \\
 	&M(\rh^{(0)}=h, z) = \sum_{i=1}^{n} p(\rh^{(0)}=h, z \mid \vx_i, y_i) = \sum_{i=1}^{n} p(\rh^{(0)}=h \mid \vx_i, y_i, z) p(z \mid \vx_i, y_i) \nonumber\\
 	&\hphantom{M(\rh^{(0)}=h,z)} = \sum_{i=1}^{n} p(\rh^{(0)}=h \mid \vx_i, y_i) p(z \mid \vx_i, y_i), \\
 	&M(z) = \sum_{i=1}^{n} p(z \mid \vx_i, y_i), \\
@@ -35,10 +35,12 @@ Now, defining $n_y$, $\eta^{(z)}_i$, $\gamma^{(z)}_{i,h}(t)$, and $\xi^{(z)}_{i,
 
 Deriving the update equations for the means and covariances of the Gaussian emission distributions is not so simple, since these are not table CPDs and therefore the procedure we have just used is no longer valid. Nonetheless, the desired equations can be obtained by explicitly maximizing the ELBO with respect to these parameters. As we have seen in \secref{sec:background_em},
 \begin{equation}
+	\label{eq:mhmm_elbo}
 	\mathrm{ELBO} = \sum_{i=1}^{n} \E_{(\rvh_i,\rz_i) \sim q} \log p(\mX_i, \rvh_i, \rz_i \mid y_i; \Theta),
 \end{equation}
 where $q(\rvh_i,\rz_i) = p(\rvh_i, \rz_i \mid \vx_i, y_i; \Theta^{(-)})$, being $\Theta^{(-)}$ the set of current values for all parameters. We are solely interested in maximizing the ELBO with respect to the parameters $\vmu^{(z)}_h$ and $\vsigma^{(z)}_h$, so we can plug in the expression for the joint $p(\vx_i, \rvh_i, \rz_i \mid y_i; \Theta)$ and ignore all terms that do not depend on these parameters:
 \begin{align}
+	\label{eq:mhmm_elbo_gaussian_params}
 	\mathrm{ELBO} &= \sum_{i=1}^n \sum_{\rvh_i, \rz_i} q(\rvh_i,\rz_i) \log \left[p(\rz_i \mid y_i) p(\rh^{(0)}_i \mid \rz_i) \prod_t p(\rh^{(t)}_i \mid \rh^{(t-1)}_i, \rz_i) p(\vx^{(t)}_i \mid \rh^{(t)}_i, \rz_i) \right] \nonumber\\
 	&= \sum_{i=1}^n \sum_{\rh^{(t)}_i, \rz_i} \sum_{t=1}^{T_i} q(\rh^{(t)}_i, \rz_i) \log p(\vx^{(t)}_i \mid \rh^{(t)}_i, \rz_i) + \text{const}.
 \end{align}
@@ -56,63 +58,54 @@ where vector division and exponentiation should be interpreted as elementwise op
 &{\vsigma^{(z)}_h}^2 = \frac{\sum_{i=1}^n  \sum_{t=1}^{T_i} q(\rh^{(t)}_i=h, z) (\vx^{(t)}_i - \vmu^{(z)}_h)^2}{\sum_{i=1}^n  \sum_{t=1}^{T_i} q(\rh^{(t)}_i=h, z)} \nonumber\\
 &\hphantom{{\vsigma^{(z)}_h}^2} = \frac{\sum_{i=1}^n p(z \mid \mX_i, y_i; \Theta^{(-)}) \sum_{t=1}^{T_i} p(\rh^{(t)}=h \mid \mX_i, z; \Theta^{(-)}) (\vx^{(t)}_i - \vmu^{(z)}_h)^2}{\sum_{i=1}^n p(z \mid \mX_i, y_i; \Theta^{(-)}) \sum_{t=1}^{T_i} p(\rh^{(t)}=h \mid \mX_i, z; \Theta^{(-)})}.
 \end{align}
-Again, the formulas in \Algref{alg:mhmm} follow by plugging $\gamma^{(z)}_{i,h}(t)$ and $\xi^{(z)}_{i,h,h'}(t)$ into the expressions above. $\quad \square$
+Again, the formulas in \Algref{alg:mhmm} follow by plugging $\eta^{(z)}_i$ and $\gamma^{(z)}_{i,h}(t)$ into the expressions above. $\quad \square$
 
-\subsection{EM for SpaMHMM \Algref{alg:mhmm}}
+\subsection{EM for SpaMHMM (\Algref{alg:spamhmm})}
 \label{sec:proof_em_reg}
-Using the same notation as in \Secref{sec:proof_em_noreg}, we may rewrite \eqref{objective} as:
-\begin{align}
-J_r(\Theta) = &\frac{1}{N}\log \sum_{\rvz,\rmH} p(\tX,\rvz,\rmH \mid \vy,\Theta) \nonumber\\
-& +\frac{\reg}{2} \sum_{j,k\neq j} \emG_{j,k} \E_{\rz \sim p(\rz \mid \ry=j, \Theta)} [ p(\rz \mid \ry=k, \Theta) ].
-\end{align}
-Despite the regularization term, we may still lower bound this objective by introducing a variational distribution $q(\rvz,\rmH)$ and using Jensen's inequality in the usual way:
-\begin{align}
-J_r(\Theta) &\geq \frac{1}{N} \E_{\rvz,\rmH \sim q} \left[\log \frac{p(\tX,\rvz,\rmH \mid \vy,\Theta)}{q(\rvz,\rmH)} \right] \nonumber\\
-&\mathbin{\hphantom{=}}{} + \frac{\reg}{2} \sum_{j,k\neq j} \emG_{j,k} \E_{\rz \sim p(\rz \mid \ry=j, \Theta)} [ p(\rz \mid \ry=k, \Theta) ] \nonumber\\
-&\coloneqq V_r(\Theta, q).
-\end{align}
-Clearly,
-\begin{align}
-\lefteqn{J_r(\Theta) - V_r(\Theta, q) =}\nonumber\\
-&=\frac{1}{N} \left(\log p(\tX|\vy,\Theta) - \E_{\rvz,\rmH \sim q} \left[\log \frac{p(\tX,\rvz,\rmH \mid \vy,\Theta)}{q(\rvz,\rmH)} \right] \right) \nonumber\\
-&= \frac{1}{N} \KL \left(q(\rvz,\rmH) || p(\rvz,\rmH \mid \tX,\vy,\Theta)  \right),
-\end{align}
-which, fixing the parameters $\Theta$ to some value $\Theta^{(-)}$ and minimizing with respect to $q$, yields the usual solution $q^*(\rvz,\rmH) = p(\rvz,\rmH \mid \tX,\vy,\Theta^{(-)})$. Thus, in the M-step, we want to find:
-\begin{align}
-\lefteqn{\argmax_\Theta V_r(\Theta, q^*) =} \nonumber\\
-& =\argmax_\Theta \frac{1}{N}\sum_{\rvz,\rmH} p(\tX,\rvz,\rmH \mid \vy,\Theta^{(-)}) \log p(\tX,\rvz,\rmH \mid \vy,\Theta) \nonumber\\
-& \mathbin{\hphantom{=}}{}+ \frac{\reg}{2} p(\tX|\vy,\Theta^{(-)}) \sum_{j,k\neq j} \emG_{j,k} \E_{\rz \sim p(\rz \mid \ry=j, \Theta)} [ p(\rz \mid \ry=k, \Theta) ] \nonumber\\
-& = \argmax_\Theta \frac{1}{N}\tilde{J}(\Theta, \Theta^{(-)}) + \reg R(\Theta, \Theta^{(-)}) \nonumber\\
-& \coloneqq \argmax_\Theta \tilde{J}_r(\Theta, \Theta^{(-)}),
-\end{align}
-where $\tilde{J}(\Theta, \Theta^{(-)})$ is as defined in \eqref{m_step_obj_noreg} and $R(\Theta, \Theta^{(-)})$ is our regularization (weighted by the data likelihood), which is simply a function of the parameters $\valpha_1,...,\valpha_K$:
-\begin{align}
-R(\Theta, \Theta^{(-)}) &= \frac{1}{2}p(\tX|\vy,\Theta^{(-)}) \sum_{j,k\neq j} \emG_{j,k} \E_{\rz \sim p(\rz \mid \ry=j, \Theta)} [ p(\rz \mid \ry=k, \Theta) ] \nonumber\\
-&= \frac{1}{2}p(\tX|\vy,\Theta^{(-)}) \sum_{j,k\neq j} \emG_{j,k} \valpha_j \transp \valpha_k \nonumber\\
-&= R(\valpha_1,...,\valpha_K,\Theta^{(-)}).
-\end{align}
-Now, we may build the Lagrangian as done in \Secref{sec:proof_em_noreg}. Since $R$ only depends on the $\valpha$'s, the update equations for the remaining parameters are unchanged. However, for the $\valpha$'s, it is not possible to obtain a closed form update equation. Thus, we use the reparameterization defined in \eqref{normalization} and update the new unconstrained parameters $\vbeta$ via gradient ascent. \\
-We have:
-\begin{align}
-& \frac{\partial \tilde{J}}{\partial \alpha_{k,m}} = \frac{p(\tX|\vy,\Theta^{(-)})}{\alpha_{k,m}} \sum_i p(\rz_i=m \mid \mX_i,y_i,\Theta^{(-)}) \1_{y_i=k} \label{dJ_dalpha}, \\
-& \frac{\partial R}{\partial \alpha_{k,m}} = p(\tX|\vy,\Theta^{(-)}) \sum_{j \neq k} \emG_{j,k} \alpha_{j,m}. \label{dR_dalpha}
-\end{align}
-From \twoeqrefs{dJ_dalpha}{dR_dalpha}, we see that the the resulting gradient $\nabla_{\boldsymbol{\alpha}_k} \tilde{J}_r = \frac{1}{N}\nabla_{\boldsymbol{\alpha}_k} \tilde{J} + \reg \nabla_{\boldsymbol{\alpha}_k} R$ is equal to some vector scaled by the joint data likelihood $p(\tX|\vy,\Theta^{(-)})$, which we discard since it only affects the learning rate, besides being usually very small and somewhat costly to compute. This option is equivalent to using a learning rate that changes at each iteration of the outter loop of the algorithm. \\
-\Eqref{normalization} yields the following derivatives:
-\begin{align}
-& \frac{\partial \alpha_{k,m}}{\partial \beta_{k,m}} = \1_{\beta_{k,m} > 0} \frac{2\sigma'(\beta_{k,m})}{\sigma(\beta_{k,m})} \alpha_{k,m} (1 - \alpha_{k,m}), \\
-& \frac{\partial \alpha_{k,m}}{\partial \beta_{k,l}} = \1_{\beta_{k,m} > 0} \frac{-2\sigma'(\beta_{k,m})}{\sigma(\beta_{k,m})} \alpha_{k,m} \alpha_{k,l}, \text{ for } l \neq m.
-\end{align}
-Finally, by the chain rule, we obtain:
-\begin{align}
-\lefteqn{\frac{\partial \tilde{J}}{\partial \beta_{k,m}} = \sum_l \frac{\partial \tilde{J}}{\partial \alpha_{k,l}} \frac{\partial \alpha_{k,l}}{\partial \beta_{k,m}}} \nonumber\\
-&= \1_{\beta_{k,m} > 0} \frac{2\sigma'(\beta_{k,m})}{\sigma(\beta_{k,m})} \sum_i  \left(p(\rz_i=m \mid \mX_i,y_i,\Theta^{(-)}) -\alpha_{k,m}\right)\1_{y_i=k}, \\
-\lefteqn{\frac{\partial R}{\partial \beta_{k,m}} = \sum_l \frac{\partial R}{\partial \alpha_{k,l}} \frac{\partial \alpha_{k,l}}{\partial \beta_{k,m}}} \nonumber\\
-&= \1_{\beta_{k,m} > 0} \frac{2\sigma'(\beta_{k,m})}{\sigma(\beta_{k,m})} \alpha_{k,m}\sum_{j \neq k} \emG_{j,k}\left(\alpha_{j,m} - \valpha_j \transp \valpha_k \right).
-\end{align}
-Defining $\delta_{k,m} \coloneqq \frac{\partial \tilde{J}_r}{\partial \beta_{k,m}} = \frac{1}{N}\frac{\partial \tilde{J}}{\partial \beta_{k,m}} + \reg \frac{\partial R}{\partial \beta_{k,m}}$ and applying the gradient ascent update formula to $\beta_{k,m}$ the result follows.
+We start by showing that the E-step is unaffected by the regularization term in \eqref{eq:spamhmm_objective} and then we will derive the update equations for the M-step.
 
-\section{Getting the posterior distribution of observations in SpaMHMM}
+As is a common practice in EM and variational methods, let $q(\rz, \rvh)$ be an arbitrary distribution over the hidden variables of our model whose support is contained in the support of $p$. Then,
+\begin{align}
+	J_r(\Theta) &= \frac{1}{n}\sum_{i=1}^n \log \E_{(\rz_i, \rvh_i) \sim q} \left[ \frac{p(\mX_i \mid y_i; \Theta)}{q(\rz_i, \rvh_i)} \right] + \reg R(\gG; \Theta) \nonumber\\
+	&\geq  \frac{1}{n}\sum_{i=1}^n \E_{(\rz_i, \rvh_i) \sim q} \log \left[ \frac{p(\mX_i \mid y_i; \Theta)}{q(\rz_i, \rvh_i)} \right] + \reg R(\gG; \Theta).
+\end{align}
+where the inequality is a direct result of Jensen's inequality and $R(\gG; \Theta)$ is our regularization term, as defined in \eqref{eq:spamhmm_objective}. We are therefore interested in maximizing this lower bound with respect to both $\Theta$ and $q$. Since $R(\gG; \Theta)$ does not depend on $q$, maximization with respect to this distribution while fixing $\Theta = \Theta^{(-)}$ yields $q(\rz_i, \rvh_i) = p(\rz_i, \rvh_i \mid \mX_i, y_i; \Theta^{(-)})$, as for the case of standard (i.e. unregularized) EM. Thus,
+\begin{equation}
+	J_r(\Theta) \geq \frac{1}{n} \mathrm{ELBO}(\Theta) + \lambda R(\gG; \Theta) + \text{const},
+\end{equation}
+where the ELBO takes the exact same form as in \eqref{eq:mhmm_elbo}. 
+
+Now all that remains is the maximization of this lower bound with respect to $\Theta$. After noting that some parameters are constrained to sum up to 1, we could build the following Lagrangian and solve for the critical points:
+\begin{align}
+	L(\Theta, \Lambda) = & \frac{1}{n} \mathrm{ELBO}(\Theta) + \lambda R(\gG; \Theta) + \sum_{y=1}^k \mu_y\left(1 - ||\valpha^{(y)}||_{1}\right) \nonumber\\
+	&+ \sum_{z=1}^m \sum_{h=1}^s \nu^{(z)}_h \left(1 - \sum_{h'=1}^s \emA^{(z)}_{h,h'}\right) 
+	+ \sum_{z=1}^m \varrho_z \left(1 - ||\vpi_z||_{1}\right),
+\end{align}
+where $\Lambda \triangleq \bigcup_{h,y,z} \{\mu_y, \nu^{(z)}_h, \varrho_z\}$ is the set of all Lagrange multipliers. Since $R(\gG; \Theta)$ only depends on the mixture coefficients $\valpha^{(y)}$, the update equations for all parameters except those are exactly the same as in \Algref{alg:mhmm}. 
+
+Unfortunately, setting $\nabla L = 0$ yields a system of equations that is non-linear in $\valpha^{(y)}$ and no analytical solution can be found. However, we can resort to the reparametrization defined in \eqref{eq:spamhmm_normalization} and update the new parameters $\vbeta^{(y)}$ by performing gradient ascent over the unconstrained lower bound. Thus, computing the required gradient concludes the derivation of the algorithm.
+
+Now we only care about the dependency of the ELBO on the mixture coefficients, so, following the same idea as in \eqref{eq:mhmm_elbo_gaussian_params}, we can write:
+\begin{align}
+	\mathrm{ELBO} &= \frac{1}{n}\sum_{i=1}^n \sum_{\rz_i} q(\rz_i) \log p(\rz_i \mid y_i) + \text{const} \nonumber\\
+	&= \frac{1}{n}\sum_{i=1}^n \sum_{z=1}^m q(z) \log \evalpha^{(y_i)}_{z} + \text{const},
+\end{align}
+and therefore,
+\begin{equation*}
+	\frac{\partial \mathrm{ELBO}}{\partial \evalpha^{(y)}_{z}} = \frac{1}{n}\sum_{i=1}^n \frac{q(z)}{\evalpha^{(y)}_{z}} \1_{y_i=y}, \quad
+	\frac{\partial R}{\partial \evalpha^{(y)}_{z}} = \frac{1}{2}\sum_{\substack{y'=1,\\y'\neq y}}^{k} \emG_{y,y'} \evalpha^{(y')}_{z}.
+\end{equation*}
+Finally, by the chain rule,
+\begin{align}
+	&\frac{\partial \mathrm{ELBO}}{\partial \evbeta^{(y)}_{z}} = \sum_{z'=1}^{m} \frac{\partial \mathrm{ELBO}}{\partial \evalpha^{(y)}_{z'}} \frac{\partial \evalpha^{(y)}_{z'}}{\partial \evbeta^{(y)}_{z}} \nonumber\\
+	&\hphantom{\frac{\partial \mathrm{ELBO}}{\partial \evbeta^{(y)}_{z}}} = \frac{1}{n} \sum_{i=1}^n \left(q(z) - \evalpha^{(y)}_{z}\right) \1_{y_i = y \wedge \evbeta^{(y)}_{z} > 0} \nonumber\\
+	&\hphantom{\frac{\partial \mathrm{ELBO}}{\partial \evbeta^{(y)}_{z}}} = \frac{1}{n} \sum_{i=1}^n \left(p(z \mid \mX_i, y_i; \Theta^{(-)}) - \evalpha^{(y)}_{z}\right) \1_{y_i = y \wedge \evbeta^{(y)}_{z} > 0}, \\
+	&\frac{\partial R}{\partial \evbeta^{(y)}_{z}} = \sum_{z'=1}^{m} \frac{\partial R}{\partial \evalpha^{(y)}_{z'}} \frac{\partial \evalpha^{(y)}_{z'}}{\partial \evbeta^{(y)}_{z}} \nonumber\\
+	&\hphantom{\frac{\partial R}{\partial \evbeta^{(y)}_{z}}} = \evalpha^{(y)}_{z} \sum_{\substack{y'=1,\\y'\neq y}}^{k} \emG_{y,y'} \left(\evalpha^{(y')}_{z} - {\valpha^{(y')}} \transp \valpha^{(y)} \right) \1_{\evbeta^{(y)}_{z} > 0},
+\end{align}
+and considering $\psi^{(y)}_{z}$, $\omega^{(y)}_{z}$, and $\delta^{(y)}_z$ as defined in \Algref{alg:spamhmm} and the gradient ascent update rule the formulas follow. $\quad \square$.
+
+\section{Posterior distribution of observations}
 \label{sec:posterior_proof}
 In this section, we show how to obtain the posterior distribution $p(\rmX \mid \mX_\text{pref}, y)$ of sequences $\rmX \triangleq \left(\rvx^{(1)}, ...,\rvx^{(t)}\right)$ given an observed prefix sequence $\mX_\text{pref} \triangleq \left(\vx^{(-t_\text{pref}+1)}, ...,\vx^{(0)}\right)$, both coming from the graph node $y$. We start by writing this posterior as a marginalization with respect to the latent variable $\rz$:
 \begin{align}
@@ -123,7 +116,7 @@ p(\rmX \mid \mX_\text{pref}, y) &= \sum_{\rz} p(\rmX, \rz \mid \mX_\text{pref}, 
 \end{align}
 where the last equality follows from the fact that the observations $\rmX$ are conditionally independent of the graph node $\ry$ given the latent variable $\rz$. The posterior $p(\rz \mid \mX_\text{pref}, y)$ may be obtained as done in \Algref{alg:mhmm}:
 \begin{equation}
-p(\rz \mid \mX_\text{pref}, y) \propto p(\mX_\text{pref} \mid z)p(z \mid y).
+p(\rz \mid \mX_\text{pref}, y) \propto p(\mX_\text{pref} \mid \rz)p(\rz \mid y).
 \end{equation}
 We now focus on the computation of $p(\rmX \mid \mX_\text{pref}, \rz)$. Let $\rvh_\text{pref} \triangleq \left(\rh^{(-t_\text{pref}+1)}, ...,\rh^{(-1)}\right)$ and $\rvh \triangleq \left(\rh^{(0)}, ...,\rh^{(t)}\right)$, then:
 \begin{align}
@@ -131,8 +124,8 @@ p(\rmX \mid \mX_\text{pref}, \rz) &= \sum_{\rvh_\text{pref}, \rvh} p(\rmX, \rvh_
 &= \sum_{\rvh_\text{pref}, \rvh} p(\rmX \mid \rvh_\text{pref}, \rvh, \mX_\text{pref}, \rz) p(\rvh_\text{pref}, \rvh \mid \mX_\text{pref}, \rz) \nonumber\\
 &= \sum_{\rvh_\text{pref}, \rvh} p(\rmX \mid \rvh, \rz) p(\rvh_\text{pref} \mid \rvh, \mX_\text{pref}, \rz) p(\rvh \mid \mX_\text{pref}, \rz) \nonumber\\
 &= \sum_{\rvh} p(\rmX \mid \rvh, \rz) p(\rvh \mid \mX_\text{pref}, \rz) \nonumber\\
-&= \sum_{\rvh} p(\rh^{(0)} \mid \mX_\text{pref}, \rz) \prod_{\tau=1}^{t} p(\rh^{(\tau)} \mid \rh^{(\tau-1)}, \rz) p(\rvx^{(\tau)} \mid \rh^{(\tau)}, z),
+&= \sum_{\rvh} p(\rh^{(0)} \mid \mX_\text{pref}, \rz) \prod_{\tau=1}^{t} p(\rh^{(\tau)} \mid \rh^{(\tau-1)}, \rz) p(\rvx^{(\tau)} \mid \rh^{(\tau)}, \rz),
 \end{align}
 where we have used the independence assumptions that characterize the HMM. Here, the initial state posteriors $p(\rh^{(0)} \mid \mX_\text{pref}, \rz)$ are actually the final state posteriors for the sequence $\mX_\text{pref}$ for each HMM in the mixture, so they can also be computed as indicated \Algref{alg:mhmm}.
 
-Thus, we see that, in order to obtain the posterior $p(\rmX \mid \mX_\text{pref}, y)$, we only need to update the mixture coefficients $p(\rz \mid \mX_\text{pref}, y)$ and the initial state probabilities $p(\rh^{(0)} \mid \rz, \mX_\text{pref})$. All remaining parameters are unchanged.
+Thus, we conclude that inference in the posterior model $p(\rmX \mid \mX_\text{pref}, y)$ corresponds to inference in a (Spa)MHMM where the original mixture coefficients and initial state probabilites are replaced with their respective posteriors, $p(\rz \mid \mX_\text{pref}, y)$ and $p(\rh^{(0)} \mid \mX_\text{pref}, \rz)$. All remaining parameters are unchanged.
