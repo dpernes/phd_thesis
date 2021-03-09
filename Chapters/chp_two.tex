@@ -20,13 +20,19 @@
 
 \begin{tcolorbox}
 	\small{
-		The content presented in this Chapter was partially published in or adapted from \cite{SpaMHMM, SOHMMM}.
+		The content presented in this chapter was partially published in or adapted from:
+		\begin{itemize}
+			\item[] \cite{SpaMHMM} \bibentry{SpaMHMM}
+			\item[] \cite{SOHMMM} \bibentry{SOHMMM}
+		\end{itemize}
+		
+		In \cite{SOHMMM}, Diogo Pernes worked primarily on the mathematical derivation of the algorithm and provided some advice about the experimental protocol. Allahdadi was responsible for the motivation, related work, and experimental evaluation, including dataset generation. Cardoso and Morla supervised the work.
 	}
 \end{tcolorbox}
 
 \section{Motivation}
 \label{sec:chp1_motivation}
-A broad range of real-life settings can be well modeled by an arbitrary number of network connected entities that share and interact in the same medium and generate data streams in real-time. The streams produced by each of these entities form a set of time series with both intra- and inter-correlations between them. In neuroimaging studies, the brain can be regarded as a network: a connected system where nodes, or units, represent different specialized regions and links, or connections, represent communication pathways. From a functional perspective, communication is coded by temporal dependence between the activities of different brain areas (\citet{DeVicoFallani20130521}). Also team sports intrinsically involve fast, complex and interdependent events among a set of entities (the players), which interact as a team (\citet{Tora2017, Theagarajan2018}). The emergence of vehicular networks is also generating an ever-increasing amount of network data (\citet{Cheng2018}), where interactions between neighboring vehicles may be exploited to build more accurate and reliable learning algorithms. Thus, in all these scenarios the behavior of each individual entity is better understood if its context information (i.e.\ the behavior of the neighboring instances) is leveraged. However, the extraction of knowledge from these streams to support the decision-making process is still challenging. Moreover, conventional algorithms that assume ability to store and centralize all the data in memory at the same time are impractical for many applications (\citet{Gama2007}).
+A broad range of real-life settings can be well modeled by an arbitrary number of network connected entities that share and interact in the same medium and generate data streams in real-time. The streams produced by each of these entities form a set of time series with both intra and inter-correlations between them. In neuroimaging studies, the brain can be regarded as a network: a connected system where nodes, or units, represent different specialized regions and links, or connections, represent communication pathways. From a functional perspective, communication is coded by temporal dependence between the activities of different brain areas (\citet{DeVicoFallani20130521}). Also team sports intrinsically involve fast, complex and interdependent events among a set of entities (the players), which interact as a team (\citet{Tora2017, Theagarajan2018}). The emergence of vehicular networks is also generating an ever-increasing amount of network data (\citet{Cheng2018}), where interactions between neighboring vehicles may be exploited to build more accurate and reliable learning algorithms. Thus, in all these scenarios the behavior of each individual entity is better understood if its context information (i.e.\ the behavior of the neighboring instances) is leveraged. However, the extraction of knowledge from these streams to support the decision-making process is still challenging. Moreover, conventional algorithms that assume ability to store and centralize all the data in memory at the same time are impractical for many applications (\citet{Gama2007}).
 
 Modeling the generative process of distributed stream data is an unsupervised learning problem and, hence, a model can be learned directly from the large amounts of data that might be continuously produced or gathered at each network connected entity, without the requirement of any special human supervision or annotation. Moreover, generative models are powerful tools for a wide variety of problems that arise naturally in networked data streams, like anomaly and novelty detection, sequence forecasting, clustering, and network simulation. Hence, generative models for stream data have been developed and applied in several previous works (e.g.\ \citet{Laxman2008, Hayat2010, Hofmann2011}). However, to the best of our knowledge, this problem is seldom explored in the  distributed setting.
 
@@ -427,7 +433,7 @@ where $\rz \in \{1, \dots, m\}$ is a latent random variable, being $m$ the size 
 \label{eq:spamhmm_hmm}
 p(\rmX \mid \rz) = \sum_{\rvh} p(\rh^{(0)}\mid\rz) \prod_{t=1}^T p(\rh^{(t)}\mid\rh^{(t-1)},\rz) p(\rvx^{(t)}\mid\rh^{(t)},\rz),
 \end{equation}
-where $\rvh = \left(\rh^{(0)}, \dots,\rh^{(T)} \right)$, $\rh^{(t)} \in \{1, \dots, s\}$, is the sequence of hidden states of the HMM, being $s$ the number of hidden states. Note that the factorization in \eqref{eq:spamhmm_density} imposes conditional independence between the sequence $\rmX$ and the node $\ry$, given the latent variable $\rz$. This is a key assumption of this model, since this way the distributions for the observations in the nodes in $\sY$ share the same dictionary of HMMs, promoting parameter sharing among the $k$ mixtures. The Bayesian network representing this model is presented in \Figref{fig:spamhmm_bayesian_net}.
+where $\rvh = \left(\rh^{(0)}, \dots,\rh^{(T)} \right)$ is the sequence of hidden states of the HMM and $\rh^{(t)} \in \{1, \dots, s\}$, being $s$ the number of hidden states. Note that the factorization in \eqref{eq:spamhmm_density} imposes conditional independence between the sequence $\rmX$ and the node $\ry$, given the latent variable $\rz$. This is a key assumption of this model, since this way the distributions for the observations in the nodes in $\sY$ share the same dictionary of HMMs, promoting parameter sharing among the $k$ mixtures. The Bayesian network representing this model is presented in \Figref{fig:spamhmm_bayesian_net}.
 
 \begin{figure}
 	\centering
@@ -444,9 +450,9 @@ where $\rvh = \left(\rh^{(0)}, \dots,\rh^{(T)} \right)$, $\rh^{(t)} \in \{1, \do
 		\node[hidden node,minimum size=1.5cm] (h0) [right of=z] {$\rh^{(0)}$};
 		\node[hidden node,minimum size=1.5cm] (h1) [right of=h0] {$\rh^{(1)}$};
 		\node[empty node] (dots) [right of=h1] {$\dots$};
-		\node[hidden node,minimum size=1.5cm] (ht) [right of=dots] {$\rh^{(t)}$};
+		\node[hidden node,minimum size=1.5cm] (ht) [right of=dots] {$\rh^{(T)}$};
 		\node[main node,minimum size=1.5cm] (x1) [below of=h1] {$\rvx^{(1)}$};
-		\node[main node,minimum size=1.5cm] (xt) [below of=ht] {$\rvx^{(t)}$};
+		\node[main node,minimum size=1.5cm] (xt) [below of=ht] {$\rvx^{(T)}$};
 		
 		\node[box node,minimum width=12cm,minimum height=5cm] (rect) at (10.5,-1.5) {};
 		
@@ -460,17 +466,17 @@ where $\rvh = \left(\rh^{(0)}, \dots,\rh^{(T)} \right)$, $\rh^{(t)} \in \{1, \do
 		(ht) edge (xt);
 		
 		\end{tikzpicture}}
-	\caption{Representation of the model as a Bayesian network. The node $\rz$ is a parent of all nodes inside the dashed box (the connections were omitted for clarity). Gray nodes represent latent variables.}
+	\caption{Representation of the model as a Bayesian network. The node $\rz$ is a parent of all nodes inside the dashed box (the connections were omitted for clarity). Gray nodes are used for latent variables.}
 	\label{fig:spamhmm_bayesian_net}
 \end{figure}
 
 \subsubsection{Inference}
 \label{sec:spamhmm_inference}
-Given an observed sequence $\mX$ and its corresponding node $y \in \sY$, the inference problem here consists in finding the likelihood $p(\rmX=\mX \mid \ry=y)$ (from now on, abbreviated as $p(\mX \mid y)$) as defined by  \twoeqrefs{eq:spamhmm_density}{eq:spamhmm_hmm}. The marginals $p(\mX \mid \rz)$ of each HMM in the mixture may be computed efficiently, in $O(s^2t)$ time, using the Forward algorithm~(\citet{Rabiner1986}). Then, $p(\mX \mid y)$ is obtained by applying \eqref{eq:spamhmm_density}, so inference in the overall model is done in at most $O(ms^2T)$ time. As we shall see, however, the mixtures we get after learning will often be sparse (see \Secref{sec:spamhmm_learning}), leading to an even smaller time complexity.
+Given an observed sequence $\mX$ and its corresponding node $y \in \sY$, the inference problem here consists in finding the likelihood $p(\rmX=\mX \mid \ry=y)$ (from now on, abbreviated as $p(\mX \mid y)$) as defined by  \twoeqrefs{eq:spamhmm_density}{eq:spamhmm_hmm}. The marginals $p(\mX \mid \rz)$ of each HMM in the mixture may be computed efficiently, in $O(Ts^2)$ time, using the Forward algorithm~(\citet{Rabiner1986}). Then, $p(\mX \mid y)$ is obtained by applying \eqref{eq:spamhmm_density}, so inference in the overall model is done in at most $O(Ts^2m)$ time. As we shall see, however, the mixtures we get after learning will often be sparse (see \Secref{sec:spamhmm_learning}), leading to an even smaller time complexity.
 
 \subsubsection{Learning}
 \label{sec:spamhmm_learning}
-Given an i.i.d.\ dataset consisting of $n$ tuples $(\mX_i, y_i)$ of sequences of observations $\mX_i = \left(\vx_i^{(1)}, \dots,\vx_i^{(T_i)} \right)$ and their respective nodes $y_i \in \sY$, the model defined by \twoeqrefs{hmm_mix}{hmm} may be easily trained using the Expectation-Maximization (EM) algorithm (\citet{Dempster1977}), (locally) maximizing the usual log-likelihood objective:
+Given an i.i.d.\ dataset consisting of $n$ tuples $(\mX_i, y_i)$ of sequences of observations $\mX_i = \left(\vx_i^{(1)}, \dots,\vx_i^{(T_i)} \right)$ and their respective nodes $y_i \in \sY$, the model defined by \twoeqrefs{eq:spamhmm_density}{eq:spamhmm_hmm} may be easily trained using the Expectation-Maximization (EM) algorithm (\citet{Dempster1977}), (locally) maximizing the usual log-likelihood objective:
 \begin{equation}
 \label{eq:spamhmm_log_likelihood}
 J(\theta) \triangleq \sum_{i=1}^n \log p(\mX_i \mid y_i; \Theta),
@@ -604,7 +610,7 @@ and so we can treat $\vbeta^{(y)}$ as an unconstrained parameter vector. This re
 \label{sec:experiments}
 The model was developed on top of the library hmmlearn~\citet{hmmlearn} for Python, which implements inference and unsupervised learning for the standard HMM using a wide variety of emission distributions. Both learning and inference use the hmmlearn API, with the appropriate adjustments for our models. For reproducibility purposes, we make our source code, pre-trained models and the datasets publicly available \footnote{\url{https://github.com/dpernes/spamhmm}}.
 
-We evaluate four different models in our experiments: a model consisting of a single HMM (denoted as 1-HMM) trained on sequences from all graph nodes; a model consisting of $k$ HMMs trained independently (denoted as k-HMM), one for each graph node; a mixture of HMMs (denoted as MHMM) as defined in this work (\twoeqrefs{hmm_mix}{hmm}), trained to maximize the usual log-likelihood objective~\plaineqref{eq:spamhmm_log_likelihood}; a mixture of HMMs (denoted as SpaMHMM) as the previous one, trained to maximize our regularized objective~\plaineqref{eq:spamhmm_objective}.
+We evaluate four different models in our experiments: a model consisting of a single HMM (denoted as 1-HMM) trained on sequences from all graph nodes; a model consisting of $k$ HMMs trained independently (denoted as k-HMM), one for each graph node; a mixture of HMMs (denoted as MHMM) as defined in this work (\twoeqrefs{eq:spamhmm_density}{eq:spamhmm_hmm}), trained to maximize the usual log-likelihood objective~\plaineqref{eq:spamhmm_log_likelihood}; a mixture of HMMs (denoted as SpaMHMM) as the previous one, trained to maximize our regularized objective~\plaineqref{eq:spamhmm_objective}.
 
 Models 1-HMM, k-HMM and MHMM will be our baselines. We shall compare the performance of these models with that of SpaMHMM and, for the case of MHMM, we shall also verify if SpaMHMM actually sparser mixtures in general, as argued in \Secref{sec:spamhmm_learning}. In order to ensure a fair comparison, we train models with approximately the same number of possible state transitions. Hence, given an MHMM or SpaMHMM with $m$ mixture components and $s$ states per component, we train a 1-HMM with $\approx s\sqrt{m}$ states and a k-HMM with $\approx s\sqrt{m/k}$ states per HMM. We initialize the mixture coefficients in MHMM and SpaMHMM randomly, while the state transition matrices and the initial state probabilities are initialized uniformly. Means are initialized using k-means, with k equal to the number of hidden states in the HMM, and covariances are initialized with the diagonal of the training data covariance. Models 1-HMM and k-HMM are trained using the Baum-Welch algorithm, MHMM is trained using \Algref{alg:mhmm} and SpaMHMM is trained using \Algref{alg:spamhmm}. However, we opted to use Adam (\citet{Kingma2014}) instead of \textit{vanilla} gradient ascent in the inner loop of \Algref{alg:spamhmm}, since its per-parameter learning rate proved to be beneficial for faster convergence.
 
