@@ -91,10 +91,10 @@ Now we only care about the dependency of the ELBO on the mixture coefficients, s
 	&= \frac{1}{n}\sum_{i=1}^n \sum_{z=1}^m q(z) \log \evalpha^{(y_i)}_{z} + \text{const},
 \end{align}
 and therefore,
-\begin{equation*}
+\begin{equation}
 	\frac{\partial \mathrm{ELBO}}{\partial \evalpha^{(y)}_{z}} = \frac{1}{n}\sum_{i=1}^n \frac{q(z)}{\evalpha^{(y)}_{z}} \1_{y_i=y}, \quad
 	\frac{\partial R}{\partial \evalpha^{(y)}_{z}} = \frac{1}{2}\sum_{\substack{y'=1,\\y'\neq y}}^{k} \emG_{y,y'} \evalpha^{(y')}_{z}.
-\end{equation*}
+\end{equation}
 Finally, by the chain rule,
 \begin{align}
 	&\frac{\partial \mathrm{ELBO}}{\partial \evbeta^{(y)}_{z}} = \sum_{z'=1}^{m} \frac{\partial \mathrm{ELBO}}{\partial \evalpha^{(y)}_{z'}} \frac{\partial \evalpha^{(y)}_{z'}}{\partial \evbeta^{(y)}_{z}} \nonumber\\
@@ -103,7 +103,7 @@ Finally, by the chain rule,
 	&\frac{\partial R}{\partial \evbeta^{(y)}_{z}} = \sum_{z'=1}^{m} \frac{\partial R}{\partial \evalpha^{(y)}_{z'}} \frac{\partial \evalpha^{(y)}_{z'}}{\partial \evbeta^{(y)}_{z}} \nonumber\\
 	&\hphantom{\frac{\partial R}{\partial \evbeta^{(y)}_{z}}} = \evalpha^{(y)}_{z} \sum_{\substack{y'=1,\\y'\neq y}}^{k} \emG_{y,y'} \left(\evalpha^{(y')}_{z} - {\valpha^{(y')}} \transp \valpha^{(y)} \right) \1_{\evbeta^{(y)}_{z} > 0},
 \end{align}
-and considering $\psi^{(y)}_{z}$, $\omega^{(y)}_{z}$, and $\delta^{(y)}_z$ as defined in \Algref{alg:spamhmm} and the gradient ascent update rule the formulas follow. $\quad \square$.
+and considering $\psi^{(y)}_{z}$, $\omega^{(y)}_{z}$, and $\delta^{(y)}_z$ as defined in \Algref{alg:spamhmm} and the gradient ascent update rule the formulas follow. $\quad \square$
 
 \section{Posterior distribution of observations}
 \label{sec:posterior_proof}
