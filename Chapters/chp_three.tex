@@ -1,0 +1,59 @@
+% Chapter Template
+
+% Main chapter title
+%\chapter[toc version]{doc version}
+\chapter{Multi-source domain adaptation}
+
+% Short version of the title for the header
+%\chaptermark{version for header}
+
+% Chapter Label
+% For referencing this chapter elsewhere, use \ref{ChapterTemplate}
+\label{chp:domain_adaptation}
+
+% Write text in here
+% Use \subsection and \subsubsection to organize text
+
+\begin{tcolorbox}
+	\small{
+		The content presented in this chapter was partially published in or adapted from:
+		\begin{itemize}
+			\item[] \cite{ThesisFrancisco} \bibentry{ThesisFrancisco} (presented in \Secref{sec:da_sensors})
+			\item[] \cite{MODAFM} \bibentry{MODAFM} (presented in \Secref{sec:modafm})
+		\end{itemize}
+		
+		\cite{ThesisFrancisco} is a Master's thesis supervised by Jaime S. Cardoso and co-supervised by Diogo Pernes.
+	}
+\end{tcolorbox}
+
+\section{Introduction}
+\label{sec:chp3_intro}
+ToDo
+
+\section{Background}
+\label{sec:chp3_background}
+We start by analyzing the problem of DA from a theoretical perspective and then we overview the main approaches that constitute the state of the art.
+
+\subsection{Theoretical foundation}
+\label{sec:da_theory}
+\citet{BenDavid2010} developed a rigorous yet comprehensive theoretical model for domain adaptation that we adopt here. This formulation enlightens the intrinsic difficulties associated with this task and provides a deep foundation for many of the algorithms we discuss in this chapter and, particularly, to our own approach, presented in \Secref{sec:modafm}.
+
+Before we present and discuss the most important results, let us introduce a few preliminary definitions. A \newterm{domain} $D$ is defined by a joint distribution $p_D(\rvx, \rvy)$ over inputs $\rvx \in \gX$ and target variables $\rvy \in \gY$, where $\gX$ and $\gY$ denote the input and target spaces, respectively. For the domain adaptation task to be well defined, at least two domains must be considered: a \newterm{source} domain, with joint distribution is denoted by $p_S(\rvx, \rvy)$, from which abundant annotated data is usually available, and a \newterm{target} domain, with joint distribution $p_T(\rvx, \rvy)$, from which scarce or even zero annotated data is available at training time. Following most classical results from statistical learning theory, \citet{BenDavid2010} focused on binary classification, thus $\gY = \{0, 1\}$. Under this setting, it is possible to define a \newterm{labeling function} $f_D: \gX \mapsto [0, 1]$ for each domain, given by $f_D(\vx) = p_D(\ry=1 \mid \vx)$. A \newterm{hypothesis} is any function $h: \gX \mapsto \{0,1\}$ and a set $\gH$ of these functions is called a \newterm{hypothesis class}. The expected absolute difference between $h$ and $f$ is called the \newterm{risk} (or \newterm{error}) of hypothesis $h$ with respect to the labeling function $f_D$:
+\begin{equation}
+	\epsilon(h,f) \triangleq \E_{\rvx \sim p_D} |h(\rvx) - f_D(\rvx)|.
+\end{equation}
+We use $\epsilon_S(h)$ and $\epsilon_T(h)$ as shorthands for $\epsilon(h,f_S)$ and $\epsilon(h,f_T)$ and refer to them as the source and target risks (or errors), respectively. The empirical estimates of these are denoted as $\widehat{\epsilon}_S(h)$ and $\widehat{\epsilon}_T(h)$, respectively.
+
+Given two domains $D$ and $D'$ and a hypothesis class $\gH$, the $\gH$-divergence provides a distance measure between $D$ and $D'$ (according to $\gH$):
+\begin{equation*}
+	d_{\gH}(D,D') \triangleq \sup_{h \in \gH} 2 |\mathrm{Pr}_{D}(\1_h) - \mathrm{Pr}_{D'}(\1_h)|,
+\end{equation*}
+where $\1_h \triangleq \{\vx \in \gX: h(\vx)=1\}$ and $\mathrm{Pr}_{D}(\1_h)$ is the probability assigned by the distribution $p_D(\rvx)$ to the subset $\1_h \subseteq \gX$. As is often the case, when the true underlying marginal distributions are unknown or intractable but finite sets of (unlabeled) samples from both domains are available, an empirical $\gH$-divergence can be constructed by replacing the true probabilities $\mathrm{Pr}_{D}(\1_h)$ and $\mathrm{Pr}_{D'}(\1_h)$ by the respective empirical estimates. Remarkably, under weak conditions on the hypothesis class, computing this empirical $\gH$-divergence is equivalent to finding the hypothesis in $\gH$ that maximally discriminates between the two domains. This result is enunciated formally in Lemma \ref{lemma:emp_h_div} and, as we shall see later, is exploited by adversarial-based approaches for domain adaptation.
+\begin{lemma}
+	\label{lemma:emp_h_div}
+	(Lemma 2 in \citet{BenDavid2010}) Let $\gH$ be a hypothesis class such that if $h \in \gH$ then $1-h \in \gH$. Given two sets $\widehat{D}$ and $\widehat{D}'$ of $n$ samples each drawn from two domains $D$ and $D'$, the empirical $\gH$-divergence between $D$ and $D'$ is given by:
+	\begin{equation}
+		\widehat{d}_{\gH}(D,D') = 2 \left(1 - \min_{h \in \gH} \left[\frac{1}{n} \sum_{\vx: h(\vx)=1} \1_{\vx \in \widehat{D}} + \frac{1}{n} \sum_{\vx: h(\vx)=0} \1_{\vx \in \widehat{D}'}\right]\right)
+	\end{equation}
+\end{lemma}
+Note that if the two sets $\widehat{D}$ and $\widehat{D}'$ can be discriminated perfectly by a hypothesis $h \in \gH$ (i.e. if there is an $h \in \gH$ such that $h(\vx) = 0$ if $x \in \widehat{D}$ and $h(\vx) = 1$ if $x \in \widehat{D}'$), then $\widehat{d}_{\gH}(D,D')$ is maximum and equal to 2.
