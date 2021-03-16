@@ -36,24 +36,58 @@ We start by analyzing the problem of DA from a theoretical perspective and then 
 
 \subsection{Theoretical foundation}
 \label{sec:da_theory}
-\citet{BenDavid2010} developed a rigorous yet comprehensive theoretical model for domain adaptation that we adopt here. This formulation enlightens the intrinsic difficulties associated with this task and provides a deep foundation for many of the algorithms we discuss in this chapter and, particularly, to our own approach, presented in \Secref{sec:modafm}.
 
-Before we present and discuss the most important results, let us introduce a few preliminary definitions. A \newterm{domain} $D$ is defined by a joint distribution $p_D(\rvx, \rvy)$ over inputs $\rvx \in \gX$ and target variables $\rvy \in \gY$, where $\gX$ and $\gY$ denote the input and target spaces, respectively. For the domain adaptation task to be well defined, at least two domains must be considered: a \newterm{source} domain, with joint distribution is denoted by $p_S(\rvx, \rvy)$, from which abundant annotated data is usually available, and a \newterm{target} domain, with joint distribution $p_T(\rvx, \rvy)$, from which scarce or even zero annotated data is available at training time. Following most classical results from statistical learning theory, \citet{BenDavid2010} focused on binary classification, thus $\gY = \{0, 1\}$. Under this setting, it is possible to define a \newterm{labeling function} $f_D: \gX \mapsto [0, 1]$ for each domain, given by $f_D(\vx) = p_D(\ry=1 \mid \vx)$. A \newterm{hypothesis} is any function $h: \gX \mapsto \{0,1\}$ and a set $\gH$ of these functions is called a \newterm{hypothesis class}. The expected absolute difference between $h$ and $f$ is called the \newterm{risk} (or \newterm{error}) of hypothesis $h$ with respect to the labeling function $f_D$:
+\subsubsection{Single source setting}
+\label{sec:da_theory_ss}
+\citet{BenDavid2010} developed a rigorous yet comprehensive theoretical model for domain adaptation that we summarize here. This formulation enlightens the intrinsic difficulties associated with this task and provides a deep foundation for many of the algorithms we discuss in this chapter and, particularly, to our own approach, presented in \Secref{sec:modafm}.
+
+Before we present and discuss the most important results, let us introduce a few preliminary definitions. A \newterm{domain} $\gD$ is defined by a joint distribution $p_\gD(\rvx, \rvy)$ over input features $\rvx \in \gX$ and target variables $\rvy \in \gY$, where $\gX$ and $\gY$ denote the input and target spaces, respectively. For the domain adaptation task to be well defined, at least two domains must be considered: a \newterm{source} domain $\gS$, with joint distribution is denoted by $p_\gS(\rvx, \rvy)$, from which abundant annotated data is usually available, and a \newterm{target} domain $\gT$, with joint distribution $p_\gT(\rvx, \rvy)$, from which scarce or even zero annotated data is available at training time. Following most classical results from statistical learning theory, \citet{BenDavid2010} focused on binary classification, thus $\gY = \{0, 1\}$. Under this setting, it is possible to define a \newterm{labeling function} $f_\gD: \gX \mapsto [0, 1]$ for each domain, given by $f_\gD(\vx) = p_\gD(\ry=1 \mid \vx)$. A \newterm{hypothesis} is any function $h: \gX \mapsto \{0,1\}$ and a set $\gH$ of these functions is called a \newterm{hypothesis class}. The expected absolute difference between $h$ and $f_\gD$ is called the \newterm{risk} (or \newterm{error}) of hypothesis $h$ (with respect to the labeling function $f_\gD$):
 \begin{equation}
-	\epsilon(h,f) \triangleq \E_{\rvx \sim p_D} |h(\rvx) - f_D(\rvx)|.
+	\epsilon(h,f_\gD) \triangleq \E_{\rvx \sim p_\gD} |h(\rvx) - f_\gD(\rvx)|.
 \end{equation}
-We use $\epsilon_S(h)$ and $\epsilon_T(h)$ as shorthands for $\epsilon(h,f_S)$ and $\epsilon(h,f_T)$ and refer to them as the source and target risks (or errors), respectively. The empirical estimates of these are denoted as $\widehat{\epsilon}_S(h)$ and $\widehat{\epsilon}_T(h)$, respectively.
+We use $\epsilon_\gS(h)$ and $\epsilon_\gT(h)$ as shorthands for $\epsilon(h,f_\gS)$ and $\epsilon(h,f_\gT)$ and refer to them as the source and target risks (or errors), respectively. The empirical estimates of these are denoted as $\widehat{\epsilon}_\gS(h)$ and $\widehat{\epsilon}_\gT(h)$, respectively.
 
-Given two domains $D$ and $D'$ and a hypothesis class $\gH$, the $\gH$-divergence provides a distance measure between $D$ and $D'$ (according to $\gH$):
+Given two domains $\gD$ and $\gD'$ and a hypothesis class $\gH$, the $\gH$-divergence provides a distance measure between the marginal distributions of features in $\gD$ and $\gD'$ (according to $\gH$):
 \begin{equation*}
-	d_{\gH}(D,D') \triangleq \sup_{h \in \gH} 2 |\mathrm{Pr}_{D}(\1_h) - \mathrm{Pr}_{D'}(\1_h)|,
+	\label{eq:h_div}
+	d_{\gH}(\gD,\gD') \triangleq \sup_{h \in \gH} 2 |\mathrm{Pr}_{\gD}(\1_h) - \mathrm{Pr}_{\gD'}(\1_h)|,
 \end{equation*}
-where $\1_h \triangleq \{\vx \in \gX: h(\vx)=1\}$ and $\mathrm{Pr}_{D}(\1_h)$ is the probability assigned by the distribution $p_D(\rvx)$ to the subset $\1_h \subseteq \gX$. As is often the case, when the true underlying marginal distributions are unknown or intractable but finite sets of (unlabeled) samples from both domains are available, an empirical $\gH$-divergence can be constructed by replacing the true probabilities $\mathrm{Pr}_{D}(\1_h)$ and $\mathrm{Pr}_{D'}(\1_h)$ by the respective empirical estimates. Remarkably, under weak conditions on the hypothesis class, computing this empirical $\gH$-divergence is equivalent to finding the hypothesis in $\gH$ that maximally discriminates between the two domains. This result is enunciated formally in Lemma \ref{lemma:emp_h_div} and, as we shall see later, is exploited by adversarial-based approaches for domain adaptation.
+where $\1_h \triangleq \{\vx \in \gX: h(\vx)=1\}$ and $\mathrm{Pr}_{\gD}(\1_h)$ is the probability assigned by the distribution $p_\gD(\rvx)$ to the subset $\1_h \subseteq \gX$. As is often the case, when the true underlying marginal distributions are unknown or intractable but finite sets of (unlabeled) samples from both domains are available, an empirical $\gH$-divergence can be constructed by replacing the true probabilities $\mathrm{Pr}_{\gD}(\1_h)$ and $\mathrm{Pr}_{\gD'}(\1_h)$ by the respective empirical estimates. Remarkably, under weak conditions on the hypothesis class, computing this empirical $\gH$-divergence is equivalent to finding the hypothesis in $\gH$ that maximally discriminates between samples of the two domains. This result is enunciated formally in Lemma \ref{lemma:emp_h_div} and, as we shall see later, is exploited by adversarial-based approaches for domain adaptation.
 \begin{lemma}
 	\label{lemma:emp_h_div}
-	(Lemma 2 in \citet{BenDavid2010}) Let $\gH$ be a hypothesis class such that if $h \in \gH$ then $1-h \in \gH$. Given two sets $\widehat{D}$ and $\widehat{D}'$ of $n$ samples each drawn from two domains $D$ and $D'$, the empirical $\gH$-divergence between $D$ and $D'$ is given by:
+	(Lemma 2 from \citet{BenDavid2010}) Let $\gH$ be a hypothesis class such that if $h \in \gH$ then $1-h \in \gH$. Given two sets $\widehat{D}$ and $\widehat{D}'$ of $n$ samples each drawn from two domains $D$ and $D'$, the empirical $\gH$-divergence between $D$ and $D'$ is given by:
 	\begin{equation}
-		\widehat{d}_{\gH}(D,D') = 2 \left(1 - \min_{h \in \gH} \left[\frac{1}{n} \sum_{\vx: h(\vx)=1} \1_{\vx \in \widehat{D}} + \frac{1}{n} \sum_{\vx: h(\vx)=0} \1_{\vx \in \widehat{D}'}\right]\right)
+		\widehat{d}_{\gH}(\gD,\gD') = 2 \left(1 - \min_{h \in \gH} \left[\frac{1}{n} \sum_{\vx: h(\vx)=1} \1_{\vx \in \widehat{\gD}} + \frac{1}{n} \sum_{\vx: h(\vx)=0} \1_{\vx \in \widehat{\gD}'}\right]\right).
 	\end{equation}
 \end{lemma}
-Note that if the two sets $\widehat{D}$ and $\widehat{D}'$ can be discriminated perfectly by a hypothesis $h \in \gH$ (i.e. if there is an $h \in \gH$ such that $h(\vx) = 0$ if $x \in \widehat{D}$ and $h(\vx) = 1$ if $x \in \widehat{D}'$), then $\widehat{d}_{\gH}(D,D')$ is maximum and equal to 2.
+Note that if the two sets $\widehat{\gD}$ and $\widehat{\gD}'$ can be discriminated perfectly by a hypothesis $h \in \gH$ (i.e. if there is an $h \in \gH$ such that $h(\vx) = 0$ if $x \in \widehat{\gD}$ and $h(\vx) = 1$ if $x \in \widehat{\gD}'$), then $\widehat{d}_{\gH}(\gD,\gD')$ is maximum and equal to 2.
+
+For a hypothesis class $\gH$, we may define the \newterm{symmetric difference hypothesis class} $\gH \Delta \gH$ as:
+\begin{equation}
+\label{eq:h_delta_h}
+\gH \Delta \gH = \{l: l(\vx) = h(\vx) \oplus h'(\vx), \; h, h' \in \gH\},
+\end{equation}
+where $\oplus$ denotes the ``exclusive or" (xor) operation. Combining this definition with \eqref{eq:h_div}, the definition of $\gH \Delta \gH$-divergence, which happens to play a major role in Theorem \ref{thm:da_bound_single_source}, follows immediately. This theorem is the main result in this section as it provides an upper bound for the target risk given the source risk and the $\gH \Delta \gH$-divergence between the source and target domains.
+\begin{theorem}
+	\label{thm:da_bound_single_source} (Theorem 2 from \citet{BenDavid2010}) Let $\gH$ be a hypothesis class with VC-dimension $d$. Consider $n$ unlabeled samples drawn from each of the two domains $\gS$ (source) and $\gT$ (target). Then, for every $h \in \gH$ and any $\delta \in (0,1)$, with probability at least $1-\delta$ over the choice of samples,
+	\begin{equation}
+		\label{eq:da_bound_single_source}
+		\epsilon_\gT(h) \leq \epsilon_\gS(h) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS, \gT) + \lambda + 2\sqrt{\frac{2d\log(2n) + \log(\frac{2}{\delta})}{n}},
+	\end{equation}
+	where $\lambda = \min_{h \in \gH} \epsilon_\gS(h) + \epsilon_\gT(h)$.
+\end{theorem}
+This bound immediately confirms the intuition that a low target error can be achieved by training a classifier to minimize the error in the source domain, provided that the marginal distributions of features are similar (i.e. $\widehat{d}_{\gH \Delta \gH}(\gS, \gT)$ is small) and a low error on the combination of the two domains can be achieved (i.e. $\lambda$ is also small). A deeper and more complete interpretation of this bound shall be provided later on, when we take into account the fact that, by applying deep neural networks, we can not only construct rich hypothesis classes but also manipulate and learn feature representations. The latter observation suggests that this kind of the classifiers may also have an impact on the $\widehat{d}_{\gH \Delta \gH}(\gS, \gT)$ and $\lambda$ terms in \eqref{eq:da_bound_single_source}, which will indeed be the case.
+
+\subsubsection{Multi-source setting}
+\label{sec:da_theory_ms}
+So far we have only considered the setting where a single source domain was available. However, in many practical cases, the annotated training dataset consists of a collection of subdatasets, each one belonging to its own domain. Therefore, it makes sense to consider $k$ distinct source domains $\gS_1, \gS_2, \dots, \gS_k$ and, in particular, to see how Theorem \ref{thm:da_bound_single_source} can be generalized to this setting.
+\begin{theorem}
+	\label{thm:da_bound_multi_source}
+	(Theorem 2 from \citet{Zhao2018}) Let $\gH$ be a hypothesis class with VC-dimension $d$. Consider $n$ unlabeled samples drawn from the target domain $\gT$ and $n/k$ annotated samples drawn from each of the $k$ source domains $\gS_1, \gS_2, \dots, \gS_k$. Then, for every $h \in \gH$, any $\valpha \in [0,1]^k: \sum_{i=1}^k \evalpha_i = 1$, and any $\delta \in (0,1)$, with probability at least $1-\delta$ over the choice of samples,
+	\begin{equation}
+		\label{eq:da_bound_multi_source}
+		\epsilon_\gT(h) \leq \sum_{j=1}^k \evalpha_i \left(\widehat{\epsilon}_{\gS_j}(h) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS_j, \gT)\right) + \lambda_\valpha + O \left(\sqrt{\frac{1}{n} \left(\log \frac{1}{\delta} +d \log \frac{n}{d} \right)} \right),
+	\end{equation}
+	where $\lambda_\valpha = \min_{h \in \gH} \epsilon_\gT(h) + \sum_{j=1}^k \evalpha_j \epsilon_{\gS_j}(h)$.
+\end{theorem}
+Unsurprisingly, the bound in Theorem \ref{thm:da_bound_multi_source} is essentially a convex combination of the bounds provided by Theorem \ref{thm:da_bound_single_source} for each individual source domain. Thus, the same interpretation applies here. Nonetheless, the source weights $\valpha$ provide an extra degree of freedom that should be taken into account. Depending on how much each source domain differs from the target, it may be beneficial to weight each source domain differently. Adjusting these weights is therefore an extra non-trivial task, exclusive to the multi-source setting, that can have a significant impact in the performance of the domain adaptation algorithm.
