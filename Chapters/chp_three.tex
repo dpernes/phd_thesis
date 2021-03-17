@@ -96,11 +96,28 @@ Unsurprisingly, the bound in Theorem \ref{thm:da_bound_multi_source} is essentia
 \label{sec:da_sota}
 We now do a brief overview of the most relevant DA algorithms, both in the single source and multi-source settings. 
 
-As we have just seen from a theoretical point of view, the success of the DA task depends on how similar the target domain is to the source(s), which is equivalent to saying that some properties of the underlying distributions must be invariant across domains. Different DA algorithms can therefore be categorized according to the invariance properties that they assume.
+As we have just seen from a theoretical point of view, the success of the DA task depends on how similar the target domain is to the source(s), which is equivalent to saying that some properties of the underlying distributions must be invariant across domains. Different DA algorithms can therefore be categorized according to the invariance properties they assume.
 
 \subsubsection{Target shift}
 \label{sec:target_shift_sota}
-In the \newterm{target shift} setting, only the marginal distribution of labels is allowed to vary across domains. Thus, the joint distribution of any domain $\gD$ is assumed to factorize as $p_\gD(\rvx, \ry) = p(\rvx \mid \ry) p_\gD(\ry)$, where $p(\rvx \mid \ry)$ is domain-invariant. By further assuming that $\mathrm{Sup}(p_\gT(\ry)) \subseteq \mathrm{Sup}(p_\gS(\ry))$, we have:
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[every loop/.style={},thick,
+		main node/.style={circle,draw},font=\sffamily\Large\bfseries]
+		
+		\node[main node,minimum size=1.5cm] (D) {$\gD$};
+		\node[main node,minimum size=1.5cm] (y) [right=1.5cm of D] {$\ry$};
+		\node[main node,minimum size=1.5cm] (x) [right=1.5cm of y] {$\rvx$};
+		
+		\draw[->]
+		(D) edge (y)
+		(y) edge (x);
+		
+	\end{tikzpicture}
+	\caption{Graphical representation of the target shift setting as a Bayesian network.}
+	\label{fig:target_shift}
+\end{figure}
+In the \newterm{target shift} setting, only the marginal distribution of labels is allowed to vary across domains. A practical example where this assumption may be realistic is when the label $\ry$ represents having or not a certain disease and the input features $\rvx$ are symptoms. It is plausible to assume that the prevalence of the disease may vary over time or across different populations, but the probability of some symptom being present or absent given that one has or not the disease should remain constant. Thus, the joint distribution of any domain $\gD$ is assumed to factorize as $p_\gD(\rvx, \ry) = p(\rvx \mid \ry) p_\gD(\ry)$, where $p(\rvx \mid \ry)$ is domain-invariant. By further assuming that $\mathrm{Supp}(p_\gT(\ry)) \subseteq \mathrm{Supp}(p_\gS(\ry))$, we have:
 \begin{align}
 	p_\gT(\ry \mid \rvx) &\propto p(\rvx \mid \ry) p_\gT(\ry) \nonumber\\
 	&= p(\rvx \mid \ry) p_\gS(\ry) \frac{p_\gT(\ry)}{p_\gS(\ry)} \nonumber\\
@@ -121,5 +138,42 @@ Note that $p_{\gS}(\widehat{f}(\rvx) \mid \ry)$, $p_{\gS}(\widehat{f}(\rvx), \ry
 
 Other approaches involve learning class-dependent weights to match the mean conditional features of source data with the mean marginal features of target data in a reproducing kernel Hilbert space (\citet{Zhang2013}, \citet{Iyer2004}), or require density estimation to model $p(\rvx \mid \ry)$ (\citet{Chan2005}, \citet{Storkey2009}).
 
+\subsubsection{Conditional shift}
+\label{sec:cond_shift_sota}
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[every loop/.style={},thick,
+	main node/.style={circle,draw},font=\sffamily\Large\bfseries]
+	
+	\node[main node,minimum size=1.5cm] (y) {$\ry$};
+	\node[main node,minimum size=1.5cm] (x) [right=1.5cm of y] {$\rvx$};
+	\node[main node,minimum size=1.5cm] (D) [right=1.5cm of x] {$\gD$};
+	
+	\draw[->]
+	(y) edge (x)
+	(D) edge (x);
+	
+	\end{tikzpicture}
+	\caption{Graphical representation of the conditional shift setting as a Bayesian network.}
+	\label{fig:cond_shift}
+\end{figure}
+
 \subsubsection{Covariate shift}
 \label{sec:cov_shift_sota}
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[every loop/.style={},thick,
+	main node/.style={circle,draw},font=\sffamily\Large\bfseries]
+	
+	\node[main node,minimum size=1.5cm] (D) {$\gD$};
+	\node[main node,minimum size=1.5cm] (x) [right=1.5cm of D] {$\rvx$};
+	\node[main node,minimum size=1.5cm] (y) [right=1.5cm of x] {$\ry$};
+	
+	\draw[->]
+	(D) edge (x)
+	(x) edge (y);
+	
+	\end{tikzpicture}
+	\caption{Graphical representation of the covariate shift setting as a Bayesian network.}
+	\label{fig:cov_shift}
+\end{figure}
