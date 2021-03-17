@@ -1057,13 +1057,6 @@
 	year={2014}
 }
 
-@article{Lipton2018,
-	title={Detecting and correcting for label shift with black box predictors},
-	author={Lipton, Zachary C and Wang, Yu-Xiang and Smola, Alex},
-	journal={arXiv preprint arXiv:1802.03916},
-	year={2018}
-}
-
 @inproceedings{Gong2016,
 	title={Domain adaptation with conditional transferable components},
 	author={Gong, Mingming and Zhang, Kun and Liu, Tongliang and Tao, Dacheng and Glymour, Clark and Sch{\"o}lkopf, Bernhard},
@@ -1265,3 +1258,50 @@
 	pages={1406--1415},
 	year={2019}
 }
+
+@inproceedings{Cortes2011,
+	author="Cortes, Corinna
+	and Mohri, Mehryar",
+	editor="Kivinen, Jyrki
+	and Szepesv{\'a}ri, Csaba
+	and Ukkonen, Esko
+	and Zeugmann, Thomas",
+	title="Domain Adaptation in Regression",
+	booktitle="Algorithmic Learning Theory",
+	year="2011",
+	publisher="Springer Berlin Heidelberg",
+	address="Berlin, Heidelberg",
+	pages="308--323",
+	abstract="This paper presents a series of new results for domain adaptation in the regression setting. We prove that the discrepancy is a distance for the squared loss when the hypothesis set is the reproducing kernel Hilbert space induced by a universal kernel such as the Gaussian kernel. We give new pointwise loss guarantees based on the discrepancy of the empirical source and target distributions for the general class of kernel-based regularization algorithms. These bounds have a simpler form than previous results and hold for a broader class of convex loss functions not necessarily differentiable, including Lqlosses and the hinge loss. We extend the discrepancy minimization adaptation algorithm to the more significant case where kernels are used and show that the problem can be cast as an SDP similar to the one in the feature space. We also show that techniques from smooth optimization can be used to derive an efficient algorithm for solving such SDPs even for very high-dimensional feature spaces. We have implemented this algorithm and report the results of experiments demonstrating its benefits for adaptation and show that, unlike previous algorithms, it can scale to large data sets of tens of thousands or more points.",
+	isbn="978-3-642-24412-4"
+}
+
+@inproceedings{Lipton2018,
+	title = 	 {Detecting and Correcting for Label Shift with Black Box Predictors},
+	author =       {Lipton, Zachary and Wang, Yu-Xiang and Smola, Alexander},
+	booktitle = 	 {Proceedings of the 35th International Conference on Machine Learning},
+	pages = 	 {3122--3130},
+	year = 	 {2018},
+	editor = 	 {Jennifer Dy and Andreas Krause},
+	volume = 	 {80},
+	series = 	 {Proceedings of Machine Learning Research},
+	address = 	 {Stockholmsmässan, Stockholm Sweden},
+	month = 	 {10--15 Jul},
+	publisher =    {PMLR},
+	abstract = 	 {Faced with distribution shift between training and test set, we wish to detect and quantify the shift, and to correct our classifiers without test set labels. Motivated by medical diagnosis, where diseases (targets), cause symptoms (observations), we focus on label shift, where the label marginal p(y) changes but the conditional p(x| y) does not. We propose Black Box Shift Estimation (BBSE) to estimate the test distribution p(y). BBSE exploits arbitrary black box predictors to reduce dimensionality prior to shift correction. While better predictors give tighter estimates, BBSE works even when predictors are biased, inaccurate, or uncalibrated, so long as their confusion matrices are invertible. We prove BBSE’s consistency, bound its error, and introduce a statistical test that uses BBSE to detect shift. We also leverage BBSE to correct classifiers. Experiments demonstrate accurate estimates and improved prediction, even on high-dimensional datasets of natural images.}
+}
+
+@inproceedings{Chan2005,
+	author = {Chan, Yee Seng and Ng, Hwee Tou},
+	title = {Word Sense Disambiguation with Distribution Estimation},
+	year = {2005},
+	publisher = {Morgan Kaufmann Publishers Inc.},
+	address = {San Francisco, CA, USA},
+	abstract = {A word sense disambiguation (WSD) system trained on one domain and applied to a different domain will show a decrease in performance. One major reason is the different sense distributions between different domains. This paper presents novel application of two distribution estimation algorithms to provide estimates of the sense distribution of the new domain data set. Even though our training examples are automatically gathered from parallel corpora, the sense distributions estimated are good enough to achieve a relative improvement of 56% when incorporated into our WSD system.},
+	booktitle = {Proceedings of the 19th International Joint Conference on Artificial Intelligence},
+	pages = {1010–1015},
+	numpages = {6},
+	location = {Edinburgh, Scotland},
+	series = {IJCAI'05}
+}
+

@@ -32,7 +32,7 @@ ToDo
 
 \section{Background}
 \label{sec:chp3_background}
-We start by analyzing the problem of DA from a theoretical perspective and then we overview the main approaches that constitute the state of the art.
+We start by analyzing the problem of DA from a theoretical perspective and then we overview the main approaches that constitute the state of the art. Although some authors have considered the problem of DA for regression problems (e.g. \cite{Cortes2011}, \cite{Zhao2018}), the literature on classification is far more vast. Moreover, many of the results and methods explained in this section can be extended to regression problems with minor modifications. For these reasons, we shall focus our discussion mostly on classification.
 
 \subsection{Theoretical foundation}
 \label{sec:da_theory}
@@ -65,7 +65,7 @@ Note that if the two sets $\widehat{\gD}$ and $\widehat{\gD}'$ can be discrimina
 For a hypothesis class $\gH$, we may define the \newterm{symmetric difference hypothesis class} $\gH \Delta \gH$ as:
 \begin{equation}
 \label{eq:h_delta_h}
-\gH \Delta \gH = \{l: l(\vx) = h(\vx) \oplus h'(\vx), \; h, h' \in \gH\},
+\gH \Delta \gH \triangleq \{l: l(\vx) = h(\vx) \oplus h'(\vx), \; h, h' \in \gH\},
 \end{equation}
 where $\oplus$ denotes the ``exclusive or" (xor) operation. Combining this definition with \eqref{eq:h_div}, the definition of $\gH \Delta \gH$-divergence, which happens to play a major role in Theorem \ref{thm:da_bound_single_source}, follows immediately. This theorem is the main result in this section as it provides an upper bound for the target risk given the source risk and the $\gH \Delta \gH$-divergence between the source and target domains.
 \begin{theorem}
@@ -74,7 +74,7 @@ where $\oplus$ denotes the ``exclusive or" (xor) operation. Combining this defin
 		\label{eq:da_bound_single_source}
 		\epsilon_\gT(h) \leq \epsilon_\gS(h) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS, \gT) + \lambda + 2\sqrt{\frac{2d\log(2n) + \log(\frac{2}{\delta})}{n}},
 	\end{equation}
-	where $\lambda = \min_{h \in \gH} \epsilon_\gS(h) + \epsilon_\gT(h)$.
+	where $\lambda \triangleq \min_{h \in \gH} \epsilon_\gS(h) + \epsilon_\gT(h)$.
 \end{theorem}
 This bound immediately confirms the intuition that a low target error can be achieved by training a classifier to minimize the error in the source domain, provided that the marginal distributions of features are similar (i.e. $\widehat{d}_{\gH \Delta \gH}(\gS, \gT)$ is small) and a low error on the combination of the two domains can be achieved (i.e. $\lambda$ is also small). A deeper and more complete interpretation of this bound shall be provided later on, when we take into account the fact that, by applying deep neural networks, we can not only construct rich hypothesis classes but also manipulate and learn feature representations. The latter observation suggests that this kind of the classifiers may also have an impact on the $\widehat{d}_{\gH \Delta \gH}(\gS, \gT)$ and $\lambda$ terms in \eqref{eq:da_bound_single_source}, which will indeed be the case.
 
@@ -88,6 +88,38 @@ So far we have only considered the setting where a single source domain was avai
 		\label{eq:da_bound_multi_source}
 		\epsilon_\gT(h) \leq \sum_{j=1}^k \evalpha_i \left(\widehat{\epsilon}_{\gS_j}(h) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS_j, \gT)\right) + \lambda_\valpha + O \left(\sqrt{\frac{1}{n} \left(\log \frac{1}{\delta} +d \log \frac{n}{d} \right)} \right),
 	\end{equation}
-	where $\lambda_\valpha = \min_{h \in \gH} \epsilon_\gT(h) + \sum_{j=1}^k \evalpha_j \epsilon_{\gS_j}(h)$.
+	where $\lambda_\valpha \triangleq \min_{h \in \gH} \epsilon_\gT(h) + \sum_{j=1}^k \evalpha_j \epsilon_{\gS_j}(h)$.
 \end{theorem}
-Unsurprisingly, the bound in Theorem \ref{thm:da_bound_multi_source} is essentially a convex combination of the bounds provided by Theorem \ref{thm:da_bound_single_source} for each individual source domain. Thus, the same interpretation applies here. Nonetheless, the source weights $\valpha$ provide an extra degree of freedom that should be taken into account. Depending on how much each source domain differs from the target, it may be beneficial to weight each source domain differently. Adjusting these weights is therefore an extra non-trivial task, exclusive to the multi-source setting, that can have a significant impact in the performance of the domain adaptation algorithm.
+Unsurprisingly, the bound in Theorem \ref{thm:da_bound_multi_source} is essentially a convex combination of the bounds provided by Theorem \ref{thm:da_bound_single_source} for each individual source domain. Thus, the same interpretation applies here. Nonetheless, the source weights $\valpha$ provide an extra degree of freedom that should be taken into account. Depending on how much each source domain differs from the target, it may be beneficial to weight each source domain differently. Adjusting these weights is therefore an extra non-trivial task, exclusive to the multi-source setting, that may have a significant impact in the performance of the domain adaptation algorithm.
+
+\subsection{State of the art}
+\label{sec:da_sota}
+We now do a brief overview of the most relevant DA algorithms, both in the single source and multi-source settings. 
+
+As we have just seen from a theoretical point of view, the success of the DA task depends on how similar the target domain is to the source(s), which is equivalent to saying that some properties of the underlying distributions must be invariant across domains. Different DA algorithms can therefore be categorized according to the invariance properties that they assume.
+
+\subsubsection{Target shift}
+\label{sec:target_shift_sota}
+In the \newterm{target shift} setting, only the marginal distribution of labels is allowed to vary across domains. Thus, the joint distribution of any domain $\gD$ is assumed to factorize as $p_\gD(\rvx, \ry) = p(\rvx \mid \ry) p_\gD(\ry)$, where $p(\rvx \mid \ry)$ is domain-invariant. By further assuming that $\mathrm{Sup}(p_\gT(\ry)) \subseteq \mathrm{Sup}(p_\gS(\ry))$, we have:
+\begin{align}
+	p_\gT(\ry \mid \rvx) &\propto p(\rvx \mid \ry) p_\gT(\ry) \nonumber\\
+	&= p(\rvx \mid \ry) p_\gS(\ry) \frac{p_\gT(\ry)}{p_\gS(\ry)} \nonumber\\
+	&= p_\gS(\rvx , \ry) \frac{p_\gT(\ry)}{p_\gS(\ry)} \nonumber\\
+	&\propto p_\gS(\ry \mid \rvx) \frac{p_\gT(\ry)}{p_\gS(\ry)}.
+\end{align}
+Thus, if the class ratios $p_\gT(\ry)/p_\gS(\ry)$ are known, the problem of DA under target shift is solved by learning a probabilistic classifier on the source domain, reweighting it with the class ratios, and then normalizing the class scores. Therefore, the literature for DA under target shift focuses on estimating class ratios when these are unknown and cannot be estimated directly from the training data, due to the absence of labels for the target samples.
+
+An elegant and simple solution for this problem was proposed by \citet{Lipton2018}. Specifically, for any classifier $\widehat{f}: \gX \mapsto \gY$ trained with labeled data from the source domain, the target shift assumption implies that $p_{\gT}(\widehat{f}(\rvx) \mid \ry) = p_{\gS}(\widehat{f}(\rvx) \mid \ry)$ and hence:
+\begin{align}
+p_{\gT}(\widehat{f}(\rvx)) &= \sum_{\ry} p_{\gT}(\widehat{f}(\rvx) \mid \ry) p_{\gT}(\ry) \nonumber\\
+\allowdisplaybreaks
+&= \sum_{\ry} p_{\gS}(\widehat{f}(\rvx) \mid \ry) p_{\gT}(\ry) \label{eq:estim_class_dist}\\
+\allowdisplaybreaks
+&= \sum_{\ry} p_{\gS}(\widehat{f}(\rvx), \ry) \frac{p_{\gT}(\ry)}{p_{\gS}(\ry)}. \label{eq:estim_class_ratio}
+\end{align}
+Note that $p_{\gS}(\widehat{f}(\rvx) \mid \ry)$, $p_{\gS}(\widehat{f}(\rvx), \ry)$, and $p_{\gS}(\ry)$ can all be estimated from labeled source samples and $p_{\gT}(\widehat{f}(\rvx))$ can be estimated from unlabeled target samples. Thus, one can either use \eqref{eq:estim_class_dist} to estimate $p_{\gT}(\ry)$ or \eqref{eq:estim_class_ratio} to estimate class ratios directly.
+
+Other approaches involve learning class-dependent weights to match the mean conditional features of source data with the mean marginal features of target data in a reproducing kernel Hilbert space (\citet{Zhang2013}, \citet{Iyer2004}), or require density estimation to model $p(\rvx \mid \ry)$ (\citet{Chan2005}, \citet{Storkey2009}).
+
+\subsubsection{Covariate shift}
+\label{sec:cov_shift_sota}
