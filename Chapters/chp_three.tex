@@ -16,13 +16,13 @@
 
 \begin{tcolorbox}
 	\small{
-		The content presented in this chapter was partially published in or adapted from:
+		Some parts of this chapter were originally published in or adapted from:
 		\begin{itemize}
 			\item[] \cite{ThesisFrancisco} \bibentry{ThesisFrancisco} (presented in \Secref{sec:da_sensors})
 			\item[] \cite{MODAFM} \bibentry{MODAFM} (presented in \Secref{sec:modafm})
 		\end{itemize}
 		
-		\cite{ThesisFrancisco} is a Master's thesis supervised by Jaime S. Cardoso and co-supervised by Diogo Pernes.
+		The Master's thesis \cite{ThesisFrancisco} was supervised by Jaime S. Cardoso and co-supervised by Diogo Pernes.
 	}
 \end{tcolorbox}
 
@@ -117,7 +117,7 @@ As we have just seen from a theoretical point of view, the success of the DA tas
 	\caption{Graphical representation of the target shift setting as a Bayesian network.}
 	\label{fig:target_shift}
 \end{figure}
-In the \newterm{target shift} setting, only the marginal distribution of labels is allowed to vary across domains. A practical example where this assumption may be realistic is when the label $\ry$ represents having or not a certain disease and the input features $\rvx$ are symptoms. It is plausible to assume that the prevalence of the disease may vary over time or across different populations, but the probability of some symptom being present or absent given that one has or not the disease should remain constant. Thus, the joint distribution of any domain $\gD$ is assumed to factorize as $p_\gD(\rvx, \ry) = p(\rvx \mid \ry) p_\gD(\ry)$, where $p(\rvx \mid \ry)$ is domain-invariant. By further assuming that $\mathrm{Supp}(p_\gT(\ry)) \subseteq \mathrm{Supp}(p_\gS(\ry))$, we have:
+In the \newterm{target shift} setting, only the marginal distribution of labels is allowed to vary across domains. A practical example where this assumption may be realistic is when the label $\ry$ represents having or not a certain disease and the input features $\rvx$ are symptoms. It is plausible to assume that the prevalence of the disease may vary over time or across different populations, but the probability of some symptom being present or absent given that one has or not the disease should remain constant. Thus, as represented in \Figref{fig:target_shift}, the joint distribution of any domain $\gD$ is assumed to factorize as $p_\gD(\rvx, \ry) = p(\rvx \mid \ry) p_\gD(\ry)$, where $p(\rvx \mid \ry)$ is domain-invariant. By further assuming that $\mathrm{Supp}(p_\gT(\ry)) \subseteq \mathrm{Supp}(p_\gS(\ry))$, we have:
 \begin{align}
 	p_\gT(\ry \mid \rvx) &\propto p(\rvx \mid \ry) p_\gT(\ry) \nonumber\\
 	&= p(\rvx \mid \ry) p_\gS(\ry) \frac{p_\gT(\ry)}{p_\gS(\ry)} \nonumber\\
@@ -157,6 +157,7 @@ Other approaches involve learning class-dependent weights to match the mean cond
 	\caption{Graphical representation of the conditional shift setting as a Bayesian network.}
 	\label{fig:cond_shift}
 \end{figure}
+In the \newterm{conditional shift} setting, the marginal distribution of labels is constant and the conditional of features given labels may change across domains. This scenario is represented in \Figref{fig:cond_shift}, from which it becomes clear that the joint distribution takes the form $p_{\gD}(\rvx, \ry) = p(\ry) p_{\gD}(\rvx \mid \ry)$, where $p(\ry)$ is domain-invariant. Besides being less realistic than other assumptions, DA under conditional shift is in general an ill-posed problem. Nonetheless, \citet{Zhang2013} show that identifiability of $p_{\gT}(\rvx \mid \ry)$ holds when it is assumed that, for any given $y$, $p_{\gT}(\rvx \mid y)$ only differs from $p_{\gS}(\rvx \mid y)$ in location and scale and derive a kernel-based approach to estimate these parameters.
 
 \subsubsection{Covariate shift}
 \label{sec:cov_shift_sota}
@@ -177,3 +178,7 @@ Other approaches involve learning class-dependent weights to match the mean cond
 	\caption{Graphical representation of the covariate shift setting as a Bayesian network.}
 	\label{fig:cov_shift}
 \end{figure}
+\newterm{Covariate shift} is by far the most common assumption and therefore the most widely addressed setting in the DA literature. As implied by the graphical representation in \Figref{fig:cov_shift}, here the conditional distribution of labels given features is constant and the marginal distribution of features is domain-dependent. Thus, $p_\gD(\rvx, \ry) = p(\ry \mid \rvx) p_\gD(\rvx)$.
+
+\subsubsection{Invariance of causal mechanisms}
+\label{sec:causal_da_sota}
