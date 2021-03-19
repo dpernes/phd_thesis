@@ -335,19 +335,6 @@
 }
 
 
-@Article{Fernandes2017,
-	author="Fernandes, Kelwin
-	and Cardoso, Jaime S.",
-	title="Hypothesis transfer learning based on structural model similarity",
-	journal="Neural Computing and Applications",
-	year="2017",
-	month="Nov",
-	day="21",
-	issn="1433-3058",
-	doi="10.1007/s00521-017-3281-4",
-	url="https://doi.org/10.1007/s00521-017-3281-4"
-}
-
 @ARTICLE{Cheng2018, 
 	author={N. {Cheng} and F. {Lyu} and J. {Chen} and W. {Xu} and H. {Zhou} and S. {Zhang} and X. S. {Shen}}, 
 	journal={IEEE Network}, 
@@ -993,14 +980,6 @@
 	year={2016}
 }
 
-@inproceedings{
-	schoenauer-sebag2018multidomain,
-	title={Multi-Domain Adversarial Learning},
-	author={Alice Schoenauer-Sebag and Louise Heinrich and Marc Schoenauer and Michele Sebag and Lani Wu and Steve Altschuler},
-	booktitle={International Conference on Learning Representations},
-	year={2019},
-	url={https://openreview.net/forum?id=Sklv5iRqYX},
-}
 
 @article{Long2015,
 	title={Learning transferable features with deep adaptation networks},
@@ -1146,16 +1125,6 @@
 	year={2017}
 }
 
-@article{Shimodaira2000,
-	title={Improving predictive inference under covariate shift by weighting the log-likelihood function},
-	author={Shimodaira, Hidetoshi},
-	journal={Journal of statistical planning and inference},
-	volume={90},
-	number={2},
-	pages={227--244},
-	year={2000},
-	publisher={Elsevier}
-}
 
 @article{Sugiyama2008,
 	title={Direct importance estimation for covariate shift adaptation},
@@ -1189,7 +1158,6 @@
 	author={Alice Schoenauer-Sebag and Louise Heinrich and Marc Schoenauer and Michele Sebag and Lani Wu and Steve Altschuler},
 	booktitle={International Conference on Learning Representations},
 	year={2019},
-	url={https://openreview.net/forum?id=Sklv5iRqYX},
 }
 
 @inproceedings{He2016,
@@ -1305,3 +1273,67 @@
 	series = {IJCAI'05}
 }
 
+@article{Sugiyama2007,
+	author = {Sugiyama, Masashi and Krauledat, Matthias and Müller, Klaus-Robert},
+	year = {2007},
+	month = {05},
+	pages = {985-1005},
+	title = {Covariate Shift Adaptation by Importance Weighted Cross Validation.},
+	volume = {8},
+	journal = {Journal of Machine Learning Research}
+}
+
+@article{Shimodaira2000,
+	title = {Improving predictive inference under covariate shift by weighting the log-likelihood function},
+	journal = {Journal of Statistical Planning and Inference},
+	volume = {90},
+	number = {2},
+	pages = {227-244},
+	year = {2000},
+	issn = {0378-3758},
+	doi = {https://doi.org/10.1016/S0378-3758(00)00115-4},
+	author = {Hidetoshi Shimodaira},
+	keywords = {Akaike information criterion, Design of experiments, Importance sampling, Kullback–Leibler divergence, Misspecification, Sample surveys, Weighted least squares},
+	abstract = {A class of predictive densities is derived by weighting the observed samples in maximizing the log-likelihood function. This approach is effective in cases such as sample surveys or design of experiments, where the observed covariate follows a different distribution than that in the whole population. Under misspecification of the parametric model, the optimal choice of the weight function is asymptotically shown to be the ratio of the density function of the covariate in the population to that in the observations. This is the pseudo-maximum likelihood estimation of sample surveys. The optimality is defined by the expected Kullback–Leibler loss, and the optimal weight is obtained by considering the importance sampling identity. Under correct specification of the model, however, the ordinary maximum likelihood estimate (i.e. the uniform weight) is shown to be optimal asymptotically. For moderate sample size, the situation is in between the two extreme cases, and the weight function is selected by minimizing a variant of the information criterion derived as an estimate of the expected loss. The method is also applied to a weighted version of the Bayesian predictive density. Numerical examples as well as Monte-Carlo simulations are shown for polynomial regression. A connection with the robust parametric estimation is discussed.}
+}
+
+@article{Webb2018,
+	title={Analyzing concept drift and shift from sample data},
+	author={Webb, Geoffrey I and Lee, Loong Kuan and Goethals, Bart and Petitjean, Fran{\c{c}}ois},
+	journal={Data Mining and Knowledge Discovery},
+	volume={32},
+	number={5},
+	pages={1179--1199},
+	year={2018},
+	publisher={Springer}
+}
+
+@ARTICLE{Courty2015,
+	author={N. {Courty} and R. {Flamary} and D. {Tuia} and A. {Rakotomamonjy}},
+	journal={IEEE Transactions on Pattern Analysis and Machine Intelligence}, 
+	title={Optimal Transport for Domain Adaptation}, 
+	year={2017},
+	volume={39},
+	number={9},
+	pages={1853-1865},
+	doi={10.1109/TPAMI.2016.2615921}
+}
+
+@article{Gama2014,
+	author = {Gama, Jo\~{a}o and \v{Z}liobaitundefined, Indrundefined and Bifet, Albert and Pechenizkiy, Mykola and Bouchachia, Abdelhamid},
+	title = {A Survey on Concept Drift Adaptation},
+	year = {2014},
+	issue_date = {April 2014},
+	publisher = {Association for Computing Machinery},
+	address = {New York, NY, USA},
+	volume = {46},
+	number = {4},
+	issn = {0360-0300},
+	doi = {10.1145/2523813},
+	abstract = {Concept drift primarily refers to an online supervised learning scenario when the relation between the input data and the target variable changes over time. Assuming a general knowledge of supervised learning in this article, we characterize adaptive learning processes; categorize existing strategies for handling concept drift; overview the most representative, distinct, and popular techniques and algorithms; discuss evaluation methodology of adaptive algorithms; and present a set of illustrative applications. The survey covers the different facets of concept drift in an integrated way to reflect on the existing scattered state of the art. Thus, it aims at providing a comprehensive introduction to the concept drift adaptation for researchers, industry analysts, and practitioners.},
+	journal = {ACM Comput. Surv.},
+	month = mar,
+	articleno = {44},
+	numpages = {37},
+	keywords = {adaptive learning, Concept drift, data streams, change detection}
+}

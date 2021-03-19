@@ -32,7 +32,7 @@ ToDo
 
 \section{Background}
 \label{sec:chp3_background}
-We start by analyzing the problem of DA from a theoretical perspective and then we overview the main approaches that constitute the state of the art. Although some authors have considered the problem of DA for regression problems (e.g. \cite{Cortes2011}, \cite{Zhao2018}), the literature on classification is far more vast. Moreover, many of the results and methods explained in this section can be extended to regression problems with minor modifications. For these reasons, we shall focus our discussion mostly on classification.
+We start by analyzing the problem of DA from a theoretical perspective and then we overview the main approaches that constitute the state of the art. Although some authors have considered the problem of DA for regression problems (e.g.\ \cite{Cortes2011}, \cite{Zhao2018}), the literature on classification is far more vast. Moreover, many of the results and methods explained in this section can be extended to regression problems with minor modifications. For these reasons, we shall focus our discussion mostly on classification.
 
 \subsection{Theoretical foundation}
 \label{sec:da_theory}
@@ -43,6 +43,7 @@ We start by analyzing the problem of DA from a theoretical perspective and then 
 
 Before we present and discuss the most important results, let us introduce a few preliminary definitions. A \newterm{domain} $\gD$ is defined by a joint distribution $p_\gD(\rvx, \rvy)$ over input features $\rvx \in \gX$ and target variables $\rvy \in \gY$, where $\gX$ and $\gY$ denote the input and target spaces, respectively. For the domain adaptation task to be well defined, at least two domains must be considered: a \newterm{source} domain $\gS$, with joint distribution is denoted by $p_\gS(\rvx, \rvy)$, from which abundant annotated data is usually available, and a \newterm{target} domain $\gT$, with joint distribution $p_\gT(\rvx, \rvy)$, from which scarce or even zero annotated data is available at training time. Following most classical results from statistical learning theory, \citet{BenDavid2010} focused on binary classification, thus $\gY = \{0, 1\}$. Under this setting, it is possible to define a \newterm{labeling function} $f_\gD: \gX \mapsto [0, 1]$ for each domain, given by $f_\gD(\vx) = p_\gD(\ry=1 \mid \vx)$. A \newterm{hypothesis} is any function $h: \gX \mapsto \{0,1\}$ and a set $\gH$ of these functions is called a \newterm{hypothesis class}. The expected absolute difference between $h$ and $f_\gD$ is called the \newterm{risk} (or \newterm{error}) of hypothesis $h$ (with respect to the labeling function $f_\gD$):
 \begin{equation}
+	\label{eq:risk}
 	\epsilon(h,f_\gD) \triangleq \E_{\rvx \sim p_\gD} |h(\rvx) - f_\gD(\rvx)|.
 \end{equation}
 We use $\epsilon_\gS(h)$ and $\epsilon_\gT(h)$ as shorthands for $\epsilon(h,f_\gS)$ and $\epsilon(h,f_\gT)$ and refer to them as the source and target risks (or errors), respectively. The empirical estimates of these are denoted as $\widehat{\epsilon}_\gS(h)$ and $\widehat{\epsilon}_\gT(h)$, respectively.
@@ -60,7 +61,7 @@ where $\1_h \triangleq \{\vx \in \gX: h(\vx)=1\}$ and $\mathrm{Pr}_{\gD}(\1_h)$ 
 		\widehat{d}_{\gH}(\gD,\gD') = 2 \left(1 - \min_{h \in \gH} \left[\frac{1}{n} \sum_{\vx: h(\vx)=1} \1_{\vx \in \widehat{\gD}} + \frac{1}{n} \sum_{\vx: h(\vx)=0} \1_{\vx \in \widehat{\gD}'}\right]\right).
 	\end{equation}
 \end{lemma}
-Note that if the two sets $\widehat{\gD}$ and $\widehat{\gD}'$ can be discriminated perfectly by a hypothesis $h \in \gH$ (i.e. if there is an $h \in \gH$ such that $h(\vx) = 0$ if $x \in \widehat{\gD}$ and $h(\vx) = 1$ if $x \in \widehat{\gD}'$), then $\widehat{d}_{\gH}(\gD,\gD')$ is maximum and equal to 2.
+Note that if the two sets $\widehat{\gD}$ and $\widehat{\gD}'$ can be discriminated perfectly by a hypothesis $h \in \gH$ (i.e.\ if there is an $h \in \gH$ such that $h(\vx) = 0$ if $x \in \widehat{\gD}$ and $h(\vx) = 1$ if $x \in \widehat{\gD}'$), then $\widehat{d}_{\gH}(\gD,\gD')$ is maximum and equal to 2.
 
 For a hypothesis class $\gH$, we may define the \newterm{symmetric difference hypothesis class} $\gH \Delta \gH$ as:
 \begin{equation}
@@ -76,7 +77,7 @@ where $\oplus$ denotes the ``exclusive or" (xor) operation. Combining this defin
 	\end{equation}
 	where $\lambda \triangleq \min_{h \in \gH} \epsilon_\gS(h) + \epsilon_\gT(h)$.
 \end{theorem}
-This bound immediately confirms the intuition that a low target error can be achieved by training a classifier to minimize the error in the source domain, provided that the marginal distributions of features are similar (i.e. $\widehat{d}_{\gH \Delta \gH}(\gS, \gT)$ is small) and a low error on the combination of the two domains can be achieved (i.e. $\lambda$ is also small). A deeper and more complete interpretation of this bound shall be provided later on, when we take into account the fact that, by applying deep neural networks, we can not only construct rich hypothesis classes but also manipulate and learn feature representations. The latter observation suggests that this kind of the classifiers may also have an impact on the $\widehat{d}_{\gH \Delta \gH}(\gS, \gT)$ and $\lambda$ terms in \eqref{eq:da_bound_single_source}, which will indeed be the case.
+This bound immediately confirms the intuition that a low target error can be achieved by training a classifier to minimize the error in the source domain, provided that the marginal distributions of features are similar (i.e.\ $\widehat{d}_{\gH \Delta \gH}(\gS, \gT)$ is small) and a low error on the combination of the two domains can be achieved (i.e.\ $\lambda$ is also small). A deeper and more complete interpretation of this bound shall be provided later on, when we take into account the fact that, by applying deep neural networks, we can not only construct rich hypothesis classes but also manipulate and learn feature representations. The latter observation suggests that this kind of the classifiers may also have an impact on the $\widehat{d}_{\gH \Delta \gH}(\gS, \gT)$ and $\lambda$ terms in \eqref{eq:da_bound_single_source}, which will indeed be the case.
 
 \subsubsection{Multi-source setting}
 \label{sec:da_theory_ms}
@@ -126,17 +127,17 @@ In the \newterm{target shift} setting, only the marginal distribution of labels 
 \end{align}
 Thus, if the class ratios $p_\gT(\ry)/p_\gS(\ry)$ are known, the problem of DA under target shift is solved by learning a probabilistic classifier on the source domain, reweighting it with the class ratios, and then normalizing the class scores. Therefore, the literature for DA under target shift focuses on estimating class ratios when these are unknown and cannot be estimated directly from the training data, due to the absence of labels for the target samples.
 
-An elegant and simple solution for this problem was proposed by \citet{Lipton2018}. Specifically, for any classifier $\widehat{f}: \gX \mapsto \gY$ trained with labeled data from the source domain, the target shift assumption implies that $p_{\gT}(\widehat{f}(\rvx) \mid \ry) = p_{\gS}(\widehat{f}(\rvx) \mid \ry)$ and hence:
+An elegant and simple solution for this problem was proposed by \citet{Lipton2018}. Specifically, for any classifier $h: \gX \mapsto \gY$ trained with labeled data from the source domain, the target shift assumption implies that $p_{\gT}(h(\rvx) \mid \ry) = p_{\gS}(h(\rvx) \mid \ry)$ and hence:
 \begin{align}
-p_{\gT}(\widehat{f}(\rvx)) &= \sum_{\ry} p_{\gT}(\widehat{f}(\rvx) \mid \ry) p_{\gT}(\ry) \nonumber\\
+p_{\gT}(h(\rvx)) &= \sum_{\ry} p_{\gT}(h(\rvx) \mid \ry) p_{\gT}(\ry) \nonumber\\
 \allowdisplaybreaks
-&= \sum_{\ry} p_{\gS}(\widehat{f}(\rvx) \mid \ry) p_{\gT}(\ry) \label{eq:estim_class_dist}\\
+&= \sum_{\ry} p_{\gS}(h(\rvx) \mid \ry) p_{\gT}(\ry) \label{eq:estim_class_dist}\\
 \allowdisplaybreaks
-&= \sum_{\ry} p_{\gS}(\widehat{f}(\rvx), \ry) \frac{p_{\gT}(\ry)}{p_{\gS}(\ry)}. \label{eq:estim_class_ratio}
+&= \sum_{\ry} p_{\gS}(h(\rvx), \ry) \frac{p_{\gT}(\ry)}{p_{\gS}(\ry)}. \label{eq:estim_class_ratio}
 \end{align}
-Note that $p_{\gS}(\widehat{f}(\rvx) \mid \ry)$, $p_{\gS}(\widehat{f}(\rvx), \ry)$, and $p_{\gS}(\ry)$ can all be estimated from labeled source samples and $p_{\gT}(\widehat{f}(\rvx))$ can be estimated from unlabeled target samples. Thus, one can either use \eqref{eq:estim_class_dist} to estimate $p_{\gT}(\ry)$ or \eqref{eq:estim_class_ratio} to estimate class ratios directly.
+Note that $p_{\gS}(h(\rvx) \mid \ry)$, $p_{\gS}(h(\rvx), \ry)$, and $p_{\gS}(\ry)$ can all be estimated from labeled source samples and $p_{\gT}(h(\rvx))$ can be estimated from unlabeled target samples. Thus, one can either use \eqref{eq:estim_class_dist} to estimate $p_{\gT}(\ry)$ or \eqref{eq:estim_class_ratio} to estimate class ratios directly.
 
-Other approaches involve learning class-dependent weights to match the mean conditional features of source data with the mean marginal features of target data in a reproducing kernel Hilbert space (\citet{Zhang2013}, \citet{Iyer2004}), or require density estimation to model $p(\rvx \mid \ry)$ (\citet{Chan2005}, \citet{Storkey2009}).
+Other approaches involve learning class-dependent weights to match the mean conditional features of source data with the mean marginal features of target data in a reproducing kernel Hilbert space (e.g.\  \citet{Iyer2004}, \citet{Zhang2013}), or require density estimation to model $p(\rvx \mid \ry)$ (e.g.\ \citet{Chan2005}, \citet{Storkey2009}).
 
 \subsubsection{Conditional shift}
 \label{sec:cond_shift_sota}
@@ -159,6 +160,27 @@ Other approaches involve learning class-dependent weights to match the mean cond
 \end{figure}
 In the \newterm{conditional shift} setting, the marginal distribution of labels is constant and the conditional of features given labels may change across domains. This scenario is represented in \Figref{fig:cond_shift}, from which it becomes clear that the joint distribution takes the form $p_{\gD}(\rvx, \ry) = p(\ry) p_{\gD}(\rvx \mid \ry)$, where $p(\ry)$ is domain-invariant. Besides being less realistic than other assumptions, DA under conditional shift is in general an ill-posed problem. Nonetheless, \citet{Zhang2013} show that identifiability of $p_{\gT}(\rvx \mid \ry)$ holds when it is assumed that, for any given $y$, $p_{\gT}(\rvx \mid y)$ only differs from $p_{\gS}(\rvx \mid y)$ in location and scale and derive a kernel-based approach to estimate these parameters.
 
+\subsubsection{Concept shift}
+\label{sec:concept_shift_sota}
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[every loop/.style={},thick,
+	main node/.style={circle,draw},font=\sffamily\Large\bfseries]
+	
+	\node[main node,minimum size=1.5cm] (x) {$\rvx$};
+	\node[main node,minimum size=1.5cm] (y) [right=1.5cm of x] {$\ry$};
+	\node[main node,minimum size=1.5cm] (D) [right=1.5cm of y] {$\gD$};
+	
+	\draw[->]
+	(x) edge (y)
+	(D) edge (y);
+	
+	\end{tikzpicture}
+	\caption{Graphical representation of the concept shift setting as a Bayesian network.}
+	\label{fig:concept_shift}
+\end{figure}
+\newterm{Concept shift} refers to the situation where the marginal feature distributions $p(\rvx)$ are constant but the conditional distribution of the target variable $p_{\gD}(\ry \mid \rvx)$ changes, thus $p(\rvx, \ry) = p(\rvx)p_{\gD}(\ry \mid \rvx)$, as implied by \Figref{fig:concept_shift}. When the change happens over time, this setting is also known as \newterm{concept drift} (\citet{Webb2018}). The literature on concept drift is vast and focuses mostly on the detection of its occurrence so that the model can be updated using new data. \citet{Gama2014} overview the most popular techniques to address this problem.
+
 \subsubsection{Covariate shift}
 \label{sec:cov_shift_sota}
 \begin{figure}
@@ -178,7 +200,26 @@ In the \newterm{conditional shift} setting, the marginal distribution of labels 
 	\caption{Graphical representation of the covariate shift setting as a Bayesian network.}
 	\label{fig:cov_shift}
 \end{figure}
-\newterm{Covariate shift} is by far the most common assumption and therefore the most widely addressed setting in the DA literature. As implied by the graphical representation in \Figref{fig:cov_shift}, here the conditional distribution of labels given features is constant and the marginal distribution of features is domain-dependent. Thus, $p_\gD(\rvx, \ry) = p(\ry \mid \rvx) p_\gD(\rvx)$.
+\newterm{Covariate shift} is by far the most common assumption and therefore the most widely addressed setting in the DA literature. As implied by the graphical representation in \Figref{fig:cov_shift}, here the conditional distribution of labels given features is constant and the marginal distribution of features is domain-dependent. Thus, $p_\gD(\rvx, \ry) = p(\ry \mid \rvx) p_\gD(\rvx)$, where $p(\ry \mid \rvx)$ is constant across domains. This assumption might hold for instance in image classification problems where the domain shift is caused by different sensors or lighting conditions.
+
+Since $p_\gT(\ry \mid \rvx) = p_\gS(\ry \mid \rvx)$, infinite labeled data from the source domain and a consistent estimator of this conditional distribution would solve this DA task. However, the former is obviously unrealistic and therefore the problem should be analyzed taking into account that the available data is finite. Let $\ell(\cdot, \cdot)$ be any loss function for the supervised learning problem. The goal is then to find an unbiased estimator of the target loss $\E_{\rvx, \ry \sim p_\gT} \ell(h(\rvx),\ry)$ when no labeled samples from the target domain are available. Following \citet{Sugiyama2007}, if the marginal densities $p_\gS(\rvx)$ and $p_\gT(\rvx)$ are known and assuming $\mathrm{Supp}(p_\gT(\rvx)) \subseteq \mathrm{Supp}(p_\gS(\rvx))$, this estimator can be obtained using \newterm{importance weights} $w(\rvx) \triangleq p_\gT(\rvx)/p_\gS(\rvx)$:
+\begin{align}
+	\E_{\rvx, \ry \sim p_\gT} \ell(h(\rvx),\ry) &= \sum_{\ry} \int l(h(\rvx),\ry) p_\gT(\rvx, \ry) d\rvx \nonumber\\
+	&= \sum_{\ry} \int \ell(h(\rvx),\ry) p(\ry \mid \rvx) p_\gT(\rvx) d\rvx \nonumber\\
+	&= \sum_{\ry} \int \frac{p_\gT(\rvx)}{p_\gS(\rvx)} \ell(h(\rvx),\ry)  p(\ry \mid \rvx) p_\gS(\rvx) d\rvx \nonumber\\
+	&= \sum_{\ry} \int w(\rvx) \ell(h(\rvx),\ry)  p_\gS(\rvx, \ry) d\rvx \nonumber\\
+	&= \E_{\rvx, \ry \sim p_\gS} w(\rvx) \ell(h(\rvx),\ry).
+\end{align}
+Hence, $(1/n) \sum_{i=1}^{n} w(\vx_i) \ell(h(\vx_i),y_i)$ is an unbiased estimator of the target loss, constructed using only source data, which can therefore be used as the loss for the supervised learning problem. When the marginal distributions are unknown and the feature space is low-dimensional, kernel density estimation techniques can be employed to estimate them (e.g.\ \citet{Shimodaira2000,Sugiyama2007,Cortes2010}). Another option is learning a transformation $T: \gX \mapsto \gX$ such that $p_{\gS}(T(\rvx)) = p_{\gT}(\rvx)$, which can be accomplished using optimal transport theory (\citet{Courty2015}), removing the constraint on the support of the marginal target distribution.
+
+For high-dimensional data (e.g.\ images), where the marginal distributions are typically unknown and hard to estimate from finite data, deep learning models play an important role by providing a successful tool learn semantically rich low-dimensional feature representations. It is then possible to learn a function $g:\gX \mapsto \gZ$ mapping input data to a new feature space $\gZ$ such that $p_{\gT}(g(\rvx))/p_{\gS}(g(\rvx)) \approx 1$, i.e.\ where the marginal feature distributions of the two domains coincide. This approach has the additional advantage of moving the overlapping support assumption to a lower-dimensional space, where it is less likely to be violated than in the original space (e.g.\ pixel space). In this new feature space the covariate shift has vanished and therefore any classifier $h:\gZ \mapsto \gY$ that achieves low error on the source domain will also perform well in the target. An alternative way of motivating these approaches follows from analyzing again the target risk bound provided in \eqref{eq:da_bound_single_source}. When we presented this bound, we assumed for simplicity that the feature space was fixed and therefore the upper bound would be minimized by minimizing the source risk. However, if the feature space can itself be optimized, the term $\widehat{d}_{\gH \Delta \gH}(\gS, \gT)$ can be minimized by finding a feature space where the source and target marginal distributions coincide. This idea has been exploited extensively in recent years, either by matching the distributions using maximum mean discrepancy (e.g.\ \citet{Long2015,Guo2018}) or, in most cases, using an adversarial neural network (e.g.\ \citet{Zhao2018,Ganin2015,Pei2018,Sebag2019}).
+
+Adversarial-based DA was originally introduced by \citet{Ganin2015} and results from the observation that 
+computing $\widehat{d}_{\gH \Delta \gH}(\gS, \gT)$ is equivalent to finding a classifier that maximally discriminates between samples of the source and target domains (Lemma \ref{lemma:emp_h_div}). Intuitively, if no classifier exists that can distinguish between source and target features, then the distributions of these two coincide. Thus, if we have access to sets $\widehat{\gS}$ and $\widehat{\gT}$ of labeled samples from the source domain and unlabeled samples from the target, respectively, we can train a feature extractor network $g:\gX \mapsto \gZ$, a classifier $h:\gZ \mapsto \gY$, and a domain discriminator $d:\gZ \mapsto \{0,1\}$ to solve the following minimax problem\footnote{This objective is only formal since the 0-1 loss is non-differentiable and intractable. In practice, the usual classification losses are used instead.}:
+\begin{equation}
+	\min_{g,h} \max_d \quad \widehat{\epsilon}_\gS(h \circ g) + 2 \left(1 - \left[\frac{1}{n} \sum_{\vx: d(g(\vx))=1} \1_{\vx \in \widehat{\gS}} + \frac{1}{n} \sum_{\vx: d(g(\vx))=0} \1_{\vx \in \widehat{\gT}}\right]\right),
+\end{equation}
+where $\circ$ denotes function composition. Several variations to this idea have been proposed so far, aiming to extend it to the multi-source setting (\citet{Zhao2018}), or beyond the covariate shift assumption (\citet{Pei2018}), or both (\citet{Sebag2019}).
 
 \subsubsection{Invariance of causal mechanisms}
 \label{sec:causal_da_sota}
