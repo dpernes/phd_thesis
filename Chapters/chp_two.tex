@@ -51,7 +51,7 @@ f(x)=\sum_{z=1}^M s_z \phi_z(x),
 where $\phi_z(x)$ are the atoms and only a few of the scalars $s_z$ are non-zero, providing a sparse representation of $f(x)$.  Distributed sparse representation (\citet{Baron}) is an extension of the standard version that considers networks with $k$ nodes. At each node, the signal sensed at the same node has its sparsity property because of its intra-correlation, while, for networks with multiple nodes, signals received at different nodes also exhibit strong intercorrelation.
 The intra and inter-correlations lead to a joint sparse model. An interesting scenario in distributed sparse representation, which we exploit here, is when all signals/models share the common support but with different non-zero coefficients.
 
-Our contributions in this chapter are summarized as follows: i) we extend an existing model based on a combination of self-organizing maps (SOM) and HMMs and evaluate it in the context of anomaly detection in Wi-Fi networks; ii) we present a novel algorithm that learns an entity-dependent model based on a mixture of shared HMMs; iii) we discuss how the two models intersect each other and, importantly, how the latter can be viewed as a particular case of a general family of generative models for distributed data.
+Our contributions in this chapter are summarized as follows: i) we extend an existing model based on a combination of self-organizing maps (SOM) and HMMs and evaluate it in the context of anomaly detection in Wi-Fi networks (\Secref{sec:sohmmm}); ii) we present a novel algorithm that learns an entity-dependent model based on a mixture of shared HMMs (\Secref{sec:spamhmm}); iii) we discuss how the two models intersect each other and, importantly, how the latter can be viewed as a particular case of a general family of generative models for distributed data (\Secref{sec:summary}).
 
 \section{Hidden Markov Models on a Self-Organizing Map for Anomaly Detection in 802.11 Wireless Networks}
 \label{sec:sohmmm}
@@ -606,8 +606,8 @@ and so we can treat $\vbeta^{(y)}$ as an unconstrained parameter vector. This re
 	\end{algorithmic}
 \end{algorithm}
 
-\section{Experimental Evaluation}
-\label{sec:experiments}
+\section{Experimental evaluation}
+\label{sec:spamhmm_experiments}
 The model was developed on top of the library hmmlearn (\citet{hmmlearn}) for Python, which implements inference and unsupervised learning for the standard HMM using a wide variety of emission distributions. Both learning and inference use the hmmlearn API, with the appropriate adjustments for our models. For reproducibility purposes, we make our source code, pre-trained models and the datasets publicly available\footnote{\url{https://github.com/dpernes/spamhmm}}.
 
 We evaluate four different models in our experiments: a model consisting of a single HMM (denoted as 1-HMM) trained on sequences from all graph nodes; a model consisting of $k$ HMMs trained independently (denoted as k-HMM), one for each graph node; a mixture of HMMs (denoted as MHMM) as defined in this work (\twoeqrefs{eq:spamhmm_density}{eq:spamhmm_hmm}), trained to maximize the usual log-likelihood objective~\plaineqref{eq:spamhmm_log_likelihood}; a mixture of HMMs (denoted as SpaMHMM) as the previous one, trained to maximize our regularized objective~\plaineqref{eq:spamhmm_objective}.
