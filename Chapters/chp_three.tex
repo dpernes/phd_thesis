@@ -130,7 +130,7 @@ In the \newterm{target shift} setting, only the marginal distribution of labels 
 \end{align}
 Thus, if the class ratios $p_\gT(\ry)/p_\gS(\ry)$ are known, the problem of DA under target shift is solved by learning a probabilistic classifier on the source domain, reweighting it with the class ratios, and then normalizing the class scores. Therefore, the literature for DA under target shift focuses on estimating class ratios when these are unknown and cannot be estimated directly from the training data, due to the absence of labels for the target samples.
 
-An elegant and simple solution for this problem was proposed by \citet{Lipton2018}. Specifically, for any classifier $h: \gX \mapsto \gY$ trained with labeled data from the source domain, the target shift assumption implies that $p_{\gT}(h(\rvx) \mid \ry) = p_{\gS}(h(\rvx) \mid \ry)$ and hence:
+An elegant and simple solution to this problem was proposed by \citet{Lipton2018}. Specifically, for any classifier $h: \gX \mapsto \gY$ trained with labeled data from the source domain, the target shift assumption implies that $p_{\gT}(h(\rvx) \mid \ry) = p_{\gS}(h(\rvx) \mid \ry)$ and hence:
 \begin{align}
 p_{\gT}(h(\rvx)) &= \sum_{\ry} p_{\gT}(h(\rvx) \mid \ry) p_{\gT}(\ry) \nonumber\\
 \allowdisplaybreaks
@@ -207,10 +207,10 @@ In the \newterm{conditional shift} setting, the marginal distribution of labels 
 
 Since $p_\gT(\ry \mid \rvx) = p_\gS(\ry \mid \rvx)$, infinite labeled data from the source domain and a consistent estimator of this conditional distribution would solve this DA task. However, the former is obviously unrealistic and therefore the problem should be analyzed taking into account that the available data is finite. Let $\ell(\cdot, \cdot)$ be any loss function for the supervised learning problem. The goal is then to find an unbiased estimator of the target loss $\E_{\rvx, \ry \sim p_\gT} \ell(h(\rvx),\ry)$ when no labeled samples from the target domain are available. Following \citet{Sugiyama2007}, if the marginal densities $p_\gS(\rvx)$ and $p_\gT(\rvx)$ are known and assuming $\mathrm{Supp}(p_\gT(\rvx)) \subseteq \mathrm{Supp}(p_\gS(\rvx))$, this estimator can be obtained using \newterm{importance weights} $w(\rvx) \triangleq p_\gT(\rvx)/p_\gS(\rvx)$:
 \begin{align}
-	\E_{\rvx, \ry \sim p_\gT} \ell(h(\rvx),\ry) &= \sum_{\ry} \int l(h(\rvx),\ry) p_\gT(\rvx, \ry) d\rvx \nonumber\\
-	&= \sum_{\ry} \int \ell(h(\rvx),\ry) p(\ry \mid \rvx) p_\gT(\rvx) d\rvx \nonumber\\
-	&= \sum_{\ry} \int \frac{p_\gT(\rvx)}{p_\gS(\rvx)} \ell(h(\rvx),\ry)  p(\ry \mid \rvx) p_\gS(\rvx) d\rvx \nonumber\\
-	&= \sum_{\ry} \int w(\rvx) \ell(h(\rvx),\ry)  p_\gS(\rvx, \ry) d\rvx \nonumber\\
+	\E_{\rvx, \ry \sim p_\gT} \ell(h(\rvx),\ry) &= \sum_{\ry} \int l(h(\rvx),\ry) p_\gT(\rvx, \ry) \d\rvx \nonumber\\
+	&= \sum_{\ry} \int \ell(h(\rvx),\ry) p(\ry \mid \rvx) p_\gT(\rvx) \d\rvx \nonumber\\
+	&= \sum_{\ry} \int \frac{p_\gT(\rvx)}{p_\gS(\rvx)} \ell(h(\rvx),\ry)  p(\ry \mid \rvx) p_\gS(\rvx) \d\rvx \nonumber\\
+	&= \sum_{\ry} \int w(\rvx) \ell(h(\rvx),\ry)  p_\gS(\rvx, \ry) \d\rvx \nonumber\\
 	&= \E_{\rvx, \ry \sim p_\gS} w(\rvx) \ell(h(\rvx),\ry).
 \end{align}
 Hence, $(1/n) \sum_{i=1}^{n} w(\vx_i) \ell(h(\vx_i),y_i)$ is an unbiased estimator of the target loss, constructed using only source data, which can therefore be used as the loss for the supervised learning problem. When the marginal distributions are unknown and the feature space is low-dimensional, kernel density estimation techniques can be employed to estimate them (e.g.\ \citet{Shimodaira2000,Sugiyama2007,Cortes2010}). An alternative that removes the constraint on the support of the marginal target distribution is learning a transformation $T: \gX \mapsto \gX$ such that $p_{\gS}(T(\rvx)) = p_{\gT}(\rvx)$, which can be accomplished using optimal transport theory (\citet{Courty2015}). Later approaches aim to relax the covariate shift assumption by trying to align the joint source and target distributions (\citet{Courty2017}) and extend the same principles to the multi-source setting (\citet{Turrisi2020}).
@@ -263,17 +263,17 @@ Adversarial DA algorithms, of which MDAN is a particular case, all aim to solve 
 \begin{equation}
 	\min_{\vtheta_g, \vtheta_h} \max_{\vtheta_d} \quad \left \lbrace L(\vtheta_g, \vtheta_h, \vtheta_d) =  L_{\text{task}}(\vtheta_g, \vtheta_h) - \lambda_d L_{\text{disc}}(\vtheta_g, \vtheta_d) \right \rbrace,
 \end{equation}
-where $L_{\text{task}}$ is the supervised loss for the desired task, $L_{\text{disc}}$ is the classification loss for the domain discrimination task, $\vtheta_g$, $\vtheta_h$, and $\vtheta_d$ are the parameters of the feature extractor, task executor, and domain discriminator networks, respectively, and $\lambda_d > 0$ is a hyperparameter. This is a treatable surrogate of objective \plaineqref{eq:dann_obj}.
+where $L_{\text{task}}$ is the supervised loss for the desired task, $L_{\text{disc}}$ is the classification loss for the domain discrimination task, $\vtheta_g$, $\vtheta_h$, and $\vtheta_d$ are the parameters of the feature extractor, task classifier, and domain discriminator networks, respectively, and $\lambda_d > 0$ is a hyperparameter. This is a treatable surrogate of objective \plaineqref{eq:dann_obj}.
 
-Solving this problem then consists in finding a saddle point of this loss function. Using automatic differentiation libraries (e.g.\ PyTorch or TensorFlow), the naive solution would involve declaring two optimizers, one for the parameters $\vtheta_g$ and $\vtheta_h$ and another for $\vtheta_d$, and then performing gradient descent with the former and gradient ascent with the latter:
+Solving this problem then consists in finding a saddle point of this loss function. Using automatic differentiation libraries (e.g.\ PyTorch or TensorFlow), the naive solution would involve using two optimizers, one for parameters $\vtheta_g$ and $\vtheta_h$ and another for $\vtheta_d$, and then performing gradient descent with the former and gradient ascent with the latter:
 \begin{align}
 	&\vtheta_g \leftarrow \vtheta_g - \rho \left(\nabla_{\vtheta_g}L_{\text{task}} - \lambda_d \nabla_{\vtheta_g} L_{\text{disc}}\right), \label{eq:grad_feature_extractor}\\
-	&\vtheta_h \leftarrow \vtheta_h - \rho \nabla_{\vtheta_h}L_{\text{task}}, \label{eq:grad_task_executor}\\
+	&\vtheta_h \leftarrow \vtheta_h - \rho \nabla_{\vtheta_h}L_{\text{task}}, \label{eq:grad_task_class}\\
 	&\vtheta_d \leftarrow \vtheta_d + \rho \left(-\lambda_d \nabla_{\vtheta_d}L_{\text{disc}}\right), \label{eq:grad_discriminator}
 \end{align}
 where $\rho>0$ is the learning rate. This implies an extra computational burden because gradients need to be backpropagated through the discriminator network twice, one for computing $\nabla_{\vtheta_d} L_{\text{disc}}$ and another for computing $\nabla_{\vtheta_g} L_{\text{disc}}$.
 
-The gradient reversal layer (\citet{Ganin2015}) is an ingenious solution for this problem. This layer is a pseudo-function $r$ that behaves as the identify in the forward pass but inverts the sign of the gradient in the backward, i.e.:
+The gradient reversal layer (\citet{Ganin2015}) is an ingenious solution to this problem. This layer is a pseudo-function $r$ that behaves as the identify in the forward pass but inverts the sign of the gradient in the backward, i.e.:
 \begin{equation}
 	r(\vx) \triangleq \vx, \quad \frac{\partial r}{\partial \vx} \triangleq -I.
 \end{equation}
@@ -281,7 +281,7 @@ By placing it in between the feature extractor $g$ and the domain discriminator 
 \begin{equation}
 	L_{\text{task}}(\vtheta_g, \vtheta_h) + \lambda_d L_{\text{disc}}(\vtheta_g, \vtheta_d),
 \end{equation}
-yields exactly update equations \plaineqref{eq:grad_feature_extractor}, \plaineqref{eq:grad_task_executor}, and \plaineqref{eq:grad_discriminator}.
+yields exactly update equations \plaineqref{eq:grad_feature_extractor}, \plaineqref{eq:grad_task_class}, and \plaineqref{eq:grad_discriminator}.
 
 \subsection{FCN-rLSTM: Spatio-temporal deep neural network for object counting}
 \label{sec:da_sensors_fcn_rltsm}
@@ -297,7 +297,9 @@ Although each video frame should contain all the information required to identif
 	\label{fig:fcn_rlstm}
 \end{figure}
 
-\Figref{fig:fcn_rlstm} shows the full architecture of this model, from which it can be observed that the convolutional part outputs a density map $\widehat{\mD}$ which is then fed through a recurrent subnetwork responsible for producing the predicted vehicle count $\widehat{y}^{(t)}$. Training this model then implies that each input frame $\mX^{(t)}$ is annotated with the corresponding ground-truth density map $\mD^{(t)}$ and vehicle count $y^{(t)}$. The loss function is defined as:
+\Figref{fig:fcn_rlstm} shows the full architecture of this model, from which it can be observed that the convolutional part outputs a density map $\widehat{\mD}$. The density maps are normalized so that the sum of the pixels corresponding to each vehicle sum up to 1 and, therefore, the sum of all pixels in the density map sup to the total number of vehicles in the frame. Thus, the final predicted count $\widehat{y}^{(t)}$ is the result of this sum plus a residual provided by a recurrent neural network, which aims to correct the predicted count by leveraging information from the previous frames.
+
+Training this model implies that each input frame $\mX^{(t)}$ is annotated with the corresponding ground-truth density map $\mD^{(t)}$ and vehicle count $y^{(t)}$. The loss function is defined as:
 \begin{equation}
 	L(\vtheta) = \frac{1}{n} \sum_{i=1}^{n} ||\widehat{\mD}^{(t)}_i - \mD^{(t)}_i||^2_F + \frac{\lambda_c}{n} \sum_{i=1}^{n} ||\widehat{y}^{(t)}_i - y^{(t)}_i||^2,
 \end{equation}
@@ -316,16 +318,279 @@ The non-temporal model uses a sub-network in the FCN-rLSTM model as its backbone
 	\label{fig:non_temporal_model}
 \end{figure}
 
-The component F-HAC in that figure corresponds to all layers of the FCN-rLSTM up to the hyper-atrous combination. It is used as a feature extractor, whereas the rest of the convolutional layers are used for the object counting task.
+The component F-HAC in that figure corresponds to all layers of the FCN-rLSTM up to the hyper-atrous combination. It is used as a feature extractor, whereas the rest of the convolutional layers are used for the object counting task. The $k$ domain discriminators consist of two fully connected layers which are preceded by a gradient reversal layer. 
 
 This model will be our baseline as we are primarily interested in merging the benefits of DA techniques and sequential modeling.
 
 \subsubsection{Temporal regression model}
-The temporal regression model uses the whole FCN-rLSTM model for the desired regression task, but the domain discriminator is still non-sequential, as shown in \Figref{fig:non_temporal_model}. Thus, in this model, the domain discrimination task only takes into account the domain-specific information provided by each frame individually and does not account for the domain-specific temporal dynamics that may exist.
+The temporal regression model uses the whole FCN-rLSTM model for the desired regression task, but the domain discriminators are still non-sequential, as shown in \Figref{fig:temporal_regress_model}. Thus, in this model, the domain discrimination task only takes into account the domain-specific information provided by each frame individually and does not account for the domain-specific temporal dynamics that may exist.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=1.0\textwidth]{ChapterThree/temporal_regress.png}
+	\caption{Temporal regression model. Reprinted from \citet{ThesisFrancisco}.}
+	\label{fig:temporal_regress_model}
+\end{figure}
+
+\subsubsection{Double-Temporal model}
+This model overcomes the limitations of the temporal regression model by incorporating three LSTM layers in each domain discriminator. These aim to learn the domain-specific temporal dynamics that might be helpful for the discrimination task. The schematic is in \Figref{fig:double_temporal_model}.
 
 \begin{figure}[!ht]
 	\centering
-	\includegraphics[width=1.0\textwidth]{ChapterThree/non_temporal.png}
-	\caption{Temporal regression model. Reprinted from \citet{ThesisFrancisco}.}
-	\label{fig:non_temporal_model}
+	\includegraphics[width=1.0\textwidth]{ChapterThree/double_temporal.png}
+	\caption{Double-Temporal model. Reprinted from \citet{ThesisFrancisco}.}
+	\label{fig:double_temporal_model}
 \end{figure}
+
+\subsubsection{Common-Temporal model}
+An alternative to the double-temporal model is to extract temporal features that are common to the desired object counting task and to the domain discrimination task. This is accomplished by the common-temporal model, which pushes the domain discriminators after the LSTMs and just before the final fully connected layer, as shown in \Figref{fig:common_temporal_model}.
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=1.0\textwidth]{ChapterThree/common_temporal.png}
+	\caption{Common-Temporal model. Reprinted from \citet{ThesisFrancisco}.}
+	\label{fig:common_temporal_model}
+\end{figure}
+
+This model is fundamentally different from all previous ones since here the feature space where domain-invariance is promoted happens much later in the network. Specifically, the density maps $\widehat{D}$ are a few layers earlier, so they should not be very much affected by the domain-invariance constraint. This might have a beneficial effect on the performance since density maps are defined by the positions in the image where vehicles appear. Since these positions depend on the shape of the street that each camera is capturing, domain-invariant density maps will almost surely be inaccurate.
+
+\subsubsection{Overview}
+
+All the proposed models have specific strengths and weaknesses that would make them suitable for certain scenarios and unlikely to show a good performance in others. Here, we anticipate a few of those scenarios.
+
+If the video frame rate is low compared to the objects speed, the number of objects in a given frame is not a good predictor for the number of objects in a subsequent frame. In this setting, the non-temporal model is ideal, as it does not make any temporal consideration. In this case, using a temporal model would probably just upset the training process.
+
+If the frame rate is sufficiently high and the temporal dynamics in the target domain are close to the dynamics in the sources, the temporal regression model is likely the best choice. By using an LSTM for the task executor but none for the domain discriminators, it will be able to make small adjustments in the predicted object count and avoid the unnecessary computational cost introduced by having a sequential model in the domain discriminator.
+
+When there is a strong correlation in the object count in consecutive video frames and the dynamics in the target domain are dissimilar to the sources, it may be beneficial to employ sequential models in both the task executor and domain discriminators. Thus, double-temporal and common-temporal models are likely to outperform the remaining. Their approach differs, as double-temporal model uses an LSTM network for the task executor and another one for each domain discriminator, whereas common-temporal includes an LSTM network in the feature extractor. As the common-temporal model will not enforce similarity between the predicted density maps as much as the double-temporal version, it is probably the best choice when the density maps of the target domain differ significantly from the sources.
+
+\subsection{Experiments}
+
+\subsubsection{Experimental protocol}
+
+We will run experiments with networks FCN-HA and FCN-rLSTM, proposed by Zhang et al. in paper "FCN-rLSTM: Deep Spatio-Temporal Neural Networks for
+Vehicle Counting in City Cameras" \cite{zhang2017fcnrlstm}, described in detail in section \ref{sec:fcn_rlstm}. The FCN-HA does not consider the temporal nature of data, whereas the FCN-rLSTM does. Additionally, we will run experiments with the new domain adaptation methods proposed in this dissertation: Simple Model, SingleLSTM Model, DoubleLSTM Model and CommonLSTM Model, described in detail in chapter \ref{chap:methodology}. Recall that Simple Model does not make temporal considerations, unlike the other three.
+
+In every experiment, assume we have $k$ domains $D_1, D_2,...,D_k$. In a domain adaptation scenario, we will do $k$ runs, so that in run number $t$, domain $D_t$ will be chosen as the target domain and all the others will be source domains. In a non-domain adaptation scenario, we also do $k$ runs, so that in run $t$, $D_t$ will be used for validation/testing and all the other domains will be used for training.
+
+For every experiment, we have computed two types of results, unsupervised and semi-supervised, that we describe below: 
+
+\begin{itemize}
+	\item \textbf{Unsupervised:} In this case, we do not have a validation dataset, and, for each run $t$, we calculate the testing results with the model we obtained at the end of the training epochs, for all the samples extracted from domain $D_t$.
+	\item \textbf{Semi-supervised:} For semi-supervised results, we have a validation dataset, that corresponds to $30\%$ of the samples extracted from target $D_t$. We use those samples to select the best epoch obtained throughout training. The model obtained in that epoch will be used to test the remaining $70\%$ of the samples in $D_t$.
+\end{itemize}
+
+For each dataset, we ran a total of $5$ experiments for the DA models, where we varied the value of hyperparameter $\mu$ between the values [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]. Recall that $\mu$ controls the weight to give to the domain discrimination loss, relative to the task execution loss. For the non-DA models, we ran just $1$ experiment.
+
+In all experiments, we train the model for $50$ epochs, using an Adam optimizer with a learning rate of 1e-4. The adopted evaluation metric is the Mean Absolute Error (MAE) between the predicted object count and the ground truth for each frame.
+
+\subsubsection{WebCamT dataset}
+
+WebCamT (\citet{Zhang2017b}) is a vehicle counting dataset that contains city camera videos, taken from a stationary camera in different points of the city of New York. All videos are in color, with dimensions $240 \times 352$, at a $1$ frame per second rate. Every frame in the dataset has a ground truth file with annotations that indicate the center of each vehicle and also its bounding box. 
+
+There are a total of $14$ cameras, that cover multiple scenes, camera perspectives, congestion states  and weather conditions. We chose a total of $4$ cameras from those $14$ to correspond to our domains. Each of those $4$ cameras had a number of videos, from which we selected $1000$ frames. The frames were selected consecutively, so that if frames $f_1$ and $f_2$ from the same video $V$ were selected, then every frame between $f_1$ and $f_2$ in video $V$ was also selected.
+
+Figures \ref{fig:webcamt_511}-\ref{fig:webcamt_846} show examples of frames in each one of the four domains. Table \ref{tab:webcamt_domains} shows the mean and standard deviation for the number of vehicles in a frame, for each domain. As it is possible to observe, the mean of vehicles in each frame differs significantly across domains, with the mean number of vehicles in domain \textit{691} being more than $3$ times higher than the mean number of vehicles in domain \textit{846}.
+
+
+
+\begin{figure}[!ht]
+	\centering
+	\begin{minipage}[b]{0.4\textwidth}
+		\includegraphics[width=\textwidth]{ChapterThree/511_example.png}
+		\caption{Domain \textit{511} from WebCamT dataset (\citet{Zhang2017b}).}
+		\label{fig:webcamt_511}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[b]{0.4\textwidth}
+		\includegraphics[width=\textwidth]{ChapterThree/551_example.png}
+		\caption{Domain \textit{551} from WebCamT dataset (\citet{Zhang2017b}).}
+		\label{fig:webcamt_551}
+	\end{minipage} \\
+	\vspace{1cm}
+	\begin{minipage}[b]{0.4\textwidth}
+		\includegraphics[width=\textwidth]{ChapterThree/691_example.png}
+		\caption{Domain \textit{691} from WebCamT dataset (\citet{Zhang2017b}).}
+		\label{fig:webcamt_691}
+	\end{minipage} 
+	\hfill
+	\begin{minipage}[b]{0.4\textwidth}
+		\includegraphics[width=\textwidth]{ChapterThree/846_example.png}
+		\caption{Domain \textit{846} from WebCamT dataset (\citet{Zhang2017b}).}
+		\label{fig:webcamt_846}
+	\end{minipage}
+\end{figure}
+
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{|c|c|c|}
+		\hline
+		\textbf{Domain} & \textbf{Mean} & \textbf{Std}  \\
+		\hline
+		\textit{511} & 12.039 & 6.32 \\
+		\hline
+		\textit{551} & 18.362 & 4.21 \\
+		\hline
+		\textit{691} & 25.470 & 10.738 \\
+		\hline
+		\textit{846} & 6.873 & 2.477 \\
+		\hline
+	\end{tabular}
+	\caption{WebCamT domains mean and standard deviation}
+	\label{tab:webcamt_domains}
+\end{table}
+
+After extracting each frame from the videos, we computed its density map, by placing a $4\times4$ Gaussian kernel with sum $1$ on the center of each car. We then had to resize the frames and density to maps to size $120\times 176$ so that we could deal with speed and memory constraints. Figure \ref{fig:webcamt_density_map} shows an example of a density map in a resized frame, where the Gaussian kernel around each car is shown in red.
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.75\textwidth]{ChapterThree/webcamt_density_map.png}   
+	\caption{Example density map for WebCamT dataset}
+	\label{fig:webcamt_density_map}
+\end{figure}
+
+%\subsection{Optimization Problems}
+
+As in each run of the experiment there are $3$ different source domains, this is a multisource scenario. As such, there are three possible optimization problem formulations for our DA models to solve, described in detail in section \ref{sec:optimization_problem} . We decided to go with the \textbf{Average} as, given the wide range of values for the mean number of vehicles in each frame across domains, it would be likely for one source domain to show a significantly higher loss than the others. If we used any of the other two optimization problems, our models would dedicate an outweighed importance to the hardest source domain, disregarding the other domains. Table \ref{table:optimization_experiments} shows experiments run comparing how well different optimization problems work with different models, that confirmed the superior performance of the formulation Average in dataset WebCamT.
+
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{| c | c | c | c |}
+		\cline{2-4}
+		\multicolumn{1}{c|}{} & \multicolumn{3}{c|}{Optimization Problem} \\
+		\cline{1-4}
+		\textbf{Model} & \textbf{Hardmax} & \textbf{Softmax} & \textbf{Average}\\
+		\hline
+		\textbf{Simple} & 18.146 & 11.160 & 9.913  \\
+		\hline 
+		\textbf{SingleLSTM} & 10.543 & 9.326 & 11.101  \\
+		\hline
+		\textbf{DoubleLSTM} & 9.589 & 7.731 & 6.148 \\
+		\hline
+		\textbf{CommonLSTM} & 9.847 & 12.069 & 10.219 \\
+		\hline
+	\end{tabular}
+	\caption{Comparison of different optimization problems. The table indicates the Avg. MAE Count across domains. The experiments were run with $\mu=$1e-3. }
+	\label{table:optimization_experiments}
+\end{table}
+
+\subsection{Unsupervised Setting}
+
+Table \ref{table:webcamt_unsupervised_results} shows the results in the unsupervised setting. For the domain adaptation models (Simple, SingleLSTM, DoubleLSTM and CommonLSTM), columns \textit{511}, \textit{551}, \textit{691} and \textit{846} indicate the best MAE Count obtained for the respective domain in the $5$ experiments with the different values of $\mu$ indicated before. Column \textbf{Avg} indicates the best average of the MAE Count across domains \textit{511}, \textit{551}, \textit{691} and \textit{846} in the $5$ experiments. That is, for each experiment, we compute the average MAE Count across the $4$ domains. We then select the best of the computed average MAE Count.
+
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{| c | c | c | c | c | c |}
+		\cline{2-6}
+		\multicolumn{1}{c|}{} & \multicolumn{5}{c|}{\textbf{MAE Count}} \\
+		\cline{1-6}
+		\textbf{Model} & \textbf{\textit{511}} & \textbf{\textit{551}} & \textbf{\textit{691}} & \textbf{\textit{846}} & \textbf{Avg}\\
+		\hline
+		\textbf{FCN-HA} & \textbf{5.006} & \textbf{2.577} & 17.224 & 4.674 & 7.370\\
+		\hline
+		\textbf{FCN-rLSTM} & 6.26 & 8.789 & 13.632 & 6.305 & 8.746\\
+		\hline
+		\textbf{Simple} & 9.629 & 3.497 & 18.271 & 5.581 & 9.846 \\
+		\hline 
+		\textbf{SingleLSTM} & 6.579 & 5.100 & 15.264  & 9.553 & 10.532 \\
+		\hline
+		\textbf{DoubleLSTM} & 5.013 & 4.576 & 10.973 & \textbf{3.029} & \textbf{6.148}\\
+		\hline
+		\textbf{CommonLSTM} & 6.106 & 5.552 & \textbf{10.508} & 3.564 & 8.146 \\
+		\hline
+	\end{tabular}
+	\caption{MAE Count by domain. For each domain, the best MAE obtained from experiments run with different $\mu's$ is shown. Column \textbf{Avg} indicates the best average of the MAE Count for domains \textit{511}, \textit{551}, \textit{691} and \textit{846} in experiments run with different values of $\mu$.}
+	\label{table:webcamt_unsupervised_results}
+\end{table}
+
+For the average of the MAE Count across domains, the model DoubleLSTM showed the best results with a MAE of $6.148$, followed by the FCN-HA with a MAE of $7.370$. In this dataset, the temporal models did not seem to perform particularly better than the non-temporal ones. Even though the DoubleLSTM showed the best results, the second best was the FCN-HA, a model that does not make any temporal consideration. We also could not verify a marked difference in the MAE Count Avg. of the DA and non-DA methods. These observations ascertain that it is not enough to apply domain adaptation or consider the temporal nature of data to obtain good results. Thus, the careful design of models and its integration with the two mentioned techniques is essential. 
+
+When it comes to the accuracy of models across different domains, we find that domain \textit{691} has the worst results, since it has the most dissimilar vehicle count distribution (highest mean and also highest standard deviation), which cannot be matched by any mixture of the source vehicle count distributions. It is observable that the performance of models across different domains is not consistent. For example, the FCN-HA model shows the best results for domains \textit{511} and \textit{551}, but the second worst result for domain \textit{691}. 
+
+We find that the model with the most balanced performance across domains was the DoubleLSTM as its MAE Count in a given model was either the best or the second best. This coupled with the fact that the DoubleLSTM was also the model with the best MAE Count Avg. allows us to conclude that this method was the best-performing in the WebCamT dataset.
+
+Graph \ref{fig:webcamt_unsupervised_graph} shows the Avg. MAE Count across domains for every DA model experiment, run with a different value of $\mu$.
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.85\textwidth]{ChapterThree/webcamt_unsupervised.png}   
+	\caption{Avg. MAE Count across domains for every $\mu$. Unsupervised results.}
+	\label{fig:webcamt_unsupervised_graph}
+\end{figure}
+
+This graph confirms that the model DoubleLSTM was the best-performing in the WebCamT dataset. The SingleLSTM, on the other hand, showed the worst results, even when comparing it against Simple Model, a non-temporal method. It is also noticeable that model DoubleLSTM has the best accuracy for the intermediate value of $\mu=$1e-3. On the other hand, CommonLSTM shows a tendency to improve the MAE Count as the $\mu$ decreases.
+
+\subsection{Semi-supervised Setting}
+
+Table \ref{table:webcamt_semi-supervised_results} shows the results in the semi-supervised setting. Like in the table \ref{table:webcamt_unsupervised_results}, for the domain adaptation models (Simple, SingleLSTM, DoubleLSTM and CommonLSTM), columns \textit{511}, \textit{551}, \textit{691} and \textit{846} indicate the best MAE Count obtained in the $5$ experiments with the different values of $\mu$ indicated before. The column \textbf{Avg} indicates the best average of the MAE Count for domains \textit{511}, \textit{551}, \textit{691} and \textit{846} in the 5 experiments.
+
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{| c | c | c | c | c | c |}
+		\cline{2-6}
+		\multicolumn{1}{c|}{} & \multicolumn{5}{c|}{\textbf{MAE Count}} \\
+		\cline{1-6}
+		\textbf{Model} & \textbf{\textit{511}} & \textbf{\textit{551}} & \textbf{\textit{691}} & \textbf{\textit{846}} & \textbf{Avg}\\
+		\hline
+		\textbf{FCN-HA} & \textbf{2.050} & \textbf{2.589} & 6.560 & 2.394 & \textbf{3.398} \\
+		\hline
+		\textbf{FCN-rLSTM} & 5.400 & 3.486 & 9.153 & 3.537 &  5.394 \\
+		\hline
+		\textbf{Simple} & 3.112 & 3.565 & 10.964 & 2.049 & 5.035 \\
+		\hline 
+		\textbf{SingleLSTM} & 4.239 & 4.393 & 7.032 & \textbf{1.520} & 4.327 \\
+		\hline
+		\textbf{DoubleLSTM} & 4.223 & 4.552 & \textbf{6.456} & 1.583 & 4.271 \\ 
+		\hline
+		\textbf{CommonLSTM} & 4.227 & 4.543 & 8.668 & 1.634 & 4.984 \\
+		\hline
+	\end{tabular}
+	\caption{MAE Count by domain. For each domain, the best MAE obtained from experiments run with different $\mu's$ is shown. Column \textbf{Avg} indicates the best average of the MAE Count for domains \textit{511}, \textit{551}, \textit{691} and \textit{846} in the experiments run with different values of $\mu$.}
+	\label{table:webcamt_semi-supervised_results}
+\end{table}
+
+There is a noticeable difference between the semi-supervised results and the unsupervised ones, with the former being significantly better that the latter. As the experiments we ran with the WebCamT had more data and more domains, that led to a reduction in the instability of the models, which caused the difference in accuracy between the two settings to not be as wide.
+
+Like in the unsupervised results, we were not able to notice a significant difference between the performance of the temporal methods and the non-temporal ones. As we have also verified before, the DA models do not show a marked improvement over the non-DA models for the WebCamT dataset. In fact, in this case, it was a non-temporal, non-DA model, the FCN-HA, that showed the best MAE Count Avg.
+
+Graph \ref{fig:webcamt_semi-supervised_graph} shows the Avg. MAE Count across domains for every DA model experiment, run with a different value of $\mu$.
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.85\textwidth]{ChapterThree/webcamt_semisupervised.png}   
+	\caption{Avg. MAE Count across domains for every $\mu$. Semi-supervised experiment.}
+	\label{fig:webcamt_semi-supervised_graph}
+\end{figure}
+
+The DoubleLSTM had, in general, the best Avg. MAE Count in the semi-supervised graph, similar to what it was verified in the unsupervised case. The Simple Model was the worst, unlike in the unsupervised setting, where it was the SingleLSTM that showed the worst results.
+
+The Avg. MAE Count across different values of $\mu$ is considerably more stable in the semi-supervised results than in the unsupervised ones. We were not able to notice an improvement in the performance of the CommonLSTM as $\mu$ decreased, just like we were not able observe a notorious lower Avg. MAE Count in the DoubleLSTM model, for $\mu=$1e-3. Because the unsupervised results are more unstable, they are also more sensible  to variations of the value of $\mu$ that are not discernible in the semi-supervised graph.
+
+\subsubsection{Discussion}
+
+It stands out that models DoubleLSTM and CommonLSTM showed a better performance than the state-of-art method for counting objects FCN-rLSTM in every dataset and in every setting (unsupervised and semi-supervised). In particular, when it comes to the Avg. MAE Count in the unsupervised results, the DoubleLSTM model showed an average improvement of $27\%$ , whereas the CommonLSTM model showed an average improvement of $17\%$, when compared against the FCN-rLSTM. As such, these results underline the contribution this dissertation made to the problem of adversarial domain adaptation in sensor networks.
+
+Models Simple and SingleLSTM, on the other hand, had a very unsatisfactory performance, by not showing better results than methods FCN-rLSTM and FCN-HA, even though they leveraged the power of domain adaptation and, in the case of SingleLSTM, the power of LSTMs to make temporal considerations about the nature of data. When it comes to the Simple Model, it appears the reason for its low accuracy is the fact that, without the power of LSTMs, applying domain adaptation to the FCN-HA just disturbs the training process. As for the SingleLSTM, having a too big of a difference in the complexity of its task executor and its domain discriminator is the most likely cause for its failure to show improvements relative to the state-of-art methods.
+
+We have thus verified that integrating domain adaptation with a method does not automatically guarantee better results. Careful considerations on how to divide the previous method between feature extractor and task executor should be made, just like careful deliberations on the domain discriminator design.
+
+It should also be noticed that the results showed an inconsistency in the performance of models across domains. That is, whereas a model performed better in one domain, another model performed better in another. Hence, when applying a model for counting objects in a real world scenario, one should ponder what model to use depending on the characteristics of the particular target domain.
+
+\subsubsection{Experimental protocol}
+
+We will run experiments with networks FCN-HA and FCN-rLSTM, proposed by Zhang et al. in paper "FCN-rLSTM: Deep Spatio-Temporal Neural Networks for
+Vehicle Counting in City Cameras" \cite{zhang2017fcnrlstm}, described in detail in section \ref{sec:fcn_rlstm}. The FCN-HA does not consider the temporal nature of data, whereas the FCN-rLSTM does. Additionally, we will run experiments with the new domain adaptation methods proposed in this dissertation: Simple Model, SingleLSTM Model, DoubleLSTM Model and CommonLSTM Model, described in detail in chapter \ref{chap:methodology}. Recall that Simple Model does not make temporal considerations, unlike the other three.
+
+In every experiment, assume we have $k$ domains $D_1, D_2,...,D_k$. In a domain adaptation scenario, we will do $k$ runs, so that in run number $t$, domain $D_t$ will be chosen as the target domain and all the others will be source domains. In a non-domain adaptation scenario, we also do $k$ runs, so that in run $t$, $D_t$ will be used for validation/testing and all the other domains will be used for training.
+
+For every experiment, we have computed two types of results, unsupervised and semi-supervised, that we describe below: 
+
+\begin{itemize}
+	\item \textbf{Unsupervised:} In this case, we do not have a validation dataset, and, for each run $t$, we calculate the testing results with the model we obtained at the end of the training epochs, for all the samples extracted from domain $D_t$.
+	\item \textbf{Semi-supervised:} For semi-supervised results, we have a validation dataset, that corresponds to $30\%$ of the samples extracted from target $D_t$. We use those samples to select the best epoch obtained throughout training. The model obtained in that epoch will be used to test the remaining $70\%$ of the samples in $D_t$.
+\end{itemize}
+
+
+For each dataset, we ran a total of $5$ experiments for the DA models, where we varied the value of hyperparameter $\mu$ between the values [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]. Recall that $\mu$ controls the weight to give to the domain discrimination loss, relative to the task execution loss. For the non-DA models, we ran just $1$ experiment.
+
+In all experiments, we train the model for $50$ epochs, using an Adam optimizer with a learning rate of 1e-4. The adopted evaluation metric is the Mean Absolute Error (MAE) between the predicted object count and the ground truth for each frame.
