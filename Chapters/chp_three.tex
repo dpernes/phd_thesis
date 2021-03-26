@@ -257,12 +257,38 @@ where $g: \gX \mapsto \gZ$ and $h: \gZ \mapsto \gY$ are, as before, the feature 
 \end{equation}
 Here, $\gamma > 0$ is a hyperparameter controlling the softness of the max operation ($\gamma \to \infty$ corresponds to the hard-max).
 
+\subsubsection{The gradient reversal layer}
+\label{sec:da_sensors_grad_rev}
+Adversarial DA algorithms, of which MDAN is a particular case, all aim to solve some variant of the following minimax problem:
+\begin{equation}
+	\min_{\vtheta_g, \vtheta_h} \max_{\vtheta_d} \quad \left \lbrace L(\vtheta_g, \vtheta_h, \vtheta_d) =  L_{\text{task}}(\vtheta_g, \vtheta_h) - \lambda_d L_{\text{disc}}(\vtheta_g, \vtheta_d) \right \rbrace,
+\end{equation}
+where $L_{\text{task}}$ is the supervised loss for the desired task, $L_{\text{disc}}$ is the classification loss for the domain discrimination task, $\vtheta_g$, $\vtheta_h$, and $\vtheta_d$ are the parameters of the feature extractor, task executor, and domain discriminator networks, respectively, and $\lambda_d > 0$ is a hyperparameter. This is a treatable surrogate of objective \plaineqref{eq:dann_obj}.
+
+Solving this problem then consists in finding a saddle point of this loss function. Using automatic differentiation libraries (e.g.\ PyTorch or TensorFlow), the naive solution would involve declaring two optimizers, one for the parameters $\vtheta_g$ and $\vtheta_h$ and another for $\vtheta_d$, and then performing gradient descent with the former and gradient ascent with the latter:
+\begin{align}
+	&\vtheta_g \leftarrow \vtheta_g - \rho \left(\nabla_{\vtheta_g}L_{\text{task}} - \lambda_d \nabla_{\vtheta_g} L_{\text{disc}}\right), \label{eq:grad_feature_extractor}\\
+	&\vtheta_h \leftarrow \vtheta_h - \rho \nabla_{\vtheta_h}L_{\text{task}}, \label{eq:grad_task_executor}\\
+	&\vtheta_d \leftarrow \vtheta_d + \rho \left(-\lambda_d \nabla_{\vtheta_d}L_{\text{disc}}\right), \label{eq:grad_discriminator}
+\end{align}
+where $\rho>0$ is the learning rate. This implies an extra computational burden because gradients need to be backpropagated through the discriminator network twice, one for computing $\nabla_{\vtheta_d} L_{\text{disc}}$ and another for computing $\nabla_{\vtheta_g} L_{\text{disc}}$.
+
+The gradient reversal layer (\citet{Ganin2015}) is an ingenious solution for this problem. This layer is a pseudo-function $r$ that behaves as the identify in the forward pass but inverts the sign of the gradient in the backward, i.e.:
+\begin{equation}
+	r(\vx) \triangleq \vx, \quad \frac{\partial r}{\partial \vx} \triangleq -I.
+\end{equation}
+By placing it in between the feature extractor $g$ and the domain discriminator $d$, the gradient $\nabla_{\vtheta_g} L_{\text{disc}}$ will come with its sign inverted. Thus, performing gradient descent over all parameters of
+\begin{equation}
+	L_{\text{task}}(\vtheta_g, \vtheta_h) + \lambda_d L_{\text{disc}}(\vtheta_g, \vtheta_d),
+\end{equation}
+yields exactly update equations \plaineqref{eq:grad_feature_extractor}, \plaineqref{eq:grad_task_executor}, and \plaineqref{eq:grad_discriminator}.
+
 \subsection{FCN-rLSTM: Spatio-temporal deep neural network for object counting}
 \label{sec:da_sensors_fcn_rltsm}
 
 \citet{Zhang2017} proposed FCN-rLSTM, a deep neural network architecture for counting vehicles in low-quality videos captured by city cameras that will constitute the backbone of our models. 
 
-Although each video frame contains all the information required to identify the number of vehicles in it, issues with the quality of the collected data can make vehicle counting a difficult problem, namely low resolution, vehicle occlusion, and different vehicle scales, particularly noticeable when the camera is too close to the road. Thus, assuming that the frame rate is sufficiently large when compared to the vehicles speed, leveraging information from the previous frames should help improving the accuracy of the prediction for the current frame. For this reason, FCN-rLSTM combines a fully convolutional network with a recurrent module, which preserves memory from the previous frames in LSTM cells. This is a density-based estimation method, being able to deal well with low frame rates, low resolutions, and vehicle occlusions, but having difficulty in accounting for different vehicle scales.
+Although each video frame should contain all the information required to identify the number of vehicles in it, issues with the quality of the collected data can make vehicle counting a difficult problem, namely low resolution, vehicle occlusion, and different vehicle scales, particularly noticeable when the camera is too close to the road. Thus, assuming that the frame rate is sufficiently large when compared to the vehicles speed, leveraging information from the previous frames should help improving the accuracy of the prediction for the current frame. For this reason, FCN-rLSTM combines a fully convolutional network with a recurrent module, which preserves memory from the previous frames in LSTM cells. This is a density-based estimation method, being able to deal well with low frame rates, low resolutions, and vehicle occlusions, but having difficulty in accounting for different vehicle scales.
 
 \begin{figure}
 	\centering
@@ -276,3 +302,30 @@ Although each video frame contains all the information required to identify the 
 	L(\vtheta) = \frac{1}{n} \sum_{i=1}^{n} ||\widehat{\mD}^{(t)}_i - \mD^{(t)}_i||^2_F + \frac{\lambda_c}{n} \sum_{i=1}^{n} ||\widehat{y}^{(t)}_i - y^{(t)}_i||^2,
 \end{equation}
 where $||\cdot||_F$ is the Frobenius norm, $\lambda_c > 0$ is a hyperparameter controlling the relative weight of the vehicle counting loss, and the dependency of $\widehat{\mD}^{(t)}_i$ and $\hat{y}^{(t)}_i$ on the network parameters $\vtheta$ is omitted to ease the notation.
+
+\subsection{Combining MDAN and FCN-rLSTM}
+We now explore several possibilities to combine MDAN and FCN-rLSTM into a single model capable of accurately counting vehicles in images from a target camera, provided that at training time we only have access to annotated data from other cameras and unlabeled data from the target.
+
+\subsubsection{Non-temporal model}
+The non-temporal model uses a sub-network in the FCN-rLSTM model as its backbone. It consists in a simplification of this, by not using LSTMs or making any other consideration on the temporal or sequential nature of the data. Figure \ref{fig:non_temporal_model} shows the architecture of the non-temporal model.
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=1.0\textwidth]{ChapterThree/non_temporal.png}
+	\caption{Non-temporal model. Reprinted from \citet{ThesisFrancisco}.}
+	\label{fig:non_temporal_model}
+\end{figure}
+
+The component F-HAC in that figure corresponds to all layers of the FCN-rLSTM up to the hyper-atrous combination. It is used as a feature extractor, whereas the rest of the convolutional layers are used for the object counting task.
+
+This model will be our baseline as we are primarily interested in merging the benefits of DA techniques and sequential modeling.
+
+\subsubsection{Temporal regression model}
+The temporal regression model uses the whole FCN-rLSTM model for the desired regression task, but the domain discriminator is still non-sequential, as shown in \Figref{fig:non_temporal_model}. Thus, in this model, the domain discrimination task only takes into account the domain-specific information provided by each frame individually and does not account for the domain-specific temporal dynamics that may exist.
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=1.0\textwidth]{ChapterThree/non_temporal.png}
+	\caption{Temporal regression model. Reprinted from \citet{ThesisFrancisco}.}
+	\label{fig:non_temporal_model}
+\end{figure}
