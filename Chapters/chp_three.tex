@@ -32,7 +32,7 @@ In Chapter \ref{chp:networked_data_streams}, we have addressed the situation whe
 
 Supervised training of deep neural networks has achieved outstanding results on multiple learning tasks greatly due to the availability of large and rich annotated datasets. Unfortunately, annotating such large-scale datasets is often prohibitively time-consuming and expensive. Furthermore, in many practical cases, it is not possible to collect annotated data with the same characteristics as the test data, and, as a result, training and test data are drawn from distinct underlying distributions. As a consequence, the model performance tends to decrease significantly on the test data. The goal of DA algorithms is to minimize this gap by finding transferable knowledge from the source to the target domain. Sometimes, it is assumed that a small portion of labeled target data are available at training time -- a setting that is known as \newterm{semi-supervised} DA (e.g.\ \citet{Daume2010, Donahue2013, Kumar2010, Saito2019, Yao2015}). In this chapter, we focus mostly on the more challenging scenario, where no labeled target data are available for training -- known as \newterm{unsupervised} DA (e.g.\ \citet{Baktashmotlagh2013, Ganin2015, Kang2019, Long2016, Zhao2018}). The DA problem, in its semi-supervised and unsupervised variants, has received increased attention in recent years, both from theoretical (e.g.\ \citet{BenDavid2010, BenDavid2007, Blitzer2008, Cortes2014, Gopalan2013, Hoffman2018, Zhao2019}) and algorithmic perspectives (e.g.\ \citet{Ajakan2014, Becker2013, Fernando2013, Jhuo2012, Long2015, Louizos2015, Sun2016, Tzeng2017}). In many situations, the annotated training data may consist of a combination of distinct datasets, some of which may be closer or further away from the target data. Finding nontrivial ways of combining multiple datasets to approximate the target distribution and extracting relevant knowledge from such combination is the purpose of multi-source DA algorithms (e.g.\ \citet{Kim2017, Guo2018, Hoffman2018, Mansour2009, Sebag2019, Zhang2015, Zhao2018}) and is also our main focus in this chapter.
 
-The remainder of the chapter is organized as follows: i) we formalize the problem and provide some useful background by reviewing some important theoretical results and state of the art algorithms (\Secref{sec:chp3_background}); ii) we discuss some exploratory solutions for this problem in the context of sensor networks (\Secref{sec:da_sensors}); and finally iii) we present our own novel algorithm for multi-source domain adaptation (\Secref{sec:modafm}).
+The remainder of the chapter is organized as follows: i) we formalize the problem and provide some useful background by reviewing some important theoretical results and state of the art algorithms (\Secref{sec:chp3_background}); ii) we discuss some exploratory solutions for this problem in the context of sensor networks (\Secref{sec:da_sensors}); and finally iii) we present our own novel algorithm for unsupervised multi-source domain adaptation (\Secref{sec:modafm}).
 
 \section{Background}
 \label{sec:chp3_background}
@@ -369,29 +369,75 @@ When there is a strong correlation in the object count in consecutive video fram
 
 \subsubsection{Experimental protocol}
 
-We will run experiments with networks FCN-HA and FCN-rLSTM, proposed by \citet{Zhang2017} in paper "FCN-rLSTM: Deep Spatio-Temporal Neural Networks for
-Vehicle Counting in City Cameras", described in detail in section \ref{sec:fcn_rlstm}. The FCN-HA does not consider the temporal nature of data, whereas the FCN-rLSTM does, and neither of them . Additionally, we will run experiments with the models presented in \Secref{sec:mdan_fcn_rlstm}.
+We will run experiments with the domain adaptation models presented in \Secref{sec:mdan_fcn_rlstm}. Additionally, we will use models FCN-HAC and FCN-rLSTM as baselines, which do not employ any technique to tackle domain shift. The former is a subnetwork of the latter consisting of all layers excluding the LSTM network. Therefore, it does not account for any temporal correlations between consecutive frames.
 
-In every experiment, assume we have $k+1$ domains $D_1, D_2,...,D_{k+1}$. In a domain adaptation scenario, we do $k+1$ runs, so that in run number $t$, domain $D_t$ will be chosen as the target domain and all the others will be source domains.
-
-For every experiment, we have computed results in both unsupervised and semi-supervised settings, described below:
+In every experiment, assume we have $k+1$ domains $\gD_1, \gD_2,...,\gD_{k+1}$. In a domain adaptation scenario, we do $k+1$ runs, so that in run number $t$, domain $\gD_t$ will be chosen as the target domain and all the others will be source domains. For each experiment, we have computed results in both unsupervised and semi-supervised settings, described below:
 
 \begin{itemize}
-	\item \textbf{Unsupervised:} In this case, we do not have a validation dataset, and, for each run $t$, we calculate the testing results with the model we obtained at the end of the training epochs, for all the samples extracted from domain $D_t$.
-	\item \textbf{Semi-supervised:} For semi-supervised results, we have a validation dataset, that corresponds to $30\%$ of the samples extracted from target $D_t$. We use those samples to select the best epoch obtained throughout training. The model obtained in that epoch will be used to test the remaining $70\%$ of the samples in $D_t$.
+	\item \textbf{Unsupervised:} In this case, we do not have a validation dataset, and, for each run $t$, we calculate the testing results with the model we obtained at the end of the training epochs, for all the samples extracted from domain $\gD_t$.
+	\item \textbf{Semi-supervised:} For semi-supervised results, we have a validation dataset that corresponds to $30\%$ of the samples extracted from target $\gD_t$. We use those samples to select the best model obtained throughout the training epochs. This model is then tested with the remaining $70\%$ of the samples from $\gD_t$.
 \end{itemize}
 
 For each dataset, we ran a total of $5$ experiments for the DA models, where we varied the value of hyperparameter $\lambda_d$ in the range $[10^{-5}, 10^{-1}]$. Recall that $\lambda_d$ controls the weight to give to the domain discrimination loss, relative to the task execution loss.
 
 In all experiments, we train the model for $50$ epochs, using Adam optimizer (\citet{Kingma2014}) with a learning rate of $10^{-4}$. The adopted evaluation metric is the Mean Absolute Error (MAE) between the predicted object count and the ground truth for each frame.
 
+\subsubsection{UCSDPeds dataset}
+\label{sec:da_sensors_ucsdpeds}
+
+UCSDPeds \cite{ucspeds_dataset} is a crowd counting dataset that contains videos of pedestrians on University of California, San Diego, walkways, taken from a stationary camera in two different viewpoints. All videos are 8-bit grayscale, with dimensions $158 \times 238$ at a $2$ frames per second rate. For each video frame, the dataset has a mask indicating the region of interest in the image and another file indicating the centers, in image coordinates, of every person in the frame. 
+
+Each camera point of view corresponds to a domain in our experiments, named \textit{vidd} and \textit{vidf}. Figures \ref{fig:ucsdpeds_vidd}-\ref{fig:ucsdpeds_vidf} show examples of frames in each one of the two domains.
+
+\begin{figure}[!ht]
+	\centering
+	\begin{minipage}[b]{0.4\textwidth}
+		\includegraphics[width=\textwidth]{ChapterThree/vidd_example.png}
+		\caption{Domain \textit{vidd} from UCSDPeds dataset.}
+		\label{fig:ucsdpeds_vidd}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[b]{0.4\textwidth}
+		\includegraphics[width=\textwidth]{ChapterThree/vidf_example.png}
+		\caption{Domain \textit{vidf} from UCSDPeds dataset.}
+		\label{fig:ucsdpeds_vidf}
+	\end{minipage} 
+\end{figure}
+
+Table \ref{tab:ucspeds_domains} shows the mean and standard deviation for the number of people in a frame, for each domain. There is a strong target shift between domains as the mean number of people in domain \textit{vidf} is more than $4$ times higher than the mean number of people in domain \textit{vidd} and, therefore, the DA task is challenging for this dataset.
+
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{|c|c|c|}
+		\hline
+		Domain & Mean & Std  \\
+		\hline
+		\textit{vidd} & 6.448 & 3.089\\
+		\hline
+		\textit{vidf} & 27.570 & 7.393 \\
+		\hline
+	\end{tabular}
+	\caption{UCSPeds domains mean and standard deviation for the number of people in a frame}
+	\label{tab:ucspeds_domains}
+\end{table}
+
+For each frame, we computed its density map, by placing a $15 \times 8$ Gaussian kernel with sum $1$ on the center of each person. Figure \ref{fig:ucsdpeds_density_map} shows an example of a density map, where the Gaussian kernel around each person is shown in red. The region of interest is also indicated in the figure. As we had only $800$ frames in each domain, we performed data augmentation by adding the mirrored image of each frame to the dataset. 
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.75\textwidth]{ChapterThree/ucsdpeds_density_map.png}   
+	\caption{Sample density map for UCSDPeds dataset.}
+	\label{fig:ucsdpeds_density_map}
+\end{figure}
+
 \subsubsection{WebCamT dataset}
+\label{sec:da_sensors_webcamt}
 
 WebCamT (\citet{Zhang2017b}) is a vehicle counting dataset that contains city camera videos, taken from a stationary camera in different points of the city of New York. All videos are in color, with dimensions $240 \times 352$, at a $1$ frame per second rate. Every frame in the dataset has a ground truth file with annotations that indicate the center of each vehicle and also its bounding box. 
 
-There are a total of $14$ cameras, that cover multiple scenes, camera perspectives, congestion states  and weather conditions. We chose a total of $4$ cameras from those $14$ to correspond to our domains. Each of those $4$ cameras had a number of videos, from which we selected $1000$ frames. The frames were selected consecutively, so that if frames $f_1$ and $f_2$ from the same video $V$ were selected, then every frame between $f_1$ and $f_2$ in video $V$ was also selected.
+There are $14$ cameras that cover multiple scenes, camera perspectives, congestion states, and weather conditions. We chose four cameras from those $14$ to correspond to our domains. Each of those four cameras had a number of videos, from which we selected $1000$ frames. The frames were selected consecutively, so that if frames $f_1$ and $f_2$ from the same video $V$ were selected, then every frame between $f_1$ and $f_2$ in video $V$ was also selected.
 
-Figures \ref{fig:webcamt_511}-\ref{fig:webcamt_846} show examples of frames in each one of the four domains. Table \ref{tab:webcamt_domains} shows the mean and standard deviation for the number of vehicles in a frame, for each domain. As it is possible to observe, the mean number of vehicles in each frame differs significantly across domains, being more than three times larger in domain \textit{691} than in domain \textit{846}. Hence, there is significant target shift in this dataset and, consequently, the covariate shift assumption does not hold.
+Figures \ref{fig:webcamt_511}-\ref{fig:webcamt_846} show examples of frames in each of the four domains. Table \ref{tab:webcamt_domains} shows the mean and standard deviation for the number of vehicles in a frame, for each domain. As it is possible to observe, the mean number of vehicles in each frame differs significantly across domains, being more than three times larger in domain \textit{691} than in domain \textit{846}. Hence, there is significant target shift in this dataset and, consequently, the covariate shift assumption does not hold.
 
 \begin{figure}[!ht]
 	\centering
@@ -424,7 +470,7 @@ Figures \ref{fig:webcamt_511}-\ref{fig:webcamt_846} show examples of frames in e
 	\centering
 	\begin{tabular}{|c|c|c|}
 		\hline
-		\textbf{Domain} & \textbf{Mean} & \textbf{Std}  \\
+		Domain & Mean & Std  \\
 		\hline
 		\textit{511} & 12.039 & 6.32 \\
 		\hline
@@ -439,131 +485,145 @@ Figures \ref{fig:webcamt_511}-\ref{fig:webcamt_846} show examples of frames in e
 	\label{tab:webcamt_domains}
 \end{table}
 
-After extracting each frame from the videos, we computed its density map, by placing a $4\times4$ Gaussian kernel with sum $1$ on the center of each car. We then had to resize the frames and density to maps to size $120\times 176$ so that we could deal with speed and memory constraints. Figure \ref{fig:webcamt_density_map} shows an example of a density map in a resized frame, where the Gaussian kernel around each car is shown in red.
+After extracting each frame from the videos, we computed its density map by placing a $4\times4$ Gaussian kernel with sum $1$ on the center of each car. We then had to resize the frames and density to maps to size $120\times 176$ so that we could deal with speed and memory constraints. Figure \ref{fig:webcamt_density_map} shows an example of a density map in a resized frame, where the Gaussian kernel around each car is shown in red.
 
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=0.75\textwidth]{ChapterThree/webcamt_density_map.png}   
-	\caption{Example density map for WebCamT dataset}
+	\caption{Sample density map for WebCamT dataset}
 	\label{fig:webcamt_density_map}
 \end{figure}
 
 \subsection{Choice of optimization problem}
 
-As in each run of the experiment there are three different source domains, this is a multi-source scenario. As such, there are three possible optimization problem formulations for our DA models to solve, namely hard-max, soft-max, and average, as described in \secref{sec:da_sensors_mdan}. Table \ref{table:optimization_experiments} shows results for each of our models on these formulations, evaluated in an unsupervised setting. These suggest that averaging performs consistently better than the other two approaches in this dataset. This is somewhat intuitive: given the wide range of values for the mean number of vehicles in each frame across domains, it would be likely for one source domain to show a significantly higher loss than the others. If we use any of the other two optimization problems, our models would dedicate an outweighed importance to the hardest source domain, disregarding the other domains. For this reason, we shall adopt the averaging formulation in all subsequent experiments.
+The DA task for the UCSDPeds dataset is single source, so there is no choice to be made regarding the combination of source domains. In this setting, the MDAN model boils down to the original adversarial DA algorithm proposed by \citet{Ganin2015}, where one single domain discriminator is used to distinguish between source and target samples.
+
+In the WebCamT dataset, we have three different source domains, so this is a multi-source scenario. As discussed in \secref{sec:da_sensors_mdan}, we consider three possible optimization problems for our DA models to solve, namely hard-max, soft-max, and average. Table \ref{table:optimization_experiments} shows results for each of our models on these formulations, evaluated in an unsupervised setting. These suggest that averaging tends to perform better than the other two approaches in this dataset. This is somewhat intuitive: given the wide range of values for the mean number of vehicles in each frame across domains, it would be likely for one source domain to show a significantly higher loss than the others. If we use any of the other two optimization problems, our models would dedicate an outweighed importance to the hardest source domain, disregarding the other domains. For this reason, we shall adopt the averaging formulation in all subsequent experiments.
 
 \begin{table}[!ht]
 	\centering
 	\begin{tabular}{| c | c | c | c |}
 		\cline{2-4}
-		\multicolumn{1}{c|}{} & \multicolumn{3}{c|}{Optimization Problem} \\
+		\multicolumn{1}{c|}{} & \multicolumn{3}{c|}{Optimization problem} \\
 		\cline{1-4}
 		Model & Hard-max & Soft-max & Average\\
 		\hline
-		Non-temporal & 18.146 & 11.160 & 9.846  \\
+		Non-temporal & 18.15 & 11.16 & \textbf{9.91}  \\
 		\hline 
-		SingleLSTM & 10.543 & 9.326 & 10.532  \\
+		SingleLSTM & 10.54 & \textbf{9.33} & 11.10  \\
 		\hline
-		DoubleLSTM & 9.589 & 7.731 & 6.148 \\
+		DoubleLSTM & 9.59 & 7.73 & \textbf{6.14} \\
 		\hline
-		CommonLSTM & 9.847 & 12.069 & 8.146 \\
+		CommonLSTM & \textbf{9.85} & 12.07 & 10.22 \\
 		\hline
 	\end{tabular}
-	\caption{Comparison of different optimization problems. The table indicates the Avg. MAE Count across domains. The experiments were run with $\lambda_d=10^{-3}$. }
+	\caption{Comparison of different optimization problems. The values indicates the average MAE count across domains in the WebCamT dataset. The experiments were run with $\lambda_d=10^{-3}$. }
 	\label{table:optimization_experiments}
 \end{table}
 
-\subsection{Unsupervised Setting}
+\subsection{Unsupervised setting}
 
-Table \ref{table:webcamt_unsupervised_results} shows the results in the unsupervised setting. For the domain adaptation models (non-temporal, temporal regression, double-temporal and common-temporal), columns \textit{511}, \textit{551}, \textit{691} and \textit{846} indicate the best MAE Count obtained for the respective domain in the $5$ experiments with the different values of $\lambda_d$ indicated before. Column Avg indicates the best average of the MAE Count across domains \textit{511}, \textit{551}, \textit{691} and \textit{846} in the $5$ experiments. That is, for each experiment, we compute the average MAE Count across the $4$ domains. We then select the best of the computed average MAE Count.
+Table \ref{table:webcamt_unsupervised_results} shows the results in the unsupervised setting. For the domain adaptation models (Non-temporal, SingleLSTM, DoubleLSTM and CommonLSTM), columns \textit{511}, \textit{551}, \textit{691} and \textit{846} indicate the best MAE count obtained for the respective domain in the $5$ experiments with the different values of $\lambda_d$ indicated before. Column Avg indicates the best average MAE count across domains \textit{511}, \textit{551}, \textit{691} and \textit{846} in the $5$ experiments. That is, for each experiment, we compute the average MAE count across the $4$ domains. We then select the best of the computed average MAE count.
 
 \begin{table}[!ht]
 	\centering
-	\begin{tabular}{| c | c | c | c | c | c |}
-		\cline{2-6}
-		\multicolumn{1}{c|}{} & \multicolumn{5}{c|}{Domain} \\
-		\cline{1-6}
-		Model & \textit{511} & \textit{551} & \textit{691} & \textit{846} & Avg\\
+	\begin{tabular}{| c | c | c | c || c | c | c | c | c | c | c | c |}
+		\cline{2-9}
+		\multicolumn{1}{c|}{} & \multicolumn{3}{c||}{UCSDPeds} & \multicolumn{5}{c|}{WebCamT} \\
+		\cline{1-9}
+		Model & \textit{vidd} & \textit{vidf} & Avg & \textit{511} & \textit{551} & \textit{691} & \textit{846} & Avg\\
 		\hline
-		FCN-HA & \textbf{5.006} & \textbf{2.577} & 17.224 & 4.674 & 7.370\\
+		FCN-HA & 15.23 & 7.14 & 11.19 & \textbf{5.01} & \textbf{2.58} & 17.22 & 4.67 & 7.37\\
 		\hline
-		FCN-rLSTM & 6.26 & 8.789 & 13.632 & 6.305 & 8.746\\
+		FCN-rLSTM & 11.04  & 5.98 &  8.51 & 6.26 & 8.79 & 13.63 & 6.31 & 8.75\\
 		\hline
-		Non-temporal & 9.629 & 3.497 & 18.271 & 5.581 & 9.846 \\
+		Non-temporal & \textbf{6.24} & 22.52 & 14.38 & 9.63 & 3.50 & 18.27 & 5.58 & 9.85 \\
 		\hline 
-		SingleLSTM & 6.579 & 5.100 & 15.264  & 9.553 & 10.532 \\
+		SingleLSTM & 7.75 & 9.07 & 9.32 & 6.58 & 5.10 & 15.26  & 9.55 & 10.53 \\
 		\hline
-		DoubleLSTM & 5.013 & 4.576 & 10.973 & \textbf{3.029} & \textbf{6.148}\\
+		DoubleLSTM & 8.04 & \textbf{3.89} & 6.49 & 5.01 & 4.58 & 10.97 & \textbf{3.03} & \textbf{6.15}\\
 		\hline
-		CommonLSTM & 6.106 & 5.552 & \textbf{10.508} & 3.564 & 8.146 \\
+		CommonLSTM & 6.83 & 4.80 & \textbf{6.18} & 6.11 & 5.55 & \textbf{10.51} & 3.56 & 8.15 \\
 		\hline
 	\end{tabular}
-	\caption{MAE Count by domain. For each domain, the best MAE obtained from experiments run with different values of $\lambda_d$ is shown. Column Avg indicates the best average of the MAE Count for domains \textit{511}, \textit{551}, \textit{691} and \textit{846} in experiments run with different values of $\lambda_d$.}
+	\caption{MAE count per domain in UCSDPeds and WebCamT datasets (unsupervised setting). For each domain, the best MAE obtained from experiments run with different values of $\lambda_d$ is shown. Column Avg indicates the best average MAE count across domains in experiments run with different values of $\lambda_d$.}
 	\label{table:webcamt_unsupervised_results}
 \end{table}
 
-For the average of the MAE Count across domains, the DoubleLSTM model showed the best results with a MAE of $6.148$, followed by the FCN-HA with a MAE of $7.370$. In this dataset, the temporal models did not seem to perform particularly better than the non-temporal ones. Even though the double-temporal showed the best results, the second best was the FCN-HA, a model that does not make any temporal consideration. We also could not verify a marked difference in the average MAE count of the DA and non-DA methods. These observations ascertain that it is not enough to apply domain adaptation or consider the temporal nature of data to obtain good results. Thus, the careful design of models and its integration with the two mentioned techniques is essential. 
+For the average MAE count across domains, the DoubleLSTM model showed the best results with a MAE of $6.148$, followed by the FCN-HA with a MAE of $7.370$. In this dataset, the temporal models did not seem to perform particularly better than the non-temporal ones. Even though the double-temporal showed the best results, the second best was the FCN-HA, a model that does not make any temporal consideration. We also could not verify a marked difference in the average MAE count of the DA and non-DA methods. These observations ascertain that it is not enough to apply domain adaptation or consider the temporal nature of data to obtain good results. Thus, the careful design of models and its integration with the two mentioned techniques is essential. 
 
-When it comes to the accuracy of models across different domains, we find that domain \textit{691} has the worst results, since it has the most dissimilar vehicle count distribution (highest mean and also highest standard deviation), which cannot be matched by any mixture of the source vehicle count distributions. It is observable that the performance of models across different domains is not consistent. For example, the FCN-HA model shows the best results for domains \textit{511} and \textit{551}, but the second worst result for domain \textit{691}. 
+When it comes to the accuracy of models across different domains, we find that domain \textit{691} has the worst results, probably because it has the most dissimilar vehicle count distribution (highest mean and also highest standard deviation), which cannot be matched by any mixture of the source vehicle count distributions. It is observable that the performance of models across different domains is not consistent. For example, the FCN-HA model shows the best results for domains \textit{511} and \textit{551}, but the second worst result for domain \textit{691}. 
 
-We find that the model with the most balanced performance across domains was the DoubleLSTM as its MAE Count in a given model was either the best or the second best. This coupled with the fact that the DoubleLSTM was also the model with the best average MAE count allows us to conclude that this method was the best-performing in the WebCamT dataset.
+We find that the model with the most balanced performance across domains was the DoubleLSTM as its MAE Count in a given model was always either the best or the second best. This observation coupled with the fact that the DoubleLSTM was also the model with the best average MAE count allows us to conclude that this method was the best-performing in the WebCamT dataset.
 
-\Figref{fig:webcamt_unsupervised_graph} shows the average MAE count across domains for every DA model experiment, run with a different value of $\lambda_d$.
+\Figref{fig:lambda_d_unsup} shows the average MAE count across domains for every DA model experiment, run with a different value of $\lambda_d$.
 
 \begin{figure}[!ht]
-	\centering
-	\includegraphics[width=0.85\textwidth]{ChapterThree/webcamt_unsupervised.png}   
-	\caption{Avg. MAE Count across domains for every $\lambda_d$ (unsupervised setting).}
-	\label{fig:webcamt_unsupervised_graph}
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=0.85\textwidth]{ChapterThree/ucsdpeds_unsupervised.png}
+	\end{subfigure}
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=0.85\textwidth]{ChapterThree/webcamt_unsupervised.png}
+	\end{subfigure}
+	\caption{Average MAE count across domains for each $\lambda_d$ in the unsupervised setting in the UCSDPeds (left) and WebCamT (right) datasets.}
+	\label{fig:lambda_d_unsup}
 \end{figure}
 
-This graph confirms that the model DoubleLSTM was the best-performing in the WebCamT dataset. The SingleLSTM, on the other hand, showed the worst results, even when comparing it against Simple Model, a non-temporal method. It is also noticeable that model DoubleLSTM has the best accuracy for the intermediate value of $\lambda_d=10^{-3}$. On the other hand, CommonLSTM shows a tendency to improve the MAE Count as the $\lambda_d$ decreases.
+This plot confirms that the DoubleLSTM model was the best-performing in the WebCamT dataset. The SingleLSTM, on the other hand, showed the worst results, even when comparing it against the Non-temporal model. It is also noticeable that model DoubleLSTM has the best accuracy for the intermediate value of $\lambda_d=10^{-3}$. On the other hand, CommonLSTM shows a tendency to improve the MAE Count as $\lambda_d$ decreases.
 
-\subsection{Semi-supervised Setting}
+\subsection{Semi-supervised setting}
 
 Table \ref{table:webcamt_semi-supervised_results} shows the results in the semi-supervised setting. Like in the table \ref{table:webcamt_unsupervised_results}, for the domain adaptation models (Simple, SingleLSTM, DoubleLSTM and CommonLSTM), columns \textit{511}, \textit{551}, \textit{691} and \textit{846} indicate the best MAE Count obtained in the $5$ experiments with the different values of $\lambda_d$ indicated before. Column Avg indicates the best average of the MAE Count for domains \textit{511}, \textit{551}, \textit{691} and \textit{846} in the 5 experiments.
 
 \begin{table}[!ht]
 	\centering
-	\begin{tabular}{| c | c | c | c | c | c |}
-		\cline{2-6}
-		\multicolumn{1}{c|}{} & \multicolumn{5}{c|}{Domain} \\
-		\cline{1-6}
-		Model & \textit{511} & \textit{551} & \textit{691} & \textit{846} & Avg\\
+	\begin{tabular}{| c | c | c | c || c | c | c | c | c | c | c | c |}
+		\cline{2-9}
+		\multicolumn{1}{c|}{} & \multicolumn{3}{c||}{UCSDPeds} & \multicolumn{5}{c|}{WebCamT} \\
+		\cline{1-9}
+		Model & \textit{vidd} & \textit{vidf} & Avg & \textit{511} & \textit{551} & \textit{691} & \textit{846} & Avg\\
 		\hline
-		FCN-HA & \textbf{2.050} & \textbf{2.589} & 6.560 & 2.394 & \textbf{3.398} \\
+		FCN-HA & 1.43 & 4.48  & 2.96 & \textbf{2.05} & \textbf{2.59} & 6.56 & 2.394 & \textbf{3.40} \\
 		\hline
-		FCN-rLSTM & 5.400 & 3.486 & 9.153 & 3.537 &  5.394 \\
+		FCN-rLSTM & 2.01 & \textbf{2.07} & 2.04 & 5.40 & 3.49 & 9.15 & 3.54 &  5.39 \\
 		\hline
-		Simple & 3.112 & 3.565 & 10.964 & 2.049 & 5.035 \\
+		Non-temporal & 0.84 & 3.49 & 2.21 & 3.11 & 3.57 & 10.96 & 2.05 & 5.04 \\
 		\hline 
-		SingleLSTM & 4.239 & 4.393 & 7.032 & \textbf{1.520} & 4.327 \\
+		SingleLSTM & 0.94 & 5.07 & 3.00 & 4.24 & 4.39 & 7.03 & \textbf{1.52} & 4.34 \\
 		\hline
-		DoubleLSTM & 4.223 & 4.552 & \textbf{6.456} & 1.583 & 4.271 \\ 
+		DoubleLSTM & 0.95 & 2.84 & \textbf{1.89} & 4.22 & 4.55 & \textbf{6.46} & 1.58 & 4.27 \\ 
 		\hline
-		CommonLSTM & 4.227 & 4.543 & 8.668 & 1.634 & 4.984 \\
+		CommonLSTM & \textbf{0.88} & 2.61 & 1.94 & 4.23 & 4.54 & 8.67 & 1.63 & 4.98 \\
 		\hline
 	\end{tabular}
-	\caption{MAE Count by domain. For each domain, the best MAE obtained from experiments run with different values of $\lambda_d$ is shown. Column Avg indicates the best average of the MAE Count for domains \textit{511}, \textit{551}, \textit{691} and \textit{846} in the experiments run with different values of $\lambda_d$.}
+	\caption{MAE count per domain in UCSDPeds and WebCamT datasets (semi-supervised setting). For each domain, the best MAE obtained from experiments run with different values of $\lambda_d$ is shown. Column Avg indicates the best average MAE count across domains in experiments run with different values of $\lambda_d$.}
 	\label{table:webcamt_semi-supervised_results}
 \end{table}
 
-There is a noticeable difference between the semi-supervised results and the unsupervised ones, with the former being significantly better that the latter. As the experiments we ran with the WebCamT had more data and more domains, that led to a reduction in the instability of the models, which caused the difference in accuracy between the two settings to not be as wide.
+There is a noticeable difference between the semi-supervised results and the unsupervised ones, with the former being significantly better that the latter. As the experiments we ran with the WebCamT had more data and more domains, that led to a reduction in the instability of the models, which caused the difference in accuracy between the two settings not to be as wide.
 
-Like in the unsupervised results, we were not able to notice a significant difference between the performance of the temporal methods and the non-temporal ones. As we have also verified before, the DA models do not show a marked improvement over the non-DA models for the WebCamT dataset. In fact, in this case, it was a non-temporal, non-DA model, the FCN-HA, that showed the best average MAE count.
+Like in the unsupervised setting, we were not able to notice a significant difference between the performance of the temporal methods and the non-temporal ones. As we have also verified before, the DA models do not show a marked improvement over the non-DA models for the WebCamT dataset. In fact, in this case, it was a non-temporal, non-DA model, the FCN-HA, that showed the best average MAE count.
 
-\Figref{fig:webcamt_semi-supervised_graph} shows the average MAE count across domains for every DA model experiment, run with a different value of $\lambda_d$.
+\Figref{fig:lambda_d_semisup} shows the average MAE count across domains for every DA model experiment, run with a different value of $\lambda_d$.
 
 \begin{figure}[!ht]
-	\centering
-	\includegraphics[width=0.85\textwidth]{ChapterThree/webcamt_semisupervised.png}   
-	\caption{Avg. MAE Count across domains for every $\lambda_d$ (semi-supervised setting).}
-	\label{fig:webcamt_semi-supervised_graph}
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=0.85\textwidth]{ChapterThree/ucsdpeds_semisupervised.png}
+	\end{subfigure}
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=0.85\textwidth]{ChapterThree/webcamt_semisupervised.png}
+	\end{subfigure}
+	\caption{Average MAE count across domains for each $\lambda_d$ in the semi-supervised setting in the UCSDPeds (left) and WebCamT (right) datasets.}
+	\label{fig:lambda_d_semisup}
 \end{figure}
 
 The DoubleLSTM had, in general, the best average MAE count in the semi-supervised graph, similar to what it was verified in the unsupervised case. The Simple Model was the worst, unlike in the unsupervised setting, where it was the SingleLSTM that showed the worst results.
 
-The average MAE count across different values of $\lambda_d$ is considerably more stable in the semi-supervised results than in the unsupervised ones. We were not able to notice an improvement in the performance of the CommonLSTM as $\lambda_d$ decreased, just like we were not able observe a notorious lower average MAE count in the DoubleLSTM model, for $\lambda_d=10^{-3}$. Because the unsupervised results are more unstable, they are also more sensible  to variations of the value of $\lambda_d$ that are not discernible in the semi-supervised graph.
+The average MAE count across different values of $\lambda_d$ is considerably more stable in the semi-supervised results than in the unsupervised ones. We were not able to notice an improvement in the performance of the CommonLSTM as $\lambda_d$ decreased, just like we were not able observe a notorious lower average MAE count in the DoubleLSTM model, for $\lambda_d=10^{-3}$. Because the unsupervised results are more unstable, they are also more sensitive  to variations of the value of $\lambda_d$ that are not discernible in the semi-supervised setting.
 
 \subsubsection{Discussion}
 
