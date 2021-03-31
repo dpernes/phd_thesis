@@ -1,0 +1,544 @@
+% Appendix Template
+
+\chapter{Tackling unsupervised domain adaptation with optimism and consistency -- supplementary material} % Main appendix title
+
+\label{appendix:modafm} % Change X to a consecutive letter; for referencing this appendix elsewhere, use \ref{AppendixX}
+
+\section{Proof of Theorem 1}
+\label{sec:thm_proof}
+
+The presented bound is an immediate consequence of two theorems of \cite{BenDavid2010, Blitzer2008}, which we present here as lemmas:
+
+\begin{lemma}
+	\label{lemma:bound_mixture}
+	(Lemma 4 from \citet{Blitzer2008}) Let $\gH$ be a hypothesis class with VC-dimension $d$. For each $j \in \{1,2,...,k\}$, consider a labeled set of $n/k$ samples drawn from the source domain $\gS_j$. For any $h \in \gH$ and any $\alpha \in \Delta$, with probability at least $1-\delta$ over the choice of samples,
+	
+	\begin{equation}
+	|\widehat{\epsilon}_\alpha(h) - \epsilon_\alpha(h)| \leq 2\sqrt{\frac{k(2d\log(2(n+1)) + \log(\frac{4}{\delta}))}{n} \sum_{j=1}^M \alpha_j^2}.
+	\end{equation}
+\end{lemma}
+
+\begin{lemma}
+	\label{lemma:bound_single_source}
+	(Theorem 2 from \citet{BenDavid2010}) Let $\gH$ be a hypothesis class with VC-dimension $d$. Consider $n$ unlabeled samples drawn from each of the two domains $\gS$ (source) and $\gT$ (target). Then, for every $h \in \gH$, with probability at least $1-\delta$ over the choice of samples,
+	
+	\begin{equation}
+	\epsilon_\gT(h) \leq \epsilon_\gS(h) + \frac{1}{2} \emp{d}_{\gH \Delta \gH}(\gS, \gT) + 2\sqrt{\frac{2d\log(2n) + \log(\frac{2}{\delta})}{n}} + \lambda,
+	\end{equation}    
+	where $\lambda = \min_{h \in \gH} \epsilon_\gS(h) + \epsilon_\gT(h)$.
+\end{lemma}
+
+Proving our result is now straightforward. We can apply Lemma~\ref{lemma:bound_single_source} taking $\gS_\alpha = \sum_{j=1}^M \alpha_j \gS_j$ as the source domain. Note that $\epsilon_{S_\alpha}(h) = \sum_{j=1}^M \alpha_j \epsilon_{S_j}(h)$ for any $h \in \gH$, and therefore $\lambda_\alpha = \min_{h \in \gH}\, \sum_{j=1}^M \alpha_j\epsilon_{\gS_j}(h) + \epsilon_{\gT}(h)$. Combining the obtained bound with Lemma~\ref{lemma:bound_mixture} through the union bound yields the desired result. $\square$
+
+\section{Model overview}
+\label{sec:model_overview}
+
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt      
+\begin{figure}[h!]
+	\centering
+	\hspace*{-0.30in}
+	\scalebox{.69}{\input{Figures/ChapterThree/model_diagram}}
+	\caption{Block diagram representing the proposed model (MODA-FM).}
+	\label{fig:model_diagram}
+\end{figure}
+
+To enhance clarity, a detailed schematic of our model and loss terms is shown in \Figref{fig:model_diagram}. The three main blocks are the feature extractor $g(\cdot, \theta_g)$, the classifier $h(\cdot, \theta_h)$, and the domain discriminator $d(\cdot, \theta_d)$. It is worth noting the usage of gradient reversal layers~\citep{Ganin2015} at the input of the domain discriminator and before the $\alpha$ that is used in the discriminator loss $\gL_\text{disc}$. This layer is the identity function in the forward pass but reverses the gradient in the backward pass, by multiplying it by a negative constant (here, $-1$ is used). Hence, the usage of this layer allows the model to be trained using standard backpropagation and stochastic gradient descent (or any of its variants) over all model parameters.
+
+\section{Experiments -- further results and details}
+
+\subsection{Label distributions}
+\label{sec:label_dist}
+As remarked throughout this work and formally discussed and proven in \cite{Zhao2019}, having different marginal label distributions across source and target domains poses difficulties to the DA task and, under this scenario, domain-invariant representations can increase the error on the target domain. Since we claim that the adopted consistency regularization can help mitigate this issue, it is relevant to observe the distributions of labels across domains in the datasets used in this work, which are shown in Figures
+~\ref{fig:digits_dist},~\ref{fig:office_dist}~and~\ref{fig:amazon_dist}.\footnote{The histogram for the DomainNet dataset is not provided since the number of classes (345) is too large, making the plot barely interpretable.} We also provide the pairwise Jensen-Shannon distances for the label distributions of all domains in Tables~\ref{tab:digits_js},~\ref{tab:office_js},~\ref{tab:amazon_js},~and~\ref{tab:domainnet_js}. The Jensen-Shannon distance is convenient since it is a metric (so it is symmetric, non-negative and zero if and only if the two distributions coincide) and upper bounded by $\sqrt{\log 2}\,(\approx 0.8326)$. Therefore, it provides a comprehensive measure to evaluate the dissimilarity between two distributions.
+
+In the digits datasets~(\Figref{fig:digits_dist}, \Tableref{tab:digits_js}), MNIST and MNIST-M have very similar label distributions and SynthDigits has an almost uniform label distribution. SVHN has the most skewed distribution, which is radically different from the remaining. Thus, this is the most challenging domain from this perspective. In Office-31~(\Figref{fig:office_dist}, \Tableref{tab:office_js}), label distributions across domains differ significantly. In the Amazon Reviews dataset~(\Figref{fig:amazon_dist}, \Tableref{tab:amazon_js}), the label distribution is almost uniform for all domains. Finally, in DomainNet~(\Tableref{tab:domainnet_js}), the label distributions are highly dissimilar across all domains. Interestingly, domains \textit{inf} and \textit{pnt} are the most distant from all remaining domains and \textit{qdr} is the closest one.
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{ChapterThree/mnist_dist}
+		\caption{MNIST}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.24\textwidth}  
+		\centering 
+		\includegraphics[width=\textwidth]{ChapterThree/mnist_m_dist}
+		\caption{MNIST-M}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.24\textwidth}   
+		\centering 
+		\includegraphics[width=\textwidth]{ChapterThree/svhn_dist}
+		\caption{SVHN}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.24\textwidth}   
+		\centering 
+		\includegraphics[width=\textwidth]{ChapterThree/synthdigits_dist}
+		\caption{SynthDigits}
+	\end{subfigure}
+	\caption{Label distributions in the digits datasets.} 
+	\label{fig:digits_dist}
+\end{figure}
+
+\begin{table}
+	\centering
+	\caption{Jensen-Shannon distances between the label distributions of each pair of digits domains. On each column, the largest distance is in bold and the smallest is underlined.}
+	\small
+	\begin{tabular}{l|cccc}
+		& MNIST                & MNIST-M              & SVHN & SynthDigits \\ \hline
+		MNIST       & $0$                  & $\underline{2.73 \cdot 10^{-4}}$ & $\underline{1.17 \cdot 10^{-1}}$     & $\underline{1.83 \cdot 10^{-2}}$            \\
+		MNIST-M     & $\underline{2.73 \cdot 10^{-4}}$ & $0$                  & $\underline{1.17 \cdot 10^{-1}}$     & $1.84 \cdot 10^{-2}$            \\
+		SVHN        & $\boldsymbol{1.17 \cdot 10^{-1}}$ & $\boldsymbol{1.17 \cdot 10^{-1}}$ & $0$                      & $\boldsymbol{1.26 \cdot 10^{-1}}$            \\
+		SynthDigits & $1.83 \cdot 10^{-2}$ & $1.84 \cdot 10^{-2}$ & $\boldsymbol{1.26 \cdot 10^{-1}}$     & $0$ \\ \hline
+		Average & $4.51 \cdot 10^{-2}$ &  $4.52 \cdot 10^{-2}$ & $1.20 \cdot 10^{-1}$ & $5.42 \cdot 10^{-2}$
+	\end{tabular}
+	\label{tab:digits_js}
+\end{table}
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[b]{0.35\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{ChapterThree/amazon_dist}
+		\caption{Amazon}
+	\end{subfigure}
+	\;%\hspace{-0.5cm}
+	\begin{subfigure}[b]{0.35\textwidth}  
+		\centering 
+		\includegraphics[width=\textwidth]{ChapterThree/dslr_dist}
+		\caption{DSLR}
+	\end{subfigure}
+	\vskip\baselineskip
+	\begin{subfigure}[b]{0.35\textwidth}   
+		\centering 
+		\includegraphics[width=\textwidth]{ChapterThree/webcam_dist}
+		\caption{Webcam}
+	\end{subfigure}
+	\caption{Label distributions in Office-31.} 
+	\label{fig:office_dist}
+\end{figure}
+
+\begin{table}
+	\centering
+	\caption{Jensen-Shannon distances between the label distributions of each pair of domains in Office-31. On each column, the largest distance is in bold.}
+	\small
+	\begin{tabular}{l|ccc}
+		& Amazon                    & DSLR                      & Webcam                    \\ \hline
+		Amazon & 0                         & $1.33 \cdot 10^{-1}$      & $9.76 \cdot 10^{-2}$      \\
+		DSLR   & $\boldsymbol{1.33 \cdot 10^{-1}}$ & 0                         & $\boldsymbol{1.45 \cdot 10^{-1}}$ \\
+		Webcam & $9.76 \cdot 10^{-2}$      & $\boldsymbol{1.45 \cdot 10^{-1}}$ & 0 \\ \hline
+		Average & $1.15 \cdot 10^{-1}$ & $1.39 \cdot 10^{-1}$ & $1.21 \cdot 10^{-1}$
+	\end{tabular}
+	\label{tab:office_js}
+\end{table}
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{ChapterThree/books_dist}
+		\caption{Books}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.24\textwidth}  
+		\centering 
+		\includegraphics[width=\textwidth]{ChapterThree/dvd_dist}
+		\caption{DVD}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.24\textwidth}   
+		\centering 
+		\includegraphics[width=\textwidth]{ChapterThree/electronics_dist}
+		\caption{Electronics}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.24\textwidth}   
+		\centering 
+		\includegraphics[width=\textwidth]{ChapterThree/kitchen_dist}
+		\caption{Kitchen}
+	\end{subfigure}
+	\caption{Label distributions in Amazon Reviews.} 
+	\label{fig:amazon_dist}
+\end{figure}
+
+\begin{table}
+	\centering
+	\caption{Jensen-Shannon distances between the label distributions of each pair of domains in Amazon Reviews. On each column, the largest distance is in bold and the smallest is underlined.}
+	\small
+	\begin{tabular}{l|cccc}
+		& Books                & DVD                  & Electronics          & Kitchen              \\ \hline
+		Books       & 0                    & $1.67 \cdot 10^{-3}$ & $1.93 \cdot 10^{-3}$ & $\boldsymbol{5.09 \cdot 10^{-3}}$ \\
+		DVD         & $\underline{1.67 \cdot 10^{-3}}$ & 0                    & $\underline{2.53 \cdot 10^{-4}}$ & $3.42 \cdot 10^{-3}$ \\
+		Electronics & $1.93 \cdot 10^{-3}$ & $\underline{2.53 \cdot 10^{-4}}$ & 0                    & $\underline{3.17 \cdot 10^{-3}}$ \\
+		Kitchen     & $\boldsymbol{5.09 \cdot 10^{-3}}$ & $\boldsymbol{3.42 \cdot 10^{-3}}$ & $\boldsymbol{3.17 \cdot 10^{-3}}$ & 0 \\ \hline
+		Average & $2.90 \cdot 10^{-3}$ & $1.78 \cdot 10^{-3}$ & $1.78 \cdot 10^{-3}$ & $3.89 \cdot 10^{-3}$
+	\end{tabular}
+	\label{tab:amazon_js}
+\end{table}
+
+\begin{table}
+	\centering
+	\caption{Jensen-Shannon distances between the label distributions of each pair of domains in the DomainNet dataset. On each column, the largest distance is in bold and the smallest is underlined.}
+	\small
+	\hspace*{-0.50in}
+	\begin{tabular}{l|cccccc}
+		& \textit{clp}                & \textit{inf}              & \textit{pnt} & \textit{qdr} & \textit{rel} & \textit{skt} \\ \hline
+		\textit{clp} & $0$ & $3.14 \cdot 10^{-1}$ & $3.34 \cdot 10^{-1}$     & $1.98 \cdot 10^{-1}$ & $2.31 \cdot 10^{-1}$ & $2.60 \cdot 10^{-1}$         \\
+		\textit{inf} & $3.14 \cdot 10^{-1}$ & $0$ & $\boldsymbol{3.79 \cdot 10^{-1}}$ & $\boldsymbol{2.83 \cdot 10^{-1}}$ & $\boldsymbol{3.03 \cdot 10^{-1}}$ & $\boldsymbol{3.26 \cdot 10^{-1}}$ \\
+		\textit{pnt} & $\boldsymbol{3.34 \cdot 10^{-1}}$ & $\boldsymbol{3.79 \cdot 10^{-1}}$ & $0$ & $2.77 \cdot 10^{-1}$ & $2.99 \cdot 10^{-1}$ & $3.10 \cdot 10^{-1}$ \\
+		\textit{qdr} & $\underline{1.98 \cdot 10^{-1}}$ & $\underline{2.83 \cdot 10^{-1}}$ & $\underline{2.77 \cdot 10^{-1}}$ & $0$ & $\underline{1.35 \cdot 10^{-1}}$ & $\underline{2.27 \cdot 10^{-1}}$ \\
+		\textit{rel}  & $2.31 \cdot 10^{-1}$ & $3.03 \cdot 10^{-1}$ & $2.99 \cdot 10^{-1}$ & $\underline{1.35 \cdot 10^{-1}}$ & $0$ & $2.67 \cdot 10^{-1}$ \\
+		\textit{skt}  & $2.60 \cdot 10^{-1}$ & $3.26 \cdot 10^{-1}$ & $3.10 \cdot 10^{-1}$ & $2.27 \cdot 10^{-1}$ & $2.67 \cdot 10^{-1}$ & $0$ \\ \hline
+		Average & $2.67 \cdot 10^{-1}$ & $3.21 \cdot 10^{-1}$ & $3.20 \cdot 10^{-1}$ & $2.24 \cdot 10^{-1}$ & $2.47 \cdot 10^{-1}$ & $2.78 \cdot 10^{-1}$ \\
+	\end{tabular}
+	\label{tab:domainnet_js}
+\end{table}
+
+\subsection{Effect of over-training}
+\label{sec:overtrain}
+When the label distributions differ across domains, training the feature extractor and domain discriminator for a large number of iterations tends to lead to an increased target error. This is a direct effect of the curse of domain-invariant representations and it has been verified experimentally in \cite{Zhao2019}.
+
+In this experiment, we want to evaluate if the increased robustness of the feature extractor provided by the adopted consistency regularization helps to mitigate this issue. For this purpose, we use Office-31 since it is fairly small and therefore easy to overtrain and the label distributions across domains are significantly skewed (see \ref{sec:label_dist}). We train our model and two baselines (MDAN~\citep{Zhao2018} and MODA) for 60 epochs and we observe the evolution of the model accuracy on the target data. The plots are shown in \Figref{fig:overtrain}. As we see there, in MODA-FM the accuracy keeps stable after reaching the maximum in all domains. Contrarily, in MODA and especially in MDAN, the accuracy tends to decay after reaching the maximum. These observations strongly suggest that MODA-FM succeeds on mitigating the curse of domain-invariant representations. In MODA the problem is less pronounced than in MDAN probably because the latter will continue optimizing itself until it can produce domain-invariant representations for all source domains, whereas the former will simply ignore the hardest source domains by assigning them a low weight (possibly even zero).
+
+\begin{figure}
+	\centering
+	\hspace*{-0.30in}
+	\begin{subfigure}[b]{0.32\textwidth}
+		\begin{tikzpicture}[scale=0.58, every node/.style={scale=0.58}]
+		\begin{axis}[
+		enlargelimits=false,
+		legend style={at={(0.45,0.1)},anchor=south west,font=\large},
+		xlabel=\huge epoch, xmin=0, xmax=60, xtick={0,10,20,30,40,50,60},
+		ylabel=\huge accuracy, ymin=0.55, ymax=0.75, ytick={0.55,0.6,0.65,0.7,0.75},
+		grid=both, grid style={line width=.1pt, draw=gray!10},
+		]   
+		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MDAN, col sep=comma]{Figures/ChapterThree/amazon_long.txt};
+		\addlegendentry{MDAN ($\pgfmathprintnumber{\slopeMDAN}$)}
+		
+		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MixMDAN, col sep=comma]{Figures/ChapterThree/amazon_long.txt};
+		\addlegendentry{MODA ($\pgfmathprintnumber{\slopeMODA}$)}
+		
+		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=Ours, col sep=comma]{Figures/ChapterThree/amazon_long.txt};
+		\addlegendentry{MODA-FM ($\pgfmathprintnumber{\slopeMODAFM}$)}
+		
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=1}},skip first n=2]{Figures/ChapterThree/amazon_long.txt};
+		\xdef\slopeMDAN{\pgfplotstableregressiona}
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=2}},skip first n=2]{Figures/ChapterThree/amazon_long.txt};
+		\xdef\slopeMODA{\pgfplotstableregressiona}
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=3}},skip first n=2]{Figures/ChapterThree/amazon_long.txt};
+		\xdef\slopeMODAFM{\pgfplotstableregressiona}
+		\end{axis}
+		\end{tikzpicture}
+		\caption{Amazon}
+	\end{subfigure}
+	\hfill%
+	\begin{subfigure}[b]{0.32\textwidth}
+		\centering
+		\hspace*{-0.30in}
+		\begin{tikzpicture}[scale=0.58, every node/.style={scale=0.58}]
+		\begin{axis}[
+		enlargelimits=false,
+		legend style={at={(0.45,0.1)},anchor=south west,font=\large},
+		xlabel=\huge epoch, xmin=0, xmax=60, xtick={0,10,20,30,40,50,60},
+		ylabel=\huge accuracy, ymin=0.8, ymax=1, ytick={0.8,0.85,0.9,0.95,1},
+		grid=both, grid style={line width=.1pt, draw=gray!10},
+		]   
+		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MDAN, col sep=comma]{Figures/ChapterThree/dslr_long.txt};
+		\addlegendentry{MDAN ($\pgfmathprintnumber{\slopeMDAN}$)}
+		
+		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MixMDAN, col sep=comma]{Figures/ChapterThree/dslr_long.txt};
+		\addlegendentry{MODA ($\pgfmathprintnumber{\slopeMODA}$)}
+		
+		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=Ours, col sep=comma]{Figures/ChapterThree/dslr_long.txt};
+		\addlegendentry{MODA-FM ($\pgfmathprintnumber{\slopeMODAFM}$)}
+		
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=1}},skip first n=2]{Figures/ChapterThree/dslr_long.txt};
+		\xdef\slopeMDAN{\pgfplotstableregressiona}
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=2}},skip first n=2]{Figures/ChapterThree/dslr_long.txt};
+		\xdef\slopeMODA{\pgfplotstableregressiona}
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=3}},skip first n=2]{Figures/ChapterThree/dslr_long.txt};
+		\xdef\slopeMODAFM{\pgfplotstableregressiona}
+		\end{axis}
+		\end{tikzpicture}
+		\caption{DSLR}
+	\end{subfigure}
+	\hfill%
+	\begin{subfigure}[b]{0.32\textwidth}
+		\centering
+		\hspace*{-0.30in}
+		\begin{tikzpicture}[scale=0.58, every node/.style={scale=0.58}]
+		\begin{axis}[
+		enlargelimits=false,
+		legend style={at={(0.45,0.1)},anchor=south west,font=\large},
+		xlabel=\huge epoch, xmin=0, xmax=60, xtick={0,10,20,30,40,50,60},
+		ylabel=\huge accuracy, ymin=0.8, ymax=1, ytick={0.8,0.85,0.9,0.95,1},
+		grid=both, grid style={line width=.1pt, draw=gray!10},
+		]   
+		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MDAN, col sep=comma]{Figures/ChapterThree/webcam_long.txt};
+		\addlegendentry{MDAN ($\pgfmathprintnumber{\slopeMDAN}$)}
+		
+		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MixMDAN, col sep=comma]{Figures/ChapterThree/webcam_long.txt};
+		\addlegendentry{MODA ($\pgfmathprintnumber{\slopeMODA}$)}
+		
+		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=Ours, col sep=comma]{Figures/ChapterThree/webcam_long.txt};
+		\addlegendentry{MODA-FM ($\pgfmathprintnumber{\slopeMODAFM}$)}
+		
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=1}},skip first n=2]{Figures/ChapterThree/webcam_long.txt};
+		\xdef\slopeMDAN{\pgfplotstableregressiona}
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=2}},skip first n=2]{Figures/ChapterThree/webcam_long.txt};
+		\xdef\slopeMODA{\pgfplotstableregressiona}
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=3}},skip first n=2]{Figures/ChapterThree/webcam_long.txt};
+		\xdef\slopeMODAFM{\pgfplotstableregressiona}
+		\end{axis}
+		\end{tikzpicture}
+		\caption{Webcam}
+	\end{subfigure}
+	\caption{Test accuracy along 60 training epochs for our model and two baselines in Office-31. The tendency line for each curve is also shown (dashed lines) and the respective slope is indicated in brackets in each plot legend. The domain indicated below each plot is the target.}
+	\label{fig:overtrain}
+\end{figure}
+
+\subsection{Hyperparameter sensitivity analysis}
+\label{sec:hyperparam}
+Our model comprises three main hyperparameters: $\mu_d$, $\mu_s$ and $\mu_c$. The hyperparameter $\mu_d$ controls the relative weight of the domain discriminator loss and is present in every work on adversarial DA, thus its effect has already been studied extensively. For this reason, we focus on the effect of $\mu_s$ and $\mu_c$. We use the digits datasets and evaluate the accuracy on each target domain while varying either $\mu_s$ or $\mu_c$ and keeping the other one constant at the optimal value.
+
+A sufficiently large value of $\mu_s$ forces $\alpha$ to converge to a vector with all components equal to $1/M$, weighting all source domains equally. Setting $\mu_s$ close to zero corresponds to the most optimistic scenario: the sparsity penalization is dropped and so, after sufficiently many training iterations, $\alpha$ would converge to a one-hot vector, choosing the source domain with the minimum difference of classification and discrimination losses ($\gL_{class} - \mu_d\gL_{disc}$). \Figref{fig:hyperparam_mu_s} shows that, for MNIST, similar results are obtained with any of those strategies. The fact that digits classification in MNIST is significantly easier than in any of the remaining datasets likely explains this behavior. Domain adaptation for MNIST-M is slightly favored by smaller values of $\mu_s$, meaning that a more optimistic approach works better here. For SVHN, the opposite holds and the results are very poor when low sparsity regularization is employed. There is even a strong discontinuity in the accuracy plot for this domain around $\mu_s \approx 0.2$. This discontinuity divides situations where $\alpha$ collapses into the easiest source domain ($\mu_s < 0.2$) and those where it does not collapse ($\mu_s > 0.2$). We elaborate more on this in \ref{sec:alpha_evol}. In all cases, we observe that a $\mu_s \in [0.2, 0.6]$ provides near-optimal results.
+
+The effect of varying $\mu_c$ is plotted in \Figref{fig:hyperparam_mu_c}. Values of $\mu_c$ close to zero drop the consistency regularization and, therefore, we obtain results close to those of MODA. Significant performance gains are obtained for $\mu_c > 0.01$ and the optimal is reached for $\mu_c \in [0.4, 1.0]$ for all domains.
+
+\begin{figure}
+	\centering
+	\hspace*{-0.30in}
+	\begin{subfigure}[b]{0.45\textwidth}
+		\centering
+		\begin{tikzpicture}[scale=0.8, every node/.style={scale=0.58}]
+		\begin{semilogxaxis}[xmin=5e-5, xmax=50, ymin=0, ymax=1.05, domain=1e-5:20, ylabel=\large accuracy,
+		scaled x ticks=real:1e-3,
+		xtick scale label code/.code={},
+		log x ticks with fixed point/.style={
+			xticklabel={
+				\pgfkeys{/pgf/fpu=true}
+				\pgfmathparse{exp(\tick)}%
+				\pgfmathprintnumber[fixed relative, precision=3]{\pgfmathresult}
+				\pgfkeys{/pgf/fpu=false}
+			}
+		},
+		legend style={at={(0.65,0.1)},anchor=south west,font=\normalsize},
+		grid=both, grid style={line width=.1pt, draw=gray!10}]
+		
+		\addplot[color=myblue,only marks,sharp plot,mark=*]table[x index={0}, y index={1}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_s.txt};
+		\addlegendentry{MNIST}
+		
+		\addplot[color=myorange,only marks,sharp plot,mark=*]table[x index={0}, y index={2}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_s.txt};
+		\addlegendentry{MNIST-M}
+		
+		\addplot[color=mygreen,only marks,sharp plot,mark=*]table[x index={0}, y index={3}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_s.txt};
+		\addlegendentry{SVHN}
+		\end{semilogxaxis}
+		\end{tikzpicture}
+		\caption{$\mu_s$}
+		\label{fig:hyperparam_mu_s}
+	\end{subfigure}
+	\hfill%
+	\begin{subfigure}[b]{0.45\textwidth}
+		\centering
+		\begin{tikzpicture}[scale=0.8, every node/.style={scale=0.58}]
+		\begin{semilogxaxis}[xmin=5e-5, xmax=50, ymin=0, ymax=1.05, domain=1e-5:20, ylabel=\large accuracy,
+		scaled x ticks=real:1e-3,
+		xtick scale label code/.code={},
+		log x ticks with fixed point/.style={
+			xticklabel={
+				\pgfkeys{/pgf/fpu=true}
+				\pgfmathparse{exp(\tick)}%
+				\pgfmathprintnumber[fixed relative, precision=3]{\pgfmathresult}
+				\pgfkeys{/pgf/fpu=false}
+			}
+		},
+		legend style={at={(0.65,0.1)},anchor=south west,font=\normalsize},
+		grid=both, grid style={line width=.1pt, draw=gray!10}]
+		
+		\addplot[color=myblue,only marks,sharp plot,mark=*]table[x index={0}, y index={1}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_c.txt};
+		\addlegendentry{MNIST}
+		
+		\addplot[color=myorange,only marks,sharp plot,mark=*]table[x index={0}, y index={2}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_c.txt};
+		\addlegendentry{MNIST-M}
+		
+		\addplot[color=mygreen,only marks,sharp plot,mark=*]table[x index={0}, y index={3}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_c.txt};
+		\addlegendentry{SVHN}
+		\end{semilogxaxis}
+		\end{tikzpicture}
+		\caption{$\mu_c$}
+		\label{fig:hyperparam_mu_c}
+	\end{subfigure}
+	\caption{Test accuracy as a function of hyperparameters $\mu_s$ (a) and $\mu_c$ (b) using the digits datasets. The domain corresponding to each line is the target.}
+	\label{fig:hyperparam}
+\end{figure}
+
+\subsection{Evolution of the source weights}
+\label{sec:alpha_evol}
+Here, we study the evolution of the source weights $\alpha$ along training. The behavior is determined by the evolution of the classification and discrimination losses of each source domain and also by the choice of the hyperparameter $\mu_s$. The effect of varying $\mu_s$ on the model performance was analyzed in \ref{sec:hyperparam}. Now, we are interested in observing the dynamics of $\alpha$ along the training epochs, for different source domains, using the corresponding optimal $\mu_s$. We use the digits datasets for this purpose and we present the results in \Figref{fig:alpha_train}.
+
+For MNIST, where the lowest $\mu_s$ is used, we observe that the mixture coefficients rapidly collapse into the easiest source domain (SynthDigits). Nonetheless, in \ref{sec:hyperparam} we have observed that the target accuracy for MNIST was almost insensitive to the choice of $\mu_s$, meaning that using only the data from the easiest source domain or weighting all source domains equally would produce identical results. When we take MNIST-M and SVHN as target domains, with a slightly increased $\mu_s$, a different behavior occurs. Early in the training process, the weight for the easiest source domain (MNIST) increases rapidly, following the fast decrease in the corresponding loss. Later, as the loss for the easiest source domain plateaus and the remaining keep decreasing, the  weights for the remaining active source domains start to increase. This behavior explains the discontinuity we have observed in the plot of target accuracy vs. $\mu_s$ for SVHN (\Figref{fig:hyperparam_mu_s}): if $\mu_s$ is sufficiently small to allow $\alpha$ to rapidly collapse into MNIST, the data of the remaining source domains is simply discarded for the remaining of the training process and the corresponding weights will never increase.
+
+\begin{figure}
+	\centering
+	\hspace*{-0.50in}
+	\begin{subfigure}[b]{0.32\textwidth}
+		\begin{tikzpicture}[scale=0.58, every node/.style={scale=0.58}]
+		\begin{axis}[
+		enlargelimits=false,
+		legend style={at={(0.65,0.1)},anchor=south west,font=\large},
+		xlabel=\huge epoch, xmin=0, xmax=60, xtick={0,10,20,30,40,50,60},
+		ylabel=\huge $\alpha$, ymin=0., ymax=1., 
+		grid=both, grid style={line width=.1pt, draw=gray!10},
+		title=\text{\huge $\mu_s=0.1$}
+		]   
+		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MNIST_M, col sep=comma]{Figures/ChapterThree/mnist_coef.txt};
+		\addlegendentry{MNIST-M}
+		
+		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=SVHN, col sep=comma]{Figures/ChapterThree/mnist_coef.txt};
+		\addlegendentry{SVHN}
+		
+		\addplot[color=myred,smooth,thick]table[x=Epoch, y=SynthDigits, col sep=comma]{Figures/ChapterThree/mnist_coef.txt};
+		\addlegendentry{SynthDigits}
+		\end{axis}
+		\end{tikzpicture}
+		\caption{MNIST}
+	\end{subfigure}
+	\hfill%
+	\begin{subfigure}[b]{0.32\textwidth}
+		\centering
+		\begin{tikzpicture}[scale=0.58, every node/.style={scale=0.58}]
+		\begin{axis}[
+		enlargelimits=false,
+		legend style={at={(0.65,0.1)},anchor=south west,font=\large},
+		xlabel=\huge epoch, xmin=0, xmax=60, xtick={0,10,20,30,40,50,60},
+		ylabel=\huge $\alpha$, ymin=0., ymax=1.,
+		grid=both, grid style={line width=.1pt, draw=gray!10},
+		title=\text{\huge$\mu_s=0.2$}
+		]   
+		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MNIST, col sep=comma]{Figures/ChapterThree/mnist_m_coef.txt};
+		\addlegendentry{MNIST}
+		
+		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=SVHN, col sep=comma]{Figures/ChapterThree/mnist_m_coef.txt};
+		\addlegendentry{SVHN}
+		
+		\addplot[color=myred,smooth,thick]table[x=Epoch, y=SynthDigits, col sep=comma]{Figures/ChapterThree/mnist_m_coef.txt};
+		\addlegendentry{SynthDigits}
+		\end{axis}
+		\end{tikzpicture}
+		\caption{MNIST-M}
+	\end{subfigure}
+	\hfill%
+	\begin{subfigure}[b]{0.32\textwidth}
+		\centering
+		\begin{tikzpicture}[scale=0.58, every node/.style={scale=0.58}]
+		\begin{axis}[
+		enlargelimits=false,
+		legend style={at={(0.65,0.1)},anchor=south west,font=\large},
+		xlabel=\huge epoch, xmin=0, xmax=60, xtick={0,10,20,30,40,50,60},
+		ylabel=\huge $\alpha$, ymin=0., ymax=1,
+		grid=both, grid style={line width=.1pt, draw=gray!10},
+		title=\text{\huge$\mu_s=0.9$}
+		]   
+		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MNIST, col sep=comma]{Figures/ChapterThree/svhn_coef.txt};
+		\addlegendentry{MNIST}
+		
+		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MNIST_M, col sep=comma]{Figures/ChapterThree/svhn_coef.txt};
+		\addlegendentry{MNIST-M}
+		
+		\addplot[color=myred,smooth,thick]table[x=Epoch, y=SynthDigits, col sep=comma]{Figures/ChapterThree/svhn_coef.txt};
+		\addlegendentry{SynthDigits}
+		\end{axis}
+		\end{tikzpicture}
+		\caption{SVHN}
+	\end{subfigure}
+	\caption{Source weights $\alpha$ for each domain along 60 training epochs in the digits datasets. The target domain and the value of $\mu_s$ that was used are indicated below and above each plot, respectively.}
+	\label{fig:alpha_train}
+\end{figure}
+
+\subsection{Network architectures}
+\label{sec:arch}
+The following notation is used to designate network layers: \texttt{Conv(n, k)} -- 2-D convolutional layer with \texttt{n} output channels, square kernels with size \texttt{k}, and unit stride, followed by a rectified linear activation; \texttt{MaxPool(k)} -- 2-D max-pooling over non-overlapping regions of $\texttt{k} \times \texttt{k}$ pixels; \texttt{AdaptAvgPool(k)} -- 2-D adaptive average pooling where the output size is $\texttt{k} \times \texttt{k}$ pixels. \texttt{FC(n)} -- fully-connected layer with $\texttt{n}$ output neurons, followed by a rectified linear activation except for output layers; \texttt{Dropout(p)} -- dropout layer where $\texttt{p}$ is the probability of zeroing an element. A gradient reversal layer~\citep{Ganin2015} is present at the input of the domain discriminator in all models. All classifiers and domain discriminators are followed by a softmax layer that maps the output to the corresponding class probabilities.
+
+\paragraph{Digits classification} Input images have shape $3 \times 32 \times 32$. Feature extractor: \texttt{Conv(64, 3)}~$\rightarrow$ \texttt{MaxPool(2)}~$\rightarrow$ \texttt{Conv(128, 3)}~$\rightarrow$ \texttt{MaxPool(2)}~$\rightarrow$ \texttt{Conv(256, 3)}. Task classifier: \texttt{MaxPool(2)}~$\rightarrow$ \texttt{Conv(256, 3)}~$\rightarrow$ \texttt{FC(2048)}~$\rightarrow$ \texttt{FC(1024)}~$\rightarrow$ \texttt{FC(10)}. Domain discriminator: \texttt{MaxPool(2)}~$\rightarrow$ \texttt{FC(2048)}~$\rightarrow$ \texttt{FC(2048)}~$\rightarrow$ \texttt{FC(1024)}~$\rightarrow$ \texttt{FC(2)}.
+
+\paragraph{Object classification (Office-31 dataset)} Input images have shape $3 \times 256 \times 256$. Feature extractor: ResNet-50 up to stage~3. Task classifier / domain discriminator: ResNet-50 stage~4~$\rightarrow$ \texttt{AdaptAvgPool(1)}~$\rightarrow$ \texttt{FC(\#classes)}, where $\texttt{\#classes} = 31$ for the task classifier and $\texttt{\#classes} = 2$ for the domain discriminator.
+
+\paragraph{Sentiment analysis (Amazon Reviews dataset)} Input features have dimension $5000$. Feature extractor: \texttt{Dropout(p)}~$\rightarrow$ \texttt{FC(1000)}~$\rightarrow$ \texttt{Dropout(p)}~$\rightarrow$ \texttt{FC(500)}~$\rightarrow$ \texttt{Dropout(p)}~$\rightarrow$ \texttt{FC(100)}~$\rightarrow$ \texttt{Dropout(p)}, where $\texttt{p} = 0$ except for producing the augmented samples used in the consistency regularization. Task classifier / domain discriminator: \texttt{FC(2)}.
+
+\paragraph{Large scale object classification (DomainNet dataset)} Input images have shape $3 \times 192 \times 192$. Feature extractor: ResNet-152 up to stage~3. Task classifier / domain discriminator: ResNet-152 stage~4~$\rightarrow$ \texttt{AdaptAvgPool(1)}~$\rightarrow$ \texttt{FC(\#classes)}, where $\texttt{\#classes} = 345$ for the task classifier and $\texttt{\#classes} = 2$ for the domain discriminator.
+
+\subsection{Choice of hyperparameters}
+\label{sec:cross_val}
+\Tableref{tab:hyperparameters} presents the values assigned to each hyperparameter. For some hyperparameters in a given dataset, a set or range of values is presented instead of a single value, meaning that the value for that hyperparameter was selected via cross-validation on the given set/range. This cross-validation consisted on 20 iterations of random search for each experiment, where no data from the target domain was used and each source domain was taken as target in turn. The hyperparameter combination that yielded the best average result was chosen.
+
+\begin{table}
+	\centering
+	\caption{Values and search ranges for all hyperparameters in all experiments.}
+	\label{tab:hyperparameters}
+	\small
+	\hspace*{-0.30in}
+	\begin{tabular}{r|cccc}
+		\multicolumn{1}{l|}{Hyperparameter} & Digits                & Office-31             & Amazon Reviews & DomainNet         \\ \hline
+		$\mu_d$~(8)                            & $[10^{-4}, 10^{0}]$   & $[10^{-4}, 10^{0}]$   & $[10^{-4}, 10^{0}]$  & $10^{-2}$  \\ \hdashline[0.5pt/5pt]
+		$\mu_s$~(8)                             & $[10^{-5}, 10^{0}]$   & $10^{-2}$             & $[10^{-6}, 10^{-1}]$ & $10^{-1}$  \\ \hdashline[0.5pt/5pt]
+		$\mu_c$~(16)                             & $[10^{-2}, 10^{0}]$   & $[10^{-2}, 10^{0}]$   & $[10^{-2}, 10^{0}]$ & $10^{-1}$   \\ \hdashline[0.5pt/5pt]
+		$\tau$~(15)                              & $0.9$                 & $0.9$                 & $0.9$  & $0.9$                \\ \hdashline[0.5pt/5pt]
+		optimizer                           & AdaDelta              & AdaDelta              & AdaDelta & AdaDelta             \\ \hdashline[0.5pt/5pt]
+		no. epochs                          & $\{10, 20, \dots, 60\}$ & $\{10, 15, \dots, 60\}$ & $\{5, 10, \dots, 40\}$ & $100$\\ \hdashline[0.5pt/5pt]
+		learning rate                         & $0.1$             & $0.1$             & $1.0$ & $0.01$              \\ \hdashline[0.5pt/5pt]
+		batch size                          & $8$                   & $8$                   & $20$  & $8$                  \\ \hdashline[0.5pt/5pt]
+		RandAugment: $n$                    & $2$                   & $2$                   & n.a. & $2$                   \\ \hdashline[0.5pt/5pt]
+		RandAugment: $m_{\text{min}}$       & $3$                   & $3$                   & n.a. &  $3$                 \\ \hdashline[0.5pt/5pt]
+		RandAugment: $m_{\text{max}}$       & $10$                  & $10$                  & n.a.  &  $10$                \\ \hdashline[0.5pt/5pt]
+		dropout: $p_{\text{min}}$           & n.a.                  & n.a.                  & $0.2$  & n.a.                 \\ \hdashline[0.5pt/5pt]
+		dropout: $p_{\text{max}}$           & n.a.                  & n.a.                  & $0.8$  & n.a.                
+	\end{tabular}
+\end{table}
+
+
+\subsection{Image transformations}
+\label{sec:img_transf}
+The list of image transformations used in RandAugment is provided in~\Tableref{tab:randaugment}. The cutout transformation is the first transformation to be applied to every image. This transformation occludes a randomly located square region with a length equal to $30\%$ of the image length. The remaining $n$ transformations are chosen at random from the provided list. All transformations were normalized such that a transformation of magnitude $m = 0$ corresponds to the identity (i.e., unchanged image) and a magnitude $m = 30$ (maximum admissible value) corresponds to the maximum distortion. We implemented the image transformations using the Python Imaging Library (PIL).
+
+\begin{savenotes}
+	\begin{table}[!h]
+		\centering
+		\caption{RandAugment image transformations and respective ranges.}
+		\label{tab:randaugment}
+		\small
+		\begin{tabular}{r|c||rc}
+			\multicolumn{1}{c|}{Transformation} & Range         & \multicolumn{1}{c|}{Transformation} & \multicolumn{1}{c}{Range} \\ \hline
+			AutoContrast                        & $\{0, 1\}$    & \multicolumn{1}{r|}{Rotate}      & $[-30^{\circ}, 30^{\circ}]$                  \\ \hdashline[0.5pt/5pt]
+			Brightness                          & $[0.1, 1.9]$  & \multicolumn{1}{r|}{Sharpness}      & $[0.1, 1.9]$              \\ \hdashline[0.5pt/5pt]
+			Color                               & $[0.1, 1.9]$  & \multicolumn{1}{r|}{ShearX}         & $[0, 0.3]$                \\ \hdashline[0.5pt/5pt]
+			Contrast                            & $[0.1, 1.9]$  & \multicolumn{1}{r|}{ShearY}         & $[0, 0.3]$                \\ \hdashline[0.5pt/5pt]
+			Equalize                            & $\{0, 1\}$    & \multicolumn{1}{r|}{Solarize}       & $[0, 255]$                \\ \hdashline[0.5pt/5pt]
+			FlipX\footnote{Excluded in the digits experiment since it is not label-preserving.}                  & $\{0, 1\}$    & \multicolumn{1}{r|}{TranslateX}     & $[-0.45, 0.45]$           \\ \hdashline[0.5pt/5pt]
+			Invert                              & $\{0, 1\}$    & \multicolumn{1}{r|}{TranslateY}     & $[-0.45, 0.45]$           \\ \hdashline[0.5pt/5pt]
+			Posterize                           & $[4, 8]$ &                                     &              
+		\end{tabular}
+	\end{table}%
+\end{savenotes}
+
+\subsection{Sample images}
+\label{sec:sample_imgs}
+We present sample images from all image datasets used in our experiments in Figures~\ref{fig:digits_samples},~\ref{fig:office_samples},~and~\ref{fig:domainnet_samples}. The result of the RandAugment transformation is also shown for various values of the parameter $m$.
+
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{ChapterThree/digits}
+	\caption{Sample original and transformed images from the digits datasets. The ground-truth label is in brackets.}
+	\label{fig:digits_samples}
+\end{figure}
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{ChapterThree/office}
+	\caption{Sample original and transformed images from each domain in the Office-31 dataset. The ground-truth label is in brackets.}
+	\label{fig:office_samples}
+\end{figure}
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{ChapterThree/domainnet}
+	\caption{Sample original and transformed images from each domain in the DomainNet dataset. The ground-truth label is in brackets.}
+	\label{fig:domainnet_samples}
+\end{figure}

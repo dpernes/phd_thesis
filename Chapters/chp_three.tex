@@ -309,13 +309,13 @@ where $||\cdot||_F$ is the Frobenius norm, $\lambda_c > 0$ is a hyperparameter c
 \label{sec:mdan_fcn_rlstm}
 We now explore several possibilities to combine MDAN and FCN-rLSTM into a single model capable of accurately counting vehicles in images from a target camera, provided that at training time we only have access to annotated data from other cameras and unlabeled data from the target.
 
-\subsubsection{Non-temporal model}
+\subsubsection{Non-Temporal model}
 The non-temporal model uses a sub-network in the FCN-rLSTM model as its backbone. It consists in a simplification of this, by not using LSTMs or making any other consideration on the temporal or sequential nature of the data. Figure \ref{fig:non_temporal_model} shows the architecture of the non-temporal model.
 
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=1.0\textwidth]{ChapterThree/non_temporal.png}
-	\caption{Non-temporal model. Reprinted from \citet{ThesisFrancisco}.}
+	\caption{Non-Temporal model. Reprinted from \citet{ThesisFrancisco}.}
 	\label{fig:non_temporal_model}
 \end{figure}
 
@@ -369,7 +369,7 @@ When there is a strong correlation in the object count in consecutive video fram
 
 \subsubsection{Experimental protocol}
 
-We will run experiments with the domain adaptation models presented in \Secref{sec:mdan_fcn_rlstm}. Additionally, we will use models FCN-HAC and FCN-rLSTM as baselines, which do not employ any technique to tackle domain shift. The former is a subnetwork of the latter consisting of all layers excluding the LSTM network. Therefore, it does not account for any temporal correlations between consecutive frames.
+We will run experiments with the domain adaptation models presented in \Secref{sec:mdan_fcn_rlstm}. Additionally, we will use models FCN-HA and FCN-rLSTM as baselines, which do not employ any technique to tackle domain shift. The former is a subnetwork of the latter consisting of all layers excluding the LSTM network, i.e.\ it coincides with the Non-Temporal model when its domain discriminator is removed. Therefore, it does not account for any temporal correlations between consecutive frames.
 
 In every experiment, assume we have $k+1$ domains $\gD_1, \gD_2,...,\gD_{k+1}$. In a domain adaptation scenario, we do $k+1$ runs, so that in run number $t$, domain $\gD_t$ will be chosen as the target domain and all the others will be source domains. For each experiment, we have computed results in both unsupervised and semi-supervised settings, described below:
 
@@ -385,7 +385,7 @@ In all experiments, we train the model for $50$ epochs, using Adam optimizer (\c
 \subsubsection{UCSDPeds dataset}
 \label{sec:da_sensors_ucsdpeds}
 
-UCSDPeds \cite{ucspeds_dataset} is a crowd counting dataset that contains videos of pedestrians on University of California, San Diego, walkways, taken from a stationary camera in two different viewpoints. All videos are 8-bit grayscale, with dimensions $158 \times 238$ at a $2$ frames per second rate. For each video frame, the dataset has a mask indicating the region of interest in the image and another file indicating the centers, in image coordinates, of every person in the frame. 
+UCSDPeds (\citet{Chan2008}) is a crowd counting dataset that contains videos of pedestrians on University of California, San Diego, walkways, taken from a stationary camera in two different viewpoints. All videos are 8-bit grayscale, with dimensions $158 \times 238$ at a $2$ frames per second rate. For each video frame, the dataset has a mask indicating the region of interest in the image and another file indicating the centers, in image coordinates, of every person in the frame. 
 
 Each camera point of view corresponds to a domain in our experiments, named \textit{vidd} and \textit{vidf}. Figures \ref{fig:ucsdpeds_vidd}-\ref{fig:ucsdpeds_vidf} show examples of frames in each one of the two domains.
 
@@ -393,13 +393,13 @@ Each camera point of view corresponds to a domain in our experiments, named \tex
 	\centering
 	\begin{minipage}[b]{0.4\textwidth}
 		\includegraphics[width=\textwidth]{ChapterThree/vidd_example.png}
-		\caption{Domain \textit{vidd} from UCSDPeds dataset.}
+		\caption{Domain \textit{vidd} from the UCSDPeds dataset.}
 		\label{fig:ucsdpeds_vidd}
 	\end{minipage}
 	\hfill
 	\begin{minipage}[b]{0.4\textwidth}
 		\includegraphics[width=\textwidth]{ChapterThree/vidf_example.png}
-		\caption{Domain \textit{vidf} from UCSDPeds dataset.}
+		\caption{Domain \textit{vidf} from the UCSDPeds dataset.}
 		\label{fig:ucsdpeds_vidf}
 	\end{minipage} 
 \end{figure}
@@ -426,7 +426,7 @@ For each frame, we computed its density map, by placing a $15 \times 8$ Gaussian
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=0.75\textwidth]{ChapterThree/ucsdpeds_density_map.png}   
-	\caption{Sample density map for UCSDPeds dataset.}
+	\caption{Sample density map for the UCSDPeds dataset.}
 	\label{fig:ucsdpeds_density_map}
 \end{figure}
 
@@ -443,25 +443,25 @@ Figures \ref{fig:webcamt_511}-\ref{fig:webcamt_846} show examples of frames in e
 	\centering
 	\begin{minipage}[b]{0.4\textwidth}
 		\includegraphics[width=\textwidth]{ChapterThree/511_example.png}
-		\caption{Domain \textit{511} from WebCamT dataset (\citet{Zhang2017b}).}
+		\caption{Domain \textit{511} from WebCamT dataset.}
 		\label{fig:webcamt_511}
 	\end{minipage}
 	\hfill
 	\begin{minipage}[b]{0.4\textwidth}
 		\includegraphics[width=\textwidth]{ChapterThree/551_example.png}
-		\caption{Domain \textit{551} from WebCamT dataset (\citet{Zhang2017b}).}
+		\caption{Domain \textit{551} from the WebCamT dataset.}
 		\label{fig:webcamt_551}
 	\end{minipage} \\
 	\vspace{1cm}
 	\begin{minipage}[b]{0.4\textwidth}
 		\includegraphics[width=\textwidth]{ChapterThree/691_example.png}
-		\caption{Domain \textit{691} from WebCamT dataset (\citet{Zhang2017b}).}
+		\caption{Domain \textit{691} from the WebCamT dataset.}
 		\label{fig:webcamt_691}
 	\end{minipage} 
 	\hfill
 	\begin{minipage}[b]{0.4\textwidth}
 		\includegraphics[width=\textwidth]{ChapterThree/846_example.png}
-		\caption{Domain \textit{846} from WebCamT dataset (\citet{Zhang2017b}).}
+		\caption{Domain \textit{846} from the WebCamT dataset.}
 		\label{fig:webcamt_846}
 	\end{minipage}
 \end{figure}
@@ -490,7 +490,7 @@ After extracting each frame from the videos, we computed its density map by plac
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=0.75\textwidth]{ChapterThree/webcamt_density_map.png}   
-	\caption{Sample density map for WebCamT dataset}
+	\caption{Sample density map for the WebCamT dataset.}
 	\label{fig:webcamt_density_map}
 \end{figure}
 
@@ -498,7 +498,7 @@ After extracting each frame from the videos, we computed its density map by plac
 
 The DA task for the UCSDPeds dataset is single source, so there is no choice to be made regarding the combination of source domains. In this setting, the MDAN model boils down to the original adversarial DA algorithm proposed by \citet{Ganin2015}, where one single domain discriminator is used to distinguish between source and target samples.
 
-In the WebCamT dataset, we have three different source domains, so this is a multi-source scenario. As discussed in \secref{sec:da_sensors_mdan}, we consider three possible optimization problems for our DA models to solve, namely hard-max, soft-max, and average. Table \ref{table:optimization_experiments} shows results for each of our models on these formulations, evaluated in an unsupervised setting. These suggest that averaging tends to perform better than the other two approaches in this dataset. This is somewhat intuitive: given the wide range of values for the mean number of vehicles in each frame across domains, it would be likely for one source domain to show a significantly higher loss than the others. If we use any of the other two optimization problems, our models would dedicate an outweighed importance to the hardest source domain, disregarding the other domains. For this reason, we shall adopt the averaging formulation in all subsequent experiments.
+In the WebCamT dataset, we have three different source domains, so this is a multi-source scenario. As discussed in \Secref{sec:da_sensors_mdan}, we consider three possible optimization problems for our DA models to solve, namely hard-max, soft-max, and average. \Tableref{table:optimization_experiments} shows results for each of our models on these formulations, evaluated in an unsupervised setting. These suggest that averaging tends to perform better than the other two approaches in this dataset. This is somewhat intuitive: given the wide range of values for the mean number of vehicles in each frame across domains, it would be likely for one source domain to show a significantly higher loss than the others. If we use any of the other two optimization problems, our models would dedicate an outweighed importance to the hardest source domain, disregarding the other domains. For this reason, we shall adopt the averaging formulation in all subsequent experiments.
 
 \begin{table}[!ht]
 	\centering
@@ -508,7 +508,7 @@ In the WebCamT dataset, we have three different source domains, so this is a mul
 		\cline{1-4}
 		Model & Hard-max & Soft-max & Average\\
 		\hline
-		Non-temporal & 18.15 & 11.16 & \textbf{9.91}  \\
+		Non-Temporal & 18.15 & 11.16 & \textbf{9.91}  \\
 		\hline 
 		SingleLSTM & 10.54 & \textbf{9.33} & 11.10  \\
 		\hline
@@ -517,14 +517,13 @@ In the WebCamT dataset, we have three different source domains, so this is a mul
 		CommonLSTM & \textbf{9.85} & 12.07 & 10.22 \\
 		\hline
 	\end{tabular}
-	\caption{Comparison of different optimization problems. The values indicates the average MAE count across domains in the WebCamT dataset. The experiments were run with $\lambda_d=10^{-3}$. }
+	\caption{Comparison of different optimization problems. The values indicate the average MAE count across domains in the WebCamT dataset. The experiments were run with $\lambda_d=10^{-3}$. }
 	\label{table:optimization_experiments}
 \end{table}
 
 \subsection{Unsupervised setting}
 
-Table \ref{table:webcamt_unsupervised_results} shows the results in the unsupervised setting. For the domain adaptation models (Non-temporal, SingleLSTM, DoubleLSTM and CommonLSTM), columns \textit{511}, \textit{551}, \textit{691} and \textit{846} indicate the best MAE count obtained for the respective domain in the $5$ experiments with the different values of $\lambda_d$ indicated before. Column Avg indicates the best average MAE count across domains \textit{511}, \textit{551}, \textit{691} and \textit{846} in the $5$ experiments. That is, for each experiment, we compute the average MAE count across the $4$ domains. We then select the best of the computed average MAE count.
-
+\Tableref{table:results_unsup} shows the results in the unsupervised setting for both datasets. For each domain, the best MAE obtained with different values of $\lambda_d$ is shown.
 \begin{table}[!ht]
 	\centering
 	\begin{tabular}{| c | c | c | c || c | c | c | c | c | c | c | c |}
@@ -537,7 +536,7 @@ Table \ref{table:webcamt_unsupervised_results} shows the results in the unsuperv
 		\hline
 		FCN-rLSTM & 11.04  & 5.98 &  8.51 & 6.26 & 8.79 & 13.63 & 6.31 & 8.75\\
 		\hline
-		Non-temporal & \textbf{6.24} & 22.52 & 14.38 & 9.63 & 3.50 & 18.27 & 5.58 & 9.85 \\
+		Non-Temporal & \textbf{6.24} & 22.52 & 14.38 & 9.63 & 3.50 & 18.27 & 5.58 & 9.85 \\
 		\hline 
 		SingleLSTM & 7.75 & 9.07 & 9.32 & 6.58 & 5.10 & 15.26  & 9.55 & 10.53 \\
 		\hline
@@ -546,36 +545,36 @@ Table \ref{table:webcamt_unsupervised_results} shows the results in the unsuperv
 		CommonLSTM & 6.83 & 4.80 & \textbf{6.18} & 6.11 & 5.55 & \textbf{10.51} & 3.56 & 8.15 \\
 		\hline
 	\end{tabular}
-	\caption{MAE count per domain in UCSDPeds and WebCamT datasets (unsupervised setting). For each domain, the best MAE obtained from experiments run with different values of $\lambda_d$ is shown. Column Avg indicates the best average MAE count across domains in experiments run with different values of $\lambda_d$.}
-	\label{table:webcamt_unsupervised_results}
+	\caption{MAE count per domain in UCSDPeds and WebCamT datasets (unsupervised setting). Column Avg indicates the average MAE count across domains.}
+	\label{table:results_unsup}
 \end{table}
 
-For the average MAE count across domains, the DoubleLSTM model showed the best results with a MAE of $6.148$, followed by the FCN-HA with a MAE of $7.370$. In this dataset, the temporal models did not seem to perform particularly better than the non-temporal ones. Even though the double-temporal showed the best results, the second best was the FCN-HA, a model that does not make any temporal consideration. We also could not verify a marked difference in the average MAE count of the DA and non-DA methods. These observations ascertain that it is not enough to apply domain adaptation or consider the temporal nature of data to obtain good results. Thus, the careful design of models and its integration with the two mentioned techniques is essential. 
+In UCSDPeds, the CommonLSTM model showed the best results, followed by DoubleLSTM. In fact, any LSTM-based model showed a better average performance than any model where LSTMs are absent. This validates our initial hypothesis that making temporal considerations would significantly improve the accuracy. When it comes to the comparison between DA models and non-DA models, we can verify that DA models performed better, as models DoubleLSTM and CommonLSTM showed the best results for MAE Count Avg. Still, in this case, the advantage of using domain adaptation is not as clear as the advantage of making temporal considerations. For example, the Simple Model, that executes domain adaptation, showed worse results than FCN-HA and FCN-rLSTM. It appears that for domain adaptation to show an improvement in results, it must be used in combination with a temporal model, as otherwise it will just fluster the training process.
 
-When it comes to the accuracy of models across different domains, we find that domain \textit{691} has the worst results, probably because it has the most dissimilar vehicle count distribution (highest mean and also highest standard deviation), which cannot be matched by any mixture of the source vehicle count distributions. It is observable that the performance of models across different domains is not consistent. For example, the FCN-HA model shows the best results for domains \textit{511} and \textit{551}, but the second worst result for domain \textit{691}. 
+In WebCamT, even though the double-temporal showed the best results, the second best was the FCN-HA, a model that does not make any temporal consideration. We also could not verify a marked difference in the average MAE count of the DA and non-DA methods. These observations ascertain that it is not enough to apply domain adaptation or consider the temporal nature of data to obtain good results. Thus, the careful design of models and its integration with the two mentioned techniques is essential. 
 
-We find that the model with the most balanced performance across domains was the DoubleLSTM as its MAE Count in a given model was always either the best or the second best. This observation coupled with the fact that the DoubleLSTM was also the model with the best average MAE count allows us to conclude that this method was the best-performing in the WebCamT dataset.
+We find that the model with the most balanced performance across domains and datasets was the DoubleLSTM as its MAE count in a given domain was always in the top-3. This observation coupled with the fact that the DoubleLSTM was also the model with the best average MAE count in UCSDPeds and the second best in WebCamT allows us to conclude that this method was the best-performing overall.
 
-\Figref{fig:lambda_d_unsup} shows the average MAE count across domains for every DA model experiment, run with a different value of $\lambda_d$.
+Results regarding the sensitivity to the hyperparameter $\lambda_d$ are shown in \Figref{fig:lambda_d_unsup}.
 
 \begin{figure}[!ht]
 	\begin{subfigure}{.5\textwidth}
 		\centering
-		\includegraphics[width=0.85\textwidth]{ChapterThree/ucsdpeds_unsupervised.png}
+		\includegraphics[width=0.95\textwidth]{ChapterThree/ucsdpeds_unsupervised.png}
 	\end{subfigure}
 	\begin{subfigure}{.5\textwidth}
 		\centering
-		\includegraphics[width=0.85\textwidth]{ChapterThree/webcamt_unsupervised.png}
+		\includegraphics[width=0.95\textwidth]{ChapterThree/webcamt_unsupervised.png}
 	\end{subfigure}
-	\caption{Average MAE count across domains for each $\lambda_d$ in the unsupervised setting in the UCSDPeds (left) and WebCamT (right) datasets.}
+	\caption{Average MAE count across domains for each $\lambda_d$ in the unsupervised setting in UCSDPeds (left) and WebCamT (right) datasets.}
 	\label{fig:lambda_d_unsup}
 \end{figure}
 
-This plot confirms that the DoubleLSTM model was the best-performing in the WebCamT dataset. The SingleLSTM, on the other hand, showed the worst results, even when comparing it against the Non-temporal model. It is also noticeable that model DoubleLSTM has the best accuracy for the intermediate value of $\lambda_d=10^{-3}$. On the other hand, CommonLSTM shows a tendency to improve the MAE Count as $\lambda_d$ decreases.
+This plot confirms that the DoubleLSTM model was the best-performing in the WebCamT dataset and is at least comparable to CommonLSTM in UCSDPeds. Setting $\lambda_d = 10^{-3}$ achieves close to optimal performance for all models in both datasets, except for Non-Temporal in UCSDPeds and CommonLSTM in WebCamT, whose performance improves significantly for larger values of $\lambda_d$.
 
 \subsection{Semi-supervised setting}
 
-Table \ref{table:webcamt_semi-supervised_results} shows the results in the semi-supervised setting. Like in the table \ref{table:webcamt_unsupervised_results}, for the domain adaptation models (Simple, SingleLSTM, DoubleLSTM and CommonLSTM), columns \textit{511}, \textit{551}, \textit{691} and \textit{846} indicate the best MAE Count obtained in the $5$ experiments with the different values of $\lambda_d$ indicated before. Column Avg indicates the best average of the MAE Count for domains \textit{511}, \textit{551}, \textit{691} and \textit{846} in the 5 experiments.
+\Tableref{table:results_semisup} shows the results in the semi-supervised setting for both datasets. Like before, the best MAE obtained with different values of $\lambda_d$ is shown.
 
 \begin{table}[!ht]
 	\centering
@@ -589,7 +588,7 @@ Table \ref{table:webcamt_semi-supervised_results} shows the results in the semi-
 		\hline
 		FCN-rLSTM & 2.01 & \textbf{2.07} & 2.04 & 5.40 & 3.49 & 9.15 & 3.54 &  5.39 \\
 		\hline
-		Non-temporal & 0.84 & 3.49 & 2.21 & 3.11 & 3.57 & 10.96 & 2.05 & 5.04 \\
+		Non-Temporal & 0.84 & 3.49 & 2.21 & 3.11 & 3.57 & 10.96 & 2.05 & 5.04 \\
 		\hline 
 		SingleLSTM & 0.94 & 5.07 & 3.00 & 4.24 & 4.39 & 7.03 & \textbf{1.52} & 4.34 \\
 		\hline
@@ -598,41 +597,214 @@ Table \ref{table:webcamt_semi-supervised_results} shows the results in the semi-
 		CommonLSTM & \textbf{0.88} & 2.61 & 1.94 & 4.23 & 4.54 & 8.67 & 1.63 & 4.98 \\
 		\hline
 	\end{tabular}
-	\caption{MAE count per domain in UCSDPeds and WebCamT datasets (semi-supervised setting). For each domain, the best MAE obtained from experiments run with different values of $\lambda_d$ is shown. Column Avg indicates the best average MAE count across domains in experiments run with different values of $\lambda_d$.}
-	\label{table:webcamt_semi-supervised_results}
+	\caption{MAE count per domain in UCSDPeds and WebCamT datasets (unsupervised setting). Column Avg indicates the average MAE count across domains.}
+	\label{table:results_semisup}
 \end{table}
 
-There is a noticeable difference between the semi-supervised results and the unsupervised ones, with the former being significantly better that the latter. As the experiments we ran with the WebCamT had more data and more domains, that led to a reduction in the instability of the models, which caused the difference in accuracy between the two settings not to be as wide.
+There is a noticeable difference between these results and those for the unsupervised setting (\Tableref{table:results_unsup}), with the former being significantly better that the latter. As the experiments we ran with the WebCamT had more data and more domains, that led to a reduction in the instability of the models, which caused the difference in accuracy between the two settings not to be as wide as in UCSDPeds.
 
-Like in the unsupervised setting, we were not able to notice a significant difference between the performance of the temporal methods and the non-temporal ones. As we have also verified before, the DA models do not show a marked improvement over the non-DA models for the WebCamT dataset. In fact, in this case, it was a non-temporal, non-DA model, the FCN-HA, that showed the best average MAE count.
+In UCSDPeds, we can discern the same general remarks we made when we analyzed the unsupervised problem. Models DoubleLSTM and CommonLSTM showed the best performance. Temporal models proved better than non-temporal ones, although in this case, model SingleLSTM had the worst average MAE count. DA models proved, in general, to be better than non-DA models.
 
-\Figref{fig:lambda_d_semisup} shows the average MAE count across domains for every DA model experiment, run with a different value of $\lambda_d$.
-
-\begin{figure}[!ht]
-	\begin{subfigure}{.5\textwidth}
-		\centering
-		\includegraphics[width=0.85\textwidth]{ChapterThree/ucsdpeds_semisupervised.png}
-	\end{subfigure}
-	\begin{subfigure}{.5\textwidth}
-		\centering
-		\includegraphics[width=0.85\textwidth]{ChapterThree/webcamt_semisupervised.png}
-	\end{subfigure}
-	\caption{Average MAE count across domains for each $\lambda_d$ in the semi-supervised setting in the UCSDPeds (left) and WebCamT (right) datasets.}
-	\label{fig:lambda_d_semisup}
-\end{figure}
-
-The DoubleLSTM had, in general, the best average MAE count in the semi-supervised graph, similar to what it was verified in the unsupervised case. The Simple Model was the worst, unlike in the unsupervised setting, where it was the SingleLSTM that showed the worst results.
-
-The average MAE count across different values of $\lambda_d$ is considerably more stable in the semi-supervised results than in the unsupervised ones. We were not able to notice an improvement in the performance of the CommonLSTM as $\lambda_d$ decreased, just like we were not able observe a notorious lower average MAE count in the DoubleLSTM model, for $\lambda_d=10^{-3}$. Because the unsupervised results are more unstable, they are also more sensitive  to variations of the value of $\lambda_d$ that are not discernible in the semi-supervised setting.
-
-\subsubsection{Discussion}
-
-It stands out that models DoubleLSTM and CommonLSTM showed a better performance than the state-of-art method for counting objects FCN-rLSTM in every dataset and in every setting (unsupervised and semi-supervised). In particular, when it comes to the average MAE count in the unsupervised results, the DoubleLSTM model showed an average improvement of $27\%$ , whereas the CommonLSTM model showed an average improvement of $17\%$, when compared against the FCN-rLSTM. As such, these results underline the contribution this dissertation made to the problem of adversarial domain adaptation in sensor networks.
-
-Models Simple and SingleLSTM, on the other hand, had a very unsatisfactory performance, by not showing better results than methods FCN-rLSTM and FCN-HA, even though they leveraged the power of domain adaptation and, in the case of SingleLSTM, the power of LSTMs to make temporal considerations about the nature of data. When it comes to the Non-temporal model, it appears the reason for its low accuracy is the fact that, without the power of LSTMs, applying domain adaptation to the FCN-HA just disturbs the training process. As for the SingleLSTM, having a too big of a difference in the complexity of its task executor and its domain discriminator is the most likely cause for its failure to show improvements relative to the state-of-art methods.
-
-We have thus verified that integrating domain adaptation with a method does not automatically guarantee better results. Careful considerations on how to divide the previous method between feature extractor and task executor should be made, just like careful deliberations on the domain discriminator design.
-
-It should also be noticed that the results showed an inconsistency in the performance of models across domains. That is, whereas a model performed better in one domain, another model performed better in another. Hence, when applying a model for counting objects in a real world scenario, one should ponder what model to use depending on the characteristics of the particular target domain.
+For WebCamT, again we were not able to notice a significant difference between the performance of the temporal methods and the non-temporal ones. As we have also verified before, the DA models do not show a marked improvement over the non-DA models for the WebCamT dataset. In fact, in this case, it was a non-temporal, non-DA model, the FCN-HA, that showed the best average MAE count.
 
 Please refer to \citet{ThesisFrancisco} for an extended discussion and further experimental results.
+
+\subsection{Conclusion}
+
+We have proposed several sensible model architectures to solve the problem of domain adaptation for the task of counting objects in videos. All of those result from the combination of two state of the art models, one for the object counting task (FCN-rLSTM) and the other one for multi-source DA (MDAN). 
+
+Among the proposed models, it stands out that DoubleLSTM and CommonLSTM showed a significant improvement over the non-DA model FCN-rLSTM in most cases. Models Non-Temporal and SingleLSTM, on the other hand, had a very unsatisfactory performance, by not showing better results than methods FCN-rLSTM and FCN-HA. We have thus verified that integrating domain adaptation with a method does not automatically guarantee better results. Careful considerations on how to divide the previous method between feature extractor and task executor should be made, just like careful deliberations on the domain discriminator design and choice of the hyperparameter $\lambda_d$. Unfortunately, informed choices about these become especially difficult in the unsupervised setting, where it is impossible to obtain a direct evaluation of how a given choice will perform on the target domain.
+
+It should also be noted that the results showed an inconsistency in the performance of models across domains. That is, whereas a model performed better in one domain, another model performed better in another. Hence, when applying a model for counting objects in a real world scenario, one should ponder what model to use depending on the characteristics of the particular target domain.
+
+All the previous considerations prove the difficulty of the DA problem, especially when the domain shift is large as was the case in the two datasets we have used in these experiments. This discussion makes a good starting point for the next section, where a novel algorithm for unsupervised multi-source DA is presented.
+
+\section{Tackling multi-source domain adaptation with optimism and consistency}
+\label{sec:modafm}
+
+\subsection{Introduction}
+\label{sec:modafm_intro}
+The ability of deep neural networks to learn rich feature representations and the recent surge of adversarial learning techniques have led to numerous approaches that resort to an adversarial objective to learn those representations. The adversary is usually implemented with a domain discriminator network (\citet{Ganin2015}), which aims to discriminate samples between source and target domains, and is jointly trained with the feature extractor and task classifier through a minimax game. Other models resort to the minimization of  distribution dissimilarity metrics between the target and source feature distributions (\citet{Ferreira2019, Guo2018}). It is known, however, that if the learned features violate the covariate shift assumption, domain-invariant features shall deteriorate the generalization performance of the model on the target domain (\citet{Zhao2019}) -- a problem that we refer to as \newterm{the curse of domain-invariant representations}. Addressing this issue in the unsupervised setting is challenging, although some strategies have been proposed. \citet{Pei2018} use a domain discriminator per class and the probability output of the task classifier as attention weights for the discriminator. \citet{Sebag2019} introduce a loss term that repulses unlabeled examples from the labeled ones whenever the classifier has low confidence on classifying the unlabeled examples. Thus, both methods depend on the classifier to make correct predictions on the target samples early in the training. Here, we avoid this issue by employing a consistency loss, together with a minimum confidence threshold, that enforces agreement on the class predictions for original and augmented target samples.
+
+Our contributions are summarized as follows: i) we present a corollary of the theoretical results from \citet{BenDavid2010} which motivates our methodology; ii) we present our multi-source adversarial model which learns the distribution weights for each source domain jointly with all remaining parameters and following a theoretically-grounded mildly optimistic approach; iii) we discuss how a simple consistency regularization technique may help avoid the curse of domain-invariant representations; iv) we conduct extensive experiments on benchmark datasets that confirm the effectiveness of the proposed methodologies.
+
+\subsection{Motivation}
+
+\subsubsection{An upper bound on the target risk}
+
+Intuitively, if the source and target domains are similar and the amount of labeled source data is sufficiently large, a classifier trained to reach low empirical error on the source domain will likely achieve a low error on the target domain too. When multiple source domains are available, a combination of their respective data yields the optimal strategy. The following bound, which is a corollary of the results from \citet{BenDavid2010}, formalizes these ideas and enlightens some properties that will be exploited by our approach. For completeness, the proof is provided in \ref{sec:thm_proof}. In the following, $\Delta$ denotes the $k$-simplex and $\gS_{\valpha}$ is the $\valpha$-weighted mixture of source domains (i.e.\ $\Delta \triangleq \lbrace \valpha \in [0,1]^k: \sum_{j=1}^{k} \alpha_j = 1$ and  $p_{\gS_{\valpha}}(\rvx) \triangleq \sum_{j=1}^{k} \evalpha_j p_{\gS_j}(\rvx)$).
+
+\begin{theorem}
+	\label{thm:target_risk_bound}
+	Let $\gH$ be a hypothesis class with VC-dimension $d$. Consider an unlabeled set of $n$ samples drawn from the target domain $\gT$ and, for each $j \in \{1,2,...,k\}$, a labeled set of $n/k$ samples drawn from the source domain $\gS_j$. Then, for any $h \in \gH$ and any $\alpha \in \Delta$, with probability at least $1-\delta$ over the choice of samples,
+	\begin{equation}
+	\label{eq:bound}
+	\epsilon_\gT(h) \leq \sum_{j=1}^k \alpha_j \widehat{\epsilon}_{\gS_j}(h) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS_\valpha, \gT) + \lambda_\valpha + B_\valpha(\delta) + V(\delta),
+	\end{equation}
+	where
+	\begin{align}
+	&B_\valpha(\delta) \triangleq 2\sqrt{\frac{k}{n}\left(2d \log(2(n+1)) + \log\frac{8}{\delta}\right)\sum_{j=1}^k \evalpha_j^2}, \\
+	&\lambda_\valpha \triangleq \min_{h \in \gH}\, \sum_{j=1}^k \evalpha_j \epsilon_{\gS_j}(h) + \epsilon_{\gT}(h), \\
+	&V(\delta) \triangleq 2 \sqrt{\frac{1}{n} \left( 2d\log(2n) + \log\frac{4}{\delta} \right)}.
+	\end{align}
+\end{theorem}
+This bound is structurally very similar to the one presented in Theorem \ref{thm:da_bound_multi_source} (\citet{Zhao2018}), with two slight differences: i) we work with the (empirical) $\gH \Delta \gH$-divergence between the target and the mixture of source domains directly, instead of upper-bounding it with the convex combination of (empirical) $\gH \Delta \gH$-divergences between the target and each source domain; and ii) we show the dependency of the bound on the quantity $B_\valpha(\delta)$, whose interpretation is given in the following discussion.
+
+\subsubsection{The curse of domain-invariant representations}
+\label{sec:modafm_domain_invariance}
+If the optimal $\valpha$ was known, a learning algorithm for DA could, in principle, be trained to minimize the first two terms in the bound. For this purpose, it should find a function $g:\gX \mapsto \gZ$ in a set of feature transformations $\gF$ and a classifier $h: \gZ \mapsto \gY$ in $\gH$. The first term in the bound is minimized by training the classifier $h$ on the desired task, using the labeled data from all source domains. The second term is minimized by finding a feature transformation $g$ such that the induced distributions $\gT^g$ and $\gS_\valpha^g$ are similar. This is the main idea exploited by adversarial-based DA algorithms, which use an adversarial objective to match source and target distributions in a latent feature space. The problem with this approach is that it completely overlooks the role of the third term, $\lambda_\valpha$, which corresponds to the minimum possible combined risk of a classifier in $\gH$ on the source and target domains. \citet{Zhao2019} show constructively that a low error on the source domain and domain-invariant features are insufficient to ensure low target risk and may actually have the opposite effect, by increasing $\lambda_\valpha$. Sufficiency is established only under the covariate shift assumption, where the conditional distributions of labels $\ry \in \gY$ given features $\rvz \in \gZ$ are the same across source and target domains and only the marginal distributions of features differ. Since, in the unsupervised DA setting, target labels are not available, imposing or verifying covariate shift is not possible. Moreover, whenever the marginal distributions of labels differ (target shift), a strong enforcement of domain-invariant feature representations necessarily hurts the covariate shift assumption, by imposing the marginals on features to coincide. For this reason, training adversarial-based DA algorithms for many iterations generally yields worse performance (\citet{Zhao2019}). In this work, we show empirically that learning a more robust feature transformation will generally help mitigate this issue.
+
+\subsubsection{Choosing the combination of source domains}
+\label{sec:modafm_choose_alpha}
+Looking at the first two terms of the learning bound in Theorem~\ref{thm:target_risk_bound} suggests that $\valpha$ could be chosen in an optimistic way, by selecting the source domain in which the sum of the risk of the classifier and the $\gH \Delta \gH$-divergence with respect to the target reaches the lowest value. However, the term $B_\valpha(\delta)$ is proportional to the $\normltwo$-norm of $\valpha$, which is maximum when $\valpha$ is one-hot and minimum when $\evalpha_j = 1/k$, $\forall\, j$. This has an intuitive explanation: choosing a sparse $\valpha$ implies discarding data from the source domains whose component is zero, so the classifier is trained with intrinsically less data and its error tends to increase. This discussion naturally leads to the following formal objective:
+\begin{equation}
+\label{eq:formal_obj}
+\min_{\valpha \in \Delta, \, h\in \gH, \, g \in \gF}\; \sum_{j=1}^k \alpha_j\widehat{\epsilon}_{\gS_j}(h \circ g) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS_\valpha^g, \gT^g) + \mu ||\valpha||_2,
+\end{equation}~
+where $\mu = \mu(\delta) > 0$. This objective contrasts with the idea from \citet{Zhao2018}, where the authors essentially choose to minimize the loss for the hardest source domain at each iteration of the learning algorithm, which is a much more pessimistic approach than ours. In either case, though, the minimum combined risk $\lambda_\valpha$ is uncontrolled and, as discussed in \Secref{sec:modafm_domain_invariance}, this is an issue that must be addressed.
+
+\subsection{Methodology}
+\label{sec:modafm_method}
+
+Given the discussion in the previous section, we now explain our method in detail. It basically consists of two major approaches, explained throughout this section.
+
+\subsection{Domain adaptation from a dynamic mixture of sources}
+
+We first address the problem of casting the objective~\plaineqref{eq:formal_obj} into a computationally treatable surrogate. As in many recent works in DA, we resort to neural networks to implement $g$ and $h$ and the empirical $\gH \Delta \gH$-divergence is implemented with a domain discriminator network, which aims to distinguish between samples of $\gS_\alpha^g$ and $\gT^g$.\footnote[1]{Theoretically, some care should be taken while designing the architecture of the discriminator to make sure that it parametrizes hypotheses in $\gH \Delta \gH$, but in practice this constraint is dropped. There are similar bounds using the $\gH$-divergence instead \citep{Sebag2019}.} Taking the previous considerations and replacing the intractable empirical risks by the usual classification losses, objective~\plaineqref{eq:formal_obj} is cast as:
+\begin{equation}
+\min_{\alpha \in \Delta, \theta_g, \theta_h} \max_{\theta_d} \; \Big\{ \gL(\alpha, \theta_g, \theta_h, \theta_d) = \gL_\text{class}(\alpha, \theta_g, \theta_h) - \mu_d \gL_\text{disc}(\alpha, \theta_g, \theta_d) + \mu_s ||\alpha||_2^2 \Big\},
+\end{equation}
+where 
+\begin{align}
+&\gL_\text{class}(\alpha, \vtheta_g, \vtheta_h) = -\sum_{j=1}^M \alpha_j\E_{\rvz \sim \gS_j^g}\log p(\ry=f_{\gS_j^g}(\rvz) \mid \rvz, \vtheta_h), \\
+%
+&\gL_\text{disc}(\alpha, \vtheta_g, \vtheta_d) = -\E_{\rvz \sim \gS_{\valpha}^g} \log p(\rd=0 \mid \rvz, \theta_d) - \E_{\rvz \sim \gT^g} \log p(\rd=1 \mid \rvz, \vtheta_d).
+\end{align}
+Here, $\vtheta_h$ and $\vtheta_d$ are the parameters of the classifier and domain discriminator networks, respectively, $\mu_d, \mu_s > 0$ are hyperparameters, $\ry \in \gY$ is the categorical r.v. associated with the class label, $f_{\gS_j^g}: \gZ \mapsto \gY$ is the true (multiclass) labeling function for the $j$-th source domain, $\rd$ is a Bernoulli random variable that discriminates source and target domains and the function $g = g(\cdot, \vtheta_g): \gX \mapsto \gZ$ is a neural network, parameterized by $\vtheta_g$, mapping input samples to features. By linearity of expectations and using the fact that $\rvz = g(\rvx, \vtheta_g)$, for input samples $\rvx \in \gX$, we have:
+\begin{align}
+\label{eq:loss_class}
+\gL_\text{class}(\valpha, \vtheta_g, \vtheta_h) &= -\sum_{j=1}^k \alpha_j\E_{\rvx \sim \gS_j} \log p(\ry=f_{\gS_j}(\rvx) \mid \rvx; \vtheta_g, \vtheta_h), \\
+\allowdisplaybreaks
+\label{eq:loss_disc}
+\gL_\text{disc}(\valpha, \vtheta_g, \vtheta_d) &= -\sum_{j=1}^k \alpha_j\E_{\rvx \sim \gS_j} \log p(\rd=0 \mid \rvx; \vtheta_g, \vtheta_d)  - \E_{\rvx \sim \gT} \log p(\rd=1 \mid \rvx; \vtheta_g, \vtheta_d) .
+\end{align}
+In order to satisfy the constraint $\valpha \in \Delta$, we reparameterize the model using $\alpha = \softmax(\vbeta)$, for an unconstrained parameter $\vbeta \in \sR^k$. Finally, since we assume to have access to labeled datasets $\widehat{\gS}_1,\widehat{\gS}_2,\dots,\widehat{\gS}_k$ from each source domain and to a unlabeled dataset $\widehat{\gT}$ from the target, we may compute empirical estimates of losses \plaineqref{eq:loss_class} and \plaineqref{eq:loss_disc}:
+\begin{equation}
+\label{eq:emp_loss_class}
+L_\text{class}(\vbeta, \vtheta_g, \vtheta_h) \approx -\frac{1}{m}\sum_{j=1}^k \frac{\exp(\evbeta_j)}{\sum_{j'} \exp(\evbeta_{j'})} \sum_{(\vx,y) \in \widehat{\gS}_j^{(m)}} \log p(y \mid \vx; \vtheta_g, \vtheta_h),
+\end{equation}
+\begin{align}
+\label{eq:emp_loss_disc}
+L_\text{disc}(\vbeta, \vtheta_g, \vtheta_d) \approx& -\frac{1}{m}\sum_{j=1}^k \frac{\exp(\evbeta_j)}{\sum_{j'} \exp(\evbeta_{j'})} \sum_{(\vx,y) \in \widehat{\gS}_j^{(m)}} \log p(\rd=0 \mid \vx; \vtheta_g, \vtheta_d) \\
+&-\frac{1}{m}\sum_{\vx \in \widehat{\gT}^{(m)}} \log p(\rd=1 \mid \vx; \vtheta_g, \vtheta_d), \nonumber
+\end{align}
+where $\widehat{\gS}_j^{(m)}$ and $\widehat{\gT}^{(m)}$ are mini-batches of $m$ examples each from $\widehat{\gS}_j$ and $\widehat{\gT}$, respectively.
+
+It is instructive to compare our approach with MDAN (\citet{Zhao2018}), as that model is the most similar to ours. The bound in \eqref{eq:bound} uses one single $\gH \Delta \gH$-divergence and, therefore, our model comprises one single domain discriminator, which aims to distinguish between the target and the $\valpha$-weighted mixture of source domains. \citet{Zhao2018} use $k$ discriminator networks, i.e.\ one per source domain. More importantly, regarding the choice of $\valpha$, we treat it as one further parameter that can be optimized to minimize the loss. To avoid the objective to collapse into the easiest source domain, as explained in \Secref{sec:modafm_choose_alpha}, we include an extra term that penalizes a sparse $\valpha$. Unlike us, they do not include the sparsity penalization term and choose $\valpha$ to minimize the worst case scenario, by assigning a larger weight to the maximum loss among the $k$ source domains on each training iteration. 
+
+\subsection{Consistency regularization on the target domain}
+\label{sec:modafm_consistency}
+
+Consistency regularization is a key component of many state of the art algorithms in semi-supervised learning. The basic idea is simple: an unlabeled sample and a slightly perturbed version of it should share the same label. Here, this approach is exploited as a sensible heuristic to avoid that domain-invariant features end up hurting the generalization performance of the model on the target domain, as discussed in \Secref{sec:modafm_domain_invariance}.
+
+Specifically, consider a target sample $\vx \in \widehat{\gT}$ and a parametric transformation $\omega: \gX \times \Xi \mapsto \gX$, where $\Xi$ is the space of parameters for the transformation. Further assume that $\omega$ is label-preserving, i.e.\ $f_\gT(\omega(\vx, \xi)) = f_\gT(\vx)$, $\forall\, \vx \in \gX, \, \xi \in \Xi$. If $\omega$ is rich and strong enough, it should spread the transformed target samples over multiple regions of low density under the target distribution, i.e.\ it will produce new domains. Then, by enforcing agreement on the predictions of original and transformed target samples, we are encouraging the model to learn to extract features that generalize well across domains. Moreover, some of the augmented samples may fall within regions of higher density under the distribution of the source domains. If this hypothesis holds, by enforcing agreement on the predictions of original and transformed target samples and low classification error on the source domains, we are indirectly promoting low error on the target domain too. \Figref{fig:consistency} illustrates this idea.
+
+\begin{figure}[h]
+	\centering
+	\fbox{\includegraphics[width=0.75\linewidth]{ChapterThree/consistency.pdf}}
+	\caption{Toy illustration of the desired effect of the consistency regularization, where images are represented as lying on a 2-D space. Green and orange circles represent (labeled) samples from two distinct source domains; blue and purple x-markers represent original and augmented (unlabeled) target samples, respectively. Colored ellipses enclose pairs of augmented and source samples that are close to each other and therefore are likely to share the same label.}
+	\label{fig:consistency}
+\end{figure}
+
+The particular type of consistency regularization we adopt here is FixMatch~\citep{Sohn2020}, due to its simplicity and good performance. This approach involves using the predicted class of original (or weakly-transformed) samples as pseudo-labels for the (strongly-)transformed samples and, in our setting, is translated into the following loss function:
+\begin{equation}
+L_{\text{cons}}(\vtheta_g, \vtheta_h) = -\frac{1}{m}\sum_{\vx \in \widehat{\gT}^{(m)}} \1_{\left(\max_{\ry \in \gY}\, p(\ry \mid \vx; \vtheta_g, \vtheta_h) > \tau \right)} \log p(\tilde{y} \mid \omega(\vx, \xi); \vtheta_g, \vtheta_h),
+\end{equation}
+where $\tilde{y} = \argmax_{\ry \in \gY} p(\ry \mid \vx; \theta_g, \theta_h)$ is the pseudo-label, $\xi$ is chosen randomly for each $\vx$, and $\tau \geq 0$ is a hyperparameter defining the minimum confidence threshold for the loss to be active. This threshold prevents the loss to be applied too early in the training process and, in our setting, may discard augmented samples that fall too far from the source distributions. The overall objective is then written as follows:
+\begin{equation}
+\min_{\valpha \in \Delta, \vtheta_g, \vtheta_h}\max_{\vtheta_d} \Big\{ L = L_\text{class}(\valpha, \vtheta_g, \vtheta_h) + \mu_c \gL_\text{cons}(\vtheta_g, \vtheta_h) - \mu_d \gL_\text{disc}(\valpha, \vtheta_g, \vtheta_d) + \mu_s ||\valpha||_2^2 \Big\}, 
+\end{equation}
+where $\mu_c > 0$ controls the relative weight of the consistency loss. A full schematic of our model is provided in \ref{sec:model_overview}.\todo{Maybe add something about the causal interpretation of this heuristic}
+
+It remains to discuss how to build the transformation $\omega$ in such a way that it is strong and diverse enough while satisfying the constraint of being label-preserving. This is essentially an application-dependent problem, though. For vision applications, there are multiple simple label-preserving transformations (e.g. translation, rotation, sharpness enhancement, etc.) that can be applied in a pipeline and, as consequence, the transformed image ends up being a strongly distorted version of the original one. This is the idea followed, for instance, in RandAugment (\citet{Cubuk2019}), which we use here. RandAugment receives as input parameters the magnitude and the number of transformations to be applied and randomly chooses the transformations to apply to each sample in the mini-batch. Here, as \citet{Sohn2020} did, we choose the number and magnitude of the transformations uniformly at random for each mini-batch.
+
+For generic, non-vision problems, adding random noise sampled from some known distribution (e.g.\ Gaussian) is a trivial realization of $\omega$. Another possibility is to apply a strong dropout (\citet{Srivastava2014}) transformation at the input and inner layers of the neural network. Although such transformation is not necessarily label-preserving, dropout is known to be a successful regularization technique when applied at fully connected layers. We employ this idea in one of the experiments conducted here.
+
+\section{Experiments}
+\label{sec:modafm_experiments}
+
+\subsection{Experimental protocol}
+We now conduct several experiments using standard benchmark datasets for multi-source DA. We follow established evaluation protocols for every dataset and, as far as possible, we use the same network architecture for our model and baselines. Notably, comparing with MDAN (\citet{Zhao2018}), our single domain discriminator has the same architecture as each of the $k$ domain discriminators in their model. Consequently, our model has less trainable parameters than theirs. Our parameter $\vbeta$ is initialized uniformly at random in $[0,1]^k$, so the resulting $\valpha$ initially weights all source domains roughly equally, but it may become sparse as training evolves. We illustrate this behavior in \ref{sec:alpha_evol}. Hyperparameter tuning was performed through cross-validation over source domains and a hyperparameter sensitivity analysis is conducted in \ref{sec:hyperparam}. Further details about the experiments, including the label distributions on each domain (\ref{sec:label_dist}), network architectures (\ref{sec:arch}), search ranges for each hyperparameter (\ref{sec:cross_val}), and image transformations (\ref{sec:img_transf}), are also provided as appendices. The PyTorch-based implementation of our model is publicly available.\footnote{\url{https://github.com/dpernes/modafm}} To facilitate the presentation, from now on we refer to our model as MODA-FM (Multi-source mildly Optimistic Domain Adaptation with FixMatch regularization). 
+
+\paragraph{Baselines} DANN-SS (\citet{Ganin2015}): a single-source DA model, where the best results among all source domains are reported. DANN-MS: the same model as before trained on the combined data from all source domains. MADA (\citet{Pei2018})I: a state of the art model for single-source DA which tries to align conditional distributions by using one domain discriminator per class (results extracted from \citet{Pei2018}, we report the best accuracy among all source domains). MDAN (\citet{Zhao2018}): a model for multi-source DA, widely described before. MoE (\citet{Guo2018}): a state of the art model for multi-source DA that uses one classifier per source domain whose predictions are weighted in an example-dependent way. M$^3$SDA-$\beta$ (\citet{Peng2019}): a moment-matching model for multi-source DA in which two classifiers per source domain are trained to have maximum label discrepancy on the target domain (results extracted from \citet{Peng2019}). Fully supervised: fully supervised model trained on the target data, to provide an empirical upper bound on the performance of the DA task. MODA: our model without consistency regularization (i.e.\ $\mu_c = 0$). FM: our model without domain discriminator, trained on the naively combined data from all source domains and using FixMatch consistency regularization as described in \Secref{sec:modafm_consistency}.
+
+\paragraph{Digits classification} In this experiment, the task is digit classification using 4 datasets: MNIST (\citet{LeCun1998}), MNIST-M (\citet{Ganin2015}), SVHN (\citet{Netzer2011}), and SynthDigits (\citet{Ganin2015}). We take each of the first three datasets as the target in turn, and use the remaining as source domains. The number of training images chosen randomly from each domain, including the target, is 20k. The evaluation is performed in the non-transductive setting, i.e. no target data used during training are used for evaluation. The results are in \Tableref{tab:digits_office_acc}.
+
+\begin{table}
+	\centering
+	\caption{Average accuracy $\pm$ standard deviation (\%) over 5 independent runs on digits and objects classification (Office-31). The domain on each column corresponds to the target.}
+	\footnotesize
+	\label{tab:digits_office_acc}
+	%\hspace*{-1.0in}
+	\begin{tabular}{l|ccc:c|ccc:c}
+		& MNIST                        & MNIST-M                       & SVHN  & Avg.                        & Amazon                        & DSLR                              & Webcam & Avg.                      \\ \hline
+		DANN-SS \cite{Ganin2015}  & $ 97.9 $ \tiny{$ \pm 0.4 $}  & $ 73.2 $\tiny{$ \pm 1.6 $}   & $ 72.8 $ \tiny{$ \pm 3.3 $} & $81.3$ & $ 60.5 $ \tiny{$ \pm 1.4 $}   & $\boldsymbol{100.0}$ \tiny{$\pm 0.0$}     & $ 98.0$ 	\tiny{$ \pm 0.3 $} & $86.2$\\
+		DANN-MS \cite{Ganin2015}  & $ 97.9 $ \tiny{$ \pm 1.6 $}  & $ 67.5 $ \tiny{$ \pm 1.4 $}   & $ 71.5 $ \tiny{$ \pm 1.6 $} & $79.0$ & $ 61.2 $ \tiny{$ \pm 1.3 $}   & $ 99.9 $ \tiny{$ \pm 0.2 $}       & $ 98.8 $ \tiny{$ \pm 0.3 $} & $86.6$\\
+		MADA \cite{Pei2018}       & --                        & --                             & --                         & --  & $ 70.3 $ \tiny{$ \pm 0.3 $}   & $ 99.6 $ \tiny{$ \pm 0.1 $}       & $ 97.4 $ \tiny{$ \pm 0.1 $} &  $89.1$\\
+		MDAN \cite{Zhao2018}      & $ 98.3 $ \tiny{$ \pm 0.2 $}  & $ 69.1 $ \tiny{$ \pm 1.2 $}   & $ 69.5 $ \tiny{$ \pm 2.8 $} & $79.0$ & $ 65.2 $ \tiny{$ \pm 0.4 $}   & $ 99.3 $ \tiny{$ \pm 0.2 $}       & $ 97.8 $ \tiny{$ \pm 0.5 $} & $87.4$\\
+		MoE \cite{Guo2018}       & $ 98.6 $ \tiny{$ \pm 0.2 $}                     & $ 69.9 $ \tiny{$ \pm 1.1 $}                      & $ 81.8 $ \tiny{$ \pm 0.8 $}  & $83.4$ & --                            & --                                & --                          & --\\ \hline
+		MODA         & $ 98.4 $ \tiny{$ \pm 0.2 $}  & $ 77.4 $ \tiny{$ \pm 1.6 $}   & $ 71.7 $ \tiny{$ \pm 1.5 $} & $82.5$ & $ 65.5 $ \tiny{$ \pm 0.5 $}   &   $ 99.9 $ \tiny{$ \pm 0.2 $}     & $ 99.0 $ \tiny{$ \pm 0.3 $}  & $88.1$\\
+		FM           & $\boldsymbol{99.2}$ \tiny{$\pm 0.1$} & $ 91.1 $ \tiny{$ \pm 0.4 $}   & $\boldsymbol{90.0}$ \tiny{$\pm 0.8$} & $93.4$ & $ 70.3 $ \tiny{$ \pm 0.6 $}   & $ 99.7 $ \tiny{$ \pm 0.2 $}       & $\boldsymbol{99.2}$ \tiny{$\pm 0.4$} & $89.7$\\
+		MODA-FM                      & $ 98.8 $ \tiny{$ \pm 0.1 $}  & $\boldsymbol{95.4}$ \tiny{$\pm 0.4$}  & $ 89.4 $ \tiny{$ \pm 1.4 $} & $\boldsymbol{94.5}$ & $\boldsymbol{70.7}$ \tiny{$\pm 0.9$}  & $ \boldsymbol{100.0} $ \tiny{$ \pm 0.0 $} & $ 99.1 $ \tiny{$ \pm 0.1 $} & $\boldsymbol{89.9}$\\ \hline
+		Fully supervised            & $ 98.9 $ \tiny{$ \pm 0.1 $}  & $ 96.2 $ \tiny{$ \pm 0.1 $}   & $ 90.3 $ \tiny{$ \pm 0.5 $} & $95.1$ & $ 88.1 $ \tiny{$ \pm 1.6 $}   & $ 99.3 $ \tiny{$ \pm 1.1 $}       & $ 99.5 $ \tiny{$ \pm 0.7 $} & $95.6$
+	\end{tabular}
+\end{table}
+
+\paragraph{Object classification on Office-31 dataset} Office-31 (\citet{Saenko2010}) is a standard benchmark dataset for domain adaptation. It comprises 31 object categories extracted from 3 domains: Amazon, which contains 2817 images downloaded from \url{amazon.com}, DSLR and Webcam, which contain 498 and 795 images captured with DSLR cameras and webcams, respectively, under different environments. In this experiment, we adopt the fully-transductive setting, following \citet{Pei2018}, where all unlabeled data from the target domain are used for training (except for the fully supervised model, where we use 80\% of the data for training and the remaining for testing). All models are implemented using a pre-trained (on ImageNet) ResNet-50 (\citet{He2016}) as the base architecture. We take each domain as the target in turn and all remaining are used as sources. The results are presented in \Tableref{tab:digits_office_acc}.
+
+\paragraph{Sentiment analysis on Amazon Reviews dataset} The Amazon Reviews dataset (\citet{Blitzer2007}) is another multi-domain dataset widely used as a benchmark for domain adaptation. It contains binary (i.e.\ positive and negative) reviews on 4 types of products: books, DVDs, electronics, and kitchen appliances. Here, we follow the experimental setting from \citet{Chen2012}, where samples were pre-processed to 5k-dimensional TF-IDF feature vectors, thus word order information was not preserved. We choose 2k training samples from each domain randomly and the remaining target samples are used for testing, following the non-transductive setting. Since the data are not images, we use dropout as our (pseudo-)label-preserving transformation. Specifically, on each training iteration, we randomly choose a dropout rate (in a pre-specified range) to be applied at the input and hidden layers of the MLP and the corresponding output prediction is used as the pseudo-label $\tilde{y}$. No dropout is applied for source and non-augmented target samples. All domains are taken as the target in turn and all remaining are used as sources. The results are in~\Tableref{tab:amazon_acc}.
+
+\begin{table}[]
+	\centering
+	\caption{Average accuracy $\pm$ standard deviation (\%) over 5 independent runs on sentiment analysis (Amazon Reviews). The domain on each column corresponds to the target.}
+	\label{tab:amazon_acc}
+	\footnotesize
+	\hspace*{-0.10in}
+	\begin{tabular}{l|cccc:c}
+		& Books           & DVD             & Electronics     & Kitchen  & Avg. \\ \hline
+		DANN-SS \cite{Ganin2015} & $ 77.5 $ \tiny{$ \pm 1.0 $} & $ 78.9 $ \tiny{$ \pm 0.9 $} & $ 84.2 $ \tiny{$ \pm 0.2 $} & $ 85.8 $ \tiny{$ \pm 0.4 $} & $81.6$ \\
+		DANN-MS \cite{Ganin2015} & $ 78.9 $ \tiny{$ \pm 0.2 $} & $ 80.8 $ \tiny{$ \pm 1.0 $} & $ 84.7 $ \tiny{$ \pm 0.6 $} & $ 87.0 $ \tiny{$ \pm 0.4 $} & $82.9$ \\
+		MDAN \cite{Zhao2018}     & $ 79.1 $ \tiny{$ \pm 0.3 $} & $ 81.3 $ \tiny{$ \pm 0.8 $} & $ 84.6 $ \tiny{$ \pm 0.3 $} & $ 85.6 $ \tiny{$ \pm 1.6 $} & $82.7$ \\
+		MoE \cite{Guo2018}      & $ 80.3 $ \tiny{$ \pm 0.3 $} & $ 81.9 $ \tiny{$ \pm 0.6 $} & $ 85.2 $ \tiny{$ \pm 0.6 $} & $ 87.4 $ \tiny{$ \pm 0.5 $} & $83.7$\\ \hline
+		MODA     & $ 79.0 $ \tiny{$ \pm 0.2 $} & $ 80.7 $ \tiny{$ \pm 1.2 $} & $ 84.7 $ \tiny{$ \pm 0.3 $} & $ 86.8 $ \tiny{$ \pm 0.6 $} & $82.8$\\
+		FM         & $ 78.8 $ \tiny{$ \pm 2.0 $} & $ 81.0 $ \tiny{$ \pm 1.5 $} & $\boldsymbol{85.6}$ \tiny{$\pm 0.9 $} & $ 87.6 $ \tiny{$ \pm 0.7 $} & $83.3$\\
+		MODA-FM    & $\boldsymbol{80.9}$ \tiny{$\pm 1.1$} & $\boldsymbol{82.0}$ \tiny{$\pm 1.0$} & $ 85.3 $ \tiny{$ \pm 0.4 $} & $\boldsymbol{88.4}$ \tiny{$\pm 0.3$} & $\boldsymbol{84.2}$\\ \hline
+		Fully supervised & $ 83.6 $ \tiny{$ \pm 0.4 $} & $ 83.6 $ \tiny{$ \pm 0.6 $} & $ 85.4 $ \tiny{$ \pm 0.4 $} & $ 87.8 $ \tiny{$ \pm 0.2 $} & $85.1$
+	\end{tabular}
+\end{table}
+
+\paragraph{Large scale object classification on DomainNet dataset} To the best of our knowledge, the DomainNet dataset (\citet{Peng2019}) is the largest domain adaptation image dataset to date. It consists of 6 domains, each containing 345 categories of common objects. The domains are: clipart images (\textit{clp}), infographic images (\textit{inf}), artist paintings (\textit{pnt}), drawings made by worldwide players of the game ``Quick, Draw!" (\textit{qdr}), real world images (\textit{rel}), and sketches of objects (\textit{skt}). The dataset consists of around 423.5k images split in prespecified train/test partitions. For training the models, we use all the data from the training partition, excluding the labels for the target domain. For testing, we use the target domain data from the test partition. All models were implemented on top of a pre-trained (on ImageNet) ResNet-152. All domains are taken as the target in turn and all remaining are used as sources. The results are in~\Tableref{tab:domainnet_acc}.
+
+\begin{table}[]
+	\centering
+	\caption{Accuracy on object classification (DomainNet). The domain on each column corresponds to the target.}
+	\label{tab:domainnet_acc}
+	\footnotesize
+	\begin{tabular}{l|cccccc:c}
+		& \textit{clp} & \textit{inf} & \textit{pnt} & \textit{qdr}  & \textit{rel} & \textit{skt} & Avg. \\ \hline
+		DANN-MS \cite{Ganin2015} & $\boldsymbol{62.6}$ & $21.7$  & $50.3$ & $14.3$ & $\boldsymbol{63.5}$ & $48.3$ & $43.5$ \\
+		MDAN \cite{Zhao2018} & $52.2$ & $19.1$ & $46.0$ & $12.6$ & $48.2$& $40.4$ & $36.4$\\
+		M$^3$SDA-$\beta$ \cite{Peng2019} & $58.6$& $\boldsymbol{26.0}$& $\boldsymbol{52.3}$ & $6.3$& $62.7$ & $49.5$ & $42.6$\\ \hline
+		MODA-FM       & $61.2$ & $24.5$  & $51.2$  & $\boldsymbol{17.2}$  & $62.3$ & $\boldsymbol{52.4}$ & $\boldsymbol{44.8}$\\ \hline
+		Fully supervised & $68.5$ & $28.7$ & $61.5$ & $64.5$ & $78.5$ & $59.3$ & $60.2$
+	\end{tabular}
+\end{table}
+
+\subsection{Discussion}
+Tables \ref{tab:digits_office_acc}, \ref{tab:amazon_acc}, and \ref{tab:domainnet_acc} show that our model outperforms the baselines in most settings and performs comparably to the fully-supervised model in many. When no consistency regularization is used (MODA), our approach exhibits a higher accuracy than DANN-SS, DANN-MS and MDAN in most cases. This observation shows that our mildly optimistic combination of source domains works better than using only the data from the best source domain (DANN-SS) or naively combining the data from all source domains (DANN-MS). It also suggests that MDAN wastes too much computational effort on optimizing itself for the hardest source domain. MADA and MoE perform better than our non-regularized model in some cases, which is not surprising since both methods try to mitigate somehow the curse of domain-invariant representations. Their advantage is, therefore, mostly noticeable when the target shift is large (e.g.\ SVHN and all domains in Office-31 -- see \ref{sec:label_dist}), but the performance is still below MODA-FM.
+
+Very significant performance gains are observed when we apply the consistency regularization, particularly in the visual datasets (digits and Office-31). These gains are more expressive in the most challenging settings, i.e. when the target data are perceptually very different from the source data (e.g.\ MNIST-M -- see \ref{sec:sample_imgs}) or when the target shift is large. The latter observation suggests that this regularization succeeds on mitigating the curse of domain-invariant representations, as hypothesized before. This is strongly corroborated by an experiment we present in \ref{sec:overtrain}, where we show that the model accuracy on the target domain keeps stably high when the model is trained for a large number of epochs. Interestingly, though, we observe that, in some settings, FM outperforms MODA-FM, although the differences are small. In these cases domain-invariant representations are slightly hurting the performance and/or the source weights $\alpha$ are sub-optimal. Besides being the largest dataset, DomainNet is also the most challenging for the DA task. For almost all domains, there is a large gap between the performance of all DA models (including ours) and the fully supervised. Interestingly, none of the multi-source DA algorithms does much better than the naive DANN-MS for this particular dataset. This might be explained by the large dissimilarity across domains in DomainNet: since no source domain is particularly close to the target domain, weighting all source domains equally works ends up working fairly well. Nonetheless, our model achieves the best average performance across all source domains.  Finally, it is worth highlighting the positive effect provided by using dropout as the label-preserving transformation $\omega$ in the experiment with Amazon Reviews. This observation suggests that this methodology can be applied successfully to non-visual data too.
+
+\section{Conclusion}
+\label{sec:modafm_conclusion}
+We have presented a novel algorithm that achieves state of the art results in unsupervised multi-source domain adaptation. In our approach, the problem is formulated as DA from a single source domain whose distribution corresponds to a mixture of the original source domains. The mixture weights are adjusted dynamically throughout the training process, according to a mildly optimistic objective. Additionally, we employ FixMatch on the target samples, a form of consistency regularization that proves to have a strong impact on the model performance and to be capable of mitigating the curse of domain invariant representations. This regularization relies on a label-preserving transformation, which is hard to construct for non-visual data. Moreover, better results could be achieved if both the label-preserving transformation and the source weights were learned to approximate the augmented target samples to the source samples. Both problems are interesting lines for future research.
