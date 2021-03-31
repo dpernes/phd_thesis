@@ -261,15 +261,15 @@ Here, $\gamma > 0$ is a hyperparameter controlling the softness of the max opera
 \label{sec:da_sensors_grad_rev}
 Adversarial DA algorithms, of which MDAN is a particular case, all aim to solve some variant of the following minimax problem:
 \begin{equation}
-	\min_{\vtheta_g, \vtheta_h} \max_{\vtheta_d} \quad \left \lbrace L(\vtheta_g, \vtheta_h, \vtheta_d) =  L_{\text{task}}(\vtheta_g, \vtheta_h) - \lambda_d L_{\text{disc}}(\vtheta_g, \vtheta_d) \right \rbrace,
+	\min_{\vtheta_g, \vtheta_h} \max_{\vtheta_d} \quad \left \lbrace L(\vtheta_g, \vtheta_h, \vtheta_d) =  L_{\text{task}}(\vtheta_g, \vtheta_h) - \mu_d L_{\text{disc}}(\vtheta_g, \vtheta_d) \right \rbrace,
 \end{equation}
-where $L_{\text{task}}$ is the supervised loss for the desired task, $L_{\text{disc}}$ is the classification loss for the domain discrimination task, $\vtheta_g$, $\vtheta_h$, and $\vtheta_d$ are the parameters of the feature extractor, task classifier, and domain discriminator networks, respectively, and $\lambda_d > 0$ is a hyperparameter. This is a treatable surrogate of objective \plaineqref{eq:dann_obj}.
+where $L_{\text{task}}$ is the supervised loss for the desired task, $L_{\text{disc}}$ is the classification loss for the domain discrimination task, $\vtheta_g$, $\vtheta_h$, and $\vtheta_d$ are the parameters of the feature extractor, task classifier, and domain discriminator networks, respectively, and $\mu_d > 0$ is a hyperparameter. Larger values of $\mu_d$ imply a stronger enforcement of domain-invariant representations. This is a treatable surrogate of objective \plaineqref{eq:dann_obj}.
 
 Solving this problem then consists in finding a saddle point of this loss function. Using automatic differentiation libraries (e.g.\ PyTorch or TensorFlow), the naive solution would involve declaring two optimizers, one for parameters $\vtheta_g$ and $\vtheta_h$ and another for $\vtheta_d$, and then performing gradient descent with the former and gradient ascent with the latter:
 \begin{align}
-	&\vtheta_g \leftarrow \vtheta_g - \rho \left(\nabla_{\vtheta_g}L_{\text{task}} - \lambda_d \nabla_{\vtheta_g} L_{\text{disc}}\right), \label{eq:grad_feature_extractor}\\
+	&\vtheta_g \leftarrow \vtheta_g - \rho \left(\nabla_{\vtheta_g}L_{\text{task}} - \mu_d \nabla_{\vtheta_g} L_{\text{disc}}\right), \label{eq:grad_feature_extractor}\\
 	&\vtheta_h \leftarrow \vtheta_h - \rho \nabla_{\vtheta_h}L_{\text{task}}, \label{eq:grad_task_class}\\
-	&\vtheta_d \leftarrow \vtheta_d + \rho \left(-\lambda_d \nabla_{\vtheta_d}L_{\text{disc}}\right), \label{eq:grad_discriminator}
+	&\vtheta_d \leftarrow \vtheta_d + \rho \left(-\mu_d \nabla_{\vtheta_d}L_{\text{disc}}\right), \label{eq:grad_discriminator}
 \end{align}
 where $\rho>0$ is the learning rate. This implies an extra computational burden because gradients need to be backpropagated through the discriminator network twice, one for computing $\nabla_{\vtheta_d} L_{\text{disc}}$ and another for computing $\nabla_{\vtheta_g} L_{\text{disc}}$.
 
@@ -279,7 +279,7 @@ The gradient reversal layer (\citet{Ganin2015}) is an ingenious solution to this
 \end{equation}
 By placing it in between the feature extractor $g$ and the domain discriminator $d$, the gradient $\nabla_{\vtheta_g} L_{\text{disc}}$ will come with its sign inverted. Thus, performing gradient descent over all parameters of
 \begin{equation}
-	L_{\text{task}}(\vtheta_g, \vtheta_h) + \lambda_d L_{\text{disc}}(\vtheta_g, \vtheta_d),
+	L_{\text{task}}(\vtheta_g, \vtheta_h) + \mu_d L_{\text{disc}}(\vtheta_g, \vtheta_d),
 \end{equation}
 yields exactly update equations \plaineqref{eq:grad_feature_extractor}, \plaineqref{eq:grad_task_class}, and \plaineqref{eq:grad_discriminator}.
 
@@ -378,7 +378,7 @@ In every experiment, assume we have $k+1$ domains $\gD_1, \gD_2,...,\gD_{k+1}$. 
 	\item \textbf{Semi-supervised:} For semi-supervised results, we have a validation dataset that corresponds to $30\%$ of the samples extracted from target $\gD_t$. We use those samples to select the best model obtained throughout the training epochs. This model is then tested with the remaining $70\%$ of the samples from $\gD_t$.
 \end{itemize}
 
-For each dataset, we ran a total of $5$ experiments for the DA models, where we varied the value of hyperparameter $\lambda_d$ in the range $[10^{-5}, 10^{-1}]$. Recall that $\lambda_d$ controls the weight to give to the domain discrimination loss, relative to the task execution loss.
+For each dataset, we ran a total of $5$ experiments for the DA models, where we varied the value of hyperparameter $\mu_d$ in the range $[10^{-5}, 10^{-1}]$. Recall that $\mu_d$ controls the weight to give to the domain discrimination loss, relative to the task execution loss.
 
 In all experiments, we train the model for $50$ epochs, using Adam optimizer (\citet{Kingma2014}) with a learning rate of $10^{-4}$. The adopted evaluation metric is the Mean Absolute Error (MAE) between the predicted object count and the ground truth for each frame.
 
@@ -517,13 +517,13 @@ In the WebCamT dataset, we have three different source domains, so this is a mul
 		CommonLSTM & \textbf{9.85} & 12.07 & 10.22 \\
 		\hline
 	\end{tabular}
-	\caption{Comparison of different optimization problems. The values indicate the average MAE count across domains in the WebCamT dataset. The experiments were run with $\lambda_d=10^{-3}$. }
+	\caption{Comparison of different optimization problems. The values indicate the average MAE count across domains in the WebCamT dataset. The experiments were run with $\mu_d=10^{-3}$. }
 	\label{table:optimization_experiments}
 \end{table}
 
 \subsection{Unsupervised setting}
 
-\Tableref{table:results_unsup} shows the results in the unsupervised setting for both datasets. For each domain, the best MAE obtained with different values of $\lambda_d$ is shown.
+\Tableref{table:results_unsup} shows the results in the unsupervised setting for both datasets. For each domain, the best MAE obtained with different values of $\mu_d$ is shown.
 \begin{table}[!ht]
 	\centering
 	\begin{tabular}{| c | c | c | c || c | c | c | c | c | c | c | c |}
@@ -549,13 +549,13 @@ In the WebCamT dataset, we have three different source domains, so this is a mul
 	\label{table:results_unsup}
 \end{table}
 
-In UCSDPeds, the CommonLSTM model showed the best results, followed by DoubleLSTM. In fact, any LSTM-based model showed a better average performance than any model where LSTMs are absent. This validates our initial hypothesis that making temporal considerations would significantly improve the accuracy. When it comes to the comparison between DA models and non-DA models, we can verify that DA models performed better, as models DoubleLSTM and CommonLSTM showed the best results for MAE Count Avg. Still, in this case, the advantage of using domain adaptation is not as clear as the advantage of making temporal considerations. For example, the Simple Model, that executes domain adaptation, showed worse results than FCN-HA and FCN-rLSTM. It appears that for domain adaptation to show an improvement in results, it must be used in combination with a temporal model, as otherwise it will just fluster the training process.
+In UCSDPeds, CommonLSTM showed the best results, followed by DoubleLSTM. In fact, any LSTM-based model showed a better average performance than any model where LSTMs are absent. This validates our initial hypothesis that making temporal considerations would significantly improve the accuracy. When it comes to the comparison between DA models and non-DA models, we can verify that DA models performed better, as models DoubleLSTM and CommonLSTM showed the best results for average MAE count. Still, in this case, the advantage of promoting domain-invariant representations is not as clear as the advantage of leveraging temporal information. For example, the Non-Temporal model, that includes a domain discriminator, showed worse results than FCN-rLSTM.
 
 In WebCamT, even though the double-temporal showed the best results, the second best was the FCN-HA, a model that does not make any temporal consideration. We also could not verify a marked difference in the average MAE count of the DA and non-DA methods. These observations ascertain that it is not enough to apply domain adaptation or consider the temporal nature of data to obtain good results. Thus, the careful design of models and its integration with the two mentioned techniques is essential. 
 
 We find that the model with the most balanced performance across domains and datasets was the DoubleLSTM as its MAE count in a given domain was always in the top-3. This observation coupled with the fact that the DoubleLSTM was also the model with the best average MAE count in UCSDPeds and the second best in WebCamT allows us to conclude that this method was the best-performing overall.
 
-Results regarding the sensitivity to the hyperparameter $\lambda_d$ are shown in \Figref{fig:lambda_d_unsup}.
+Results regarding the sensitivity to the hyperparameter $\mu_d$ are shown in \Figref{fig:lambda_d_unsup}.
 
 \begin{figure}[!ht]
 	\begin{subfigure}{.5\textwidth}
@@ -566,15 +566,15 @@ Results regarding the sensitivity to the hyperparameter $\lambda_d$ are shown in
 		\centering
 		\includegraphics[width=0.95\textwidth]{ChapterThree/webcamt_unsupervised.png}
 	\end{subfigure}
-	\caption{Average MAE count across domains for each $\lambda_d$ in the unsupervised setting in UCSDPeds (left) and WebCamT (right) datasets.}
+	\caption{Average MAE count across domains for each $\mu_d$ in the unsupervised setting in UCSDPeds (left) and WebCamT (right) datasets.}
 	\label{fig:lambda_d_unsup}
 \end{figure}
 
-This plot confirms that the DoubleLSTM model was the best-performing in the WebCamT dataset and is at least comparable to CommonLSTM in UCSDPeds. Setting $\lambda_d = 10^{-3}$ achieves close to optimal performance for all models in both datasets, except for Non-Temporal in UCSDPeds and CommonLSTM in WebCamT, whose performance improves significantly for larger values of $\lambda_d$.
+This plot confirms that the DoubleLSTM model was the best-performing in the WebCamT dataset and is at least comparable to CommonLSTM in UCSDPeds. Setting $\mu_d = 10^{-3}$ achieves close to optimal performance for all models in both datasets, except for Non-Temporal in UCSDPeds and CommonLSTM in WebCamT, whose performance improves significantly for larger values of $\mu_d$.
 
 \subsection{Semi-supervised setting}
 
-\Tableref{table:results_semisup} shows the results in the semi-supervised setting for both datasets. Like before, the best MAE obtained with different values of $\lambda_d$ is shown.
+\Tableref{table:results_semisup} shows the results in the semi-supervised setting for both datasets. Like before, the best MAE obtained with different values of $\mu_d$ is shown.
 
 \begin{table}[!ht]
 	\centering
@@ -613,7 +613,7 @@ Please refer to \citet{ThesisFrancisco} for an extended discussion and further e
 
 We have proposed several sensible model architectures to solve the problem of domain adaptation for the task of counting objects in videos. All of those result from the combination of two state of the art models, one for the object counting task (FCN-rLSTM) and the other one for multi-source DA (MDAN). 
 
-Among the proposed models, it stands out that DoubleLSTM and CommonLSTM showed a significant improvement over the non-DA model FCN-rLSTM in most cases. Models Non-Temporal and SingleLSTM, on the other hand, had a very unsatisfactory performance, by not showing better results than methods FCN-rLSTM and FCN-HA. We have thus verified that integrating domain adaptation with a method does not automatically guarantee better results. Careful considerations on how to divide the previous method between feature extractor and task executor should be made, just like careful deliberations on the domain discriminator design and choice of the hyperparameter $\lambda_d$. Unfortunately, informed choices about these become especially difficult in the unsupervised setting, where it is impossible to obtain a direct evaluation of how a given choice will perform on the target domain.
+Among the proposed models, it stands out that DoubleLSTM and CommonLSTM showed a significant improvement over the non-DA model FCN-rLSTM in most cases. Models Non-Temporal and SingleLSTM, on the other hand, had a very unsatisfactory performance, by not showing better results than methods FCN-rLSTM and FCN-HA. We have thus verified that integrating domain adaptation with a method does not automatically guarantee better results. Careful considerations on how to divide the previous method between feature extractor and task executor should be made, just like careful deliberations on the domain discriminator design and choice of the hyperparameter $\mu_d$. Unfortunately, informed choices about these become especially difficult in the unsupervised setting, where it is impossible to obtain a direct evaluation of how a given choice will perform on the target domain.
 
 It should also be noted that the results showed an inconsistency in the performance of models across domains. That is, whereas a model performed better in one domain, another model performed better in another. Hence, when applying a model for counting objects in a real world scenario, one should ponder what model to use depending on the characteristics of the particular target domain.
 

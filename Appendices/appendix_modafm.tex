@@ -1,20 +1,21 @@
 % Appendix Template
 
 \chapter{Tackling unsupervised domain adaptation with optimism and consistency -- supplementary material} % Main appendix title
+\chaptermark{Tackling UDA with optimism and consistency -- supp. material}
 
 \label{appendix:modafm} % Change X to a consecutive letter; for referencing this appendix elsewhere, use \ref{AppendixX}
 
-\section{Proof of Theorem 1}
+\section{Proof of Theorem \ref{thm:target_risk_bound}}
 \label{sec:thm_proof}
 
 The presented bound is an immediate consequence of two theorems of \cite{BenDavid2010, Blitzer2008}, which we present here as lemmas:
 
 \begin{lemma}
 	\label{lemma:bound_mixture}
-	(Lemma 4 from \citet{Blitzer2008}) Let $\gH$ be a hypothesis class with VC-dimension $d$. For each $j \in \{1,2,...,k\}$, consider a labeled set of $n/k$ samples drawn from the source domain $\gS_j$. For any $h \in \gH$ and any $\alpha \in \Delta$, with probability at least $1-\delta$ over the choice of samples,
+	(Lemma 4 from \citet{Blitzer2008}) Let $\gH$ be a hypothesis class with VC-dimension $d$. For each $j \in \{1,2,...,k\}$, consider a labeled set of $n/k$ samples drawn from the source domain $\gS_j$. For any $h \in \gH$ and any $\valpha \in \Delta$, with probability at least $1-\delta$ over the choice of samples,
 	
 	\begin{equation}
-	|\widehat{\epsilon}_\alpha(h) - \epsilon_\alpha(h)| \leq 2\sqrt{\frac{k(2d\log(2(n+1)) + \log(\frac{4}{\delta}))}{n} \sum_{j=1}^M \alpha_j^2}.
+	|\widehat{\epsilon}_\valpha(h) - \epsilon_\valpha(h)| \leq 2\sqrt{\frac{k}{n} \left(2d\log(2(n+1)) + \log \frac{4}{\delta}\right) \sum_{j=1}^k \evalpha_j^2}.
 	\end{equation}
 \end{lemma}
 
@@ -23,12 +24,12 @@ The presented bound is an immediate consequence of two theorems of \cite{BenDavi
 	(Theorem 2 from \citet{BenDavid2010}) Let $\gH$ be a hypothesis class with VC-dimension $d$. Consider $n$ unlabeled samples drawn from each of the two domains $\gS$ (source) and $\gT$ (target). Then, for every $h \in \gH$, with probability at least $1-\delta$ over the choice of samples,
 	
 	\begin{equation}
-	\epsilon_\gT(h) \leq \epsilon_\gS(h) + \frac{1}{2} \emp{d}_{\gH \Delta \gH}(\gS, \gT) + 2\sqrt{\frac{2d\log(2n) + \log(\frac{2}{\delta})}{n}} + \lambda,
+	\epsilon_\gT(h) \leq \epsilon_\gS(h) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS, \gT) + 2\sqrt{\frac{1}{n} \left( 2d\log(2n) + \log \frac{2}{\delta} \right)} + \lambda,
 	\end{equation}    
 	where $\lambda = \min_{h \in \gH} \epsilon_\gS(h) + \epsilon_\gT(h)$.
 \end{lemma}
 
-Proving our result is now straightforward. We can apply Lemma~\ref{lemma:bound_single_source} taking $\gS_\alpha = \sum_{j=1}^M \alpha_j \gS_j$ as the source domain. Note that $\epsilon_{S_\alpha}(h) = \sum_{j=1}^M \alpha_j \epsilon_{S_j}(h)$ for any $h \in \gH$, and therefore $\lambda_\alpha = \min_{h \in \gH}\, \sum_{j=1}^M \alpha_j\epsilon_{\gS_j}(h) + \epsilon_{\gT}(h)$. Combining the obtained bound with Lemma~\ref{lemma:bound_mixture} through the union bound yields the desired result. $\square$
+Proving our result is now straightforward. We can apply Lemma \ref{lemma:bound_single_source} taking $\gS_\valpha$ as the source domain. Note that $\epsilon_{S_\valpha}(h) = \sum_{j=1}^k \evalpha_j \epsilon_{S_j}(h)$ for any $h \in \gH$, and therefore $\lambda_\valpha = \min_{h \in \gH}\, \sum_{j=1}^k \evalpha_j\epsilon_{\gS_j}(h) + \epsilon_{\gT}(h)$. Combining the obtained bound with Lemma \ref{lemma:bound_mixture} through the union bound yields the desired result. $\square$
 
 \section{Model overview}
 \label{sec:model_overview}
@@ -42,16 +43,15 @@ Proving our result is now straightforward. We can apply Lemma~\ref{lemma:bound_s
 	\label{fig:model_diagram}
 \end{figure}
 
-To enhance clarity, a detailed schematic of our model and loss terms is shown in \Figref{fig:model_diagram}. The three main blocks are the feature extractor $g(\cdot, \theta_g)$, the classifier $h(\cdot, \theta_h)$, and the domain discriminator $d(\cdot, \theta_d)$. It is worth noting the usage of gradient reversal layers~\citep{Ganin2015} at the input of the domain discriminator and before the $\alpha$ that is used in the discriminator loss $\gL_\text{disc}$. This layer is the identity function in the forward pass but reverses the gradient in the backward pass, by multiplying it by a negative constant (here, $-1$ is used). Hence, the usage of this layer allows the model to be trained using standard backpropagation and stochastic gradient descent (or any of its variants) over all model parameters.
+To enhance clarity, a detailed schematic of our model and loss terms is shown in \Figref{fig:model_diagram}. The three main blocks are the feature extractor $g(\cdot, \vtheta_g)$, the classifier $h(\cdot, \vtheta_h)$, and the domain discriminator $d(\cdot, \vtheta_d)$. It is worth noting the usage of gradient reversal layers at the input of the domain discriminator and before the $\valpha$ that is used in the discriminator loss $\gL_\text{disc}$. As explained in \Secref{sec:da_sensors_grad_rev}, the usage of this layer allows the model to be trained using standard backpropagation and stochastic gradient descent (or any of its variants) over all model parameters.
 
 \section{Experiments -- further results and details}
 
 \subsection{Label distributions}
 \label{sec:label_dist}
-As remarked throughout this work and formally discussed and proven in \cite{Zhao2019}, having different marginal label distributions across source and target domains poses difficulties to the DA task and, under this scenario, domain-invariant representations can increase the error on the target domain. Since we claim that the adopted consistency regularization can help mitigate this issue, it is relevant to observe the distributions of labels across domains in the datasets used in this work, which are shown in Figures
-~\ref{fig:digits_dist},~\ref{fig:office_dist}~and~\ref{fig:amazon_dist}.\footnote{The histogram for the DomainNet dataset is not provided since the number of classes (345) is too large, making the plot barely interpretable.} We also provide the pairwise Jensen-Shannon distances for the label distributions of all domains in Tables~\ref{tab:digits_js},~\ref{tab:office_js},~\ref{tab:amazon_js},~and~\ref{tab:domainnet_js}. The Jensen-Shannon distance is convenient since it is a metric (so it is symmetric, non-negative and zero if and only if the two distributions coincide) and upper bounded by $\sqrt{\log 2}\,(\approx 0.8326)$. Therefore, it provides a comprehensive measure to evaluate the dissimilarity between two distributions.
+As remarked throughout this work and formally discussed and proven in \cite{Zhao2019}, having different marginal label distributions across source and target domains poses difficulties to the DA task and, under this scenario, domain-invariant representations can increase the error on the target domain. Since we claim that the adopted consistency regularization can help mitigate this issue, it is relevant to observe the distributions of labels across domains in the datasets used in this work, which are shown in Figures \ref{fig:digits_dist}, \ref{fig:office_dist}, and \ref{fig:amazon_dist}.\footnote{The histogram for the DomainNet dataset is not provided since the number of classes (345) is too large, making the plot barely interpretable.} We also provide the pairwise Jensen-Shannon distances for the label distributions of all domains in Tables~\ref{tab:digits_js},~\ref{tab:office_js},~\ref{tab:amazon_js},~and~\ref{tab:domainnet_js}. The Jensen-Shannon distance is convenient since it is a metric (so it is symmetric, non-negative and zero if and only if the two distributions coincide) and upper bounded by $\sqrt{\log 2}\,(\approx 0.8326)$. Therefore, it provides a comprehensive measure to evaluate the dissimilarity between two distributions.
 
-In the digits datasets~(\Figref{fig:digits_dist}, \Tableref{tab:digits_js}), MNIST and MNIST-M have very similar label distributions and SynthDigits has an almost uniform label distribution. SVHN has the most skewed distribution, which is radically different from the remaining. Thus, this is the most challenging domain from this perspective. In Office-31~(\Figref{fig:office_dist}, \Tableref{tab:office_js}), label distributions across domains differ significantly. In the Amazon Reviews dataset~(\Figref{fig:amazon_dist}, \Tableref{tab:amazon_js}), the label distribution is almost uniform for all domains. Finally, in DomainNet~(\Tableref{tab:domainnet_js}), the label distributions are highly dissimilar across all domains. Interestingly, domains \textit{inf} and \textit{pnt} are the most distant from all remaining domains and \textit{qdr} is the closest one.
+In the digits datasets~(\Figref{fig:digits_dist}, \Tableref{tab:digits_js}), MNIST and MNIST-M have very similar label distributions and SynthDigits has an almost uniform label´ distribution. SVHN has the most skewed distribution, which is radically different from the remaining. Thus, this is the most challenging domain from this perspective. In Office-31~(\Figref{fig:office_dist}, \Tableref{tab:office_js}), label distributions across domains differ significantly. In the Amazon Reviews dataset~(\Figref{fig:amazon_dist}, \Tableref{tab:amazon_js}), the label distribution is almost uniform for all domains. Finally, in DomainNet~(\Tableref{tab:domainnet_js}), the label distributions are highly dissimilar across all domains. Interestingly, domains \textit{inf} and \textit{pnt} are the most distant from all remaining domains and \textit{qdr} is the closest one.
 
 \begin{figure}
 	\centering
@@ -295,7 +295,7 @@ In this experiment, we want to evaluate if the increased robustness of the featu
 		\end{tikzpicture}
 		\caption{Webcam}
 	\end{subfigure}
-	\caption{Test accuracy along 60 training epochs for our model and two baselines in Office-31. The tendency line for each curve is also shown (dashed lines) and the respective slope is indicated in brackets in each plot legend. The domain indicated below each plot is the target.}
+	\caption{Test accuracy over 60 training epochs for our model and two baselines in Office-31. The tendency line for each curve is also shown (dashed lines) and the respective slope is indicated in brackets in each plot legend. The domain indicated below each plot is the target.}
 	\label{fig:overtrain}
 \end{figure}
 
@@ -303,7 +303,7 @@ In this experiment, we want to evaluate if the increased robustness of the featu
 \label{sec:hyperparam}
 Our model comprises three main hyperparameters: $\mu_d$, $\mu_s$ and $\mu_c$. The hyperparameter $\mu_d$ controls the relative weight of the domain discriminator loss and is present in every work on adversarial DA, thus its effect has already been studied extensively. For this reason, we focus on the effect of $\mu_s$ and $\mu_c$. We use the digits datasets and evaluate the accuracy on each target domain while varying either $\mu_s$ or $\mu_c$ and keeping the other one constant at the optimal value.
 
-A sufficiently large value of $\mu_s$ forces $\alpha$ to converge to a vector with all components equal to $1/M$, weighting all source domains equally. Setting $\mu_s$ close to zero corresponds to the most optimistic scenario: the sparsity penalization is dropped and so, after sufficiently many training iterations, $\alpha$ would converge to a one-hot vector, choosing the source domain with the minimum difference of classification and discrimination losses ($\gL_{class} - \mu_d\gL_{disc}$). \Figref{fig:hyperparam_mu_s} shows that, for MNIST, similar results are obtained with any of those strategies. The fact that digits classification in MNIST is significantly easier than in any of the remaining datasets likely explains this behavior. Domain adaptation for MNIST-M is slightly favored by smaller values of $\mu_s$, meaning that a more optimistic approach works better here. For SVHN, the opposite holds and the results are very poor when low sparsity regularization is employed. There is even a strong discontinuity in the accuracy plot for this domain around $\mu_s \approx 0.2$. This discontinuity divides situations where $\alpha$ collapses into the easiest source domain ($\mu_s < 0.2$) and those where it does not collapse ($\mu_s > 0.2$). We elaborate more on this in \ref{sec:alpha_evol}. In all cases, we observe that a $\mu_s \in [0.2, 0.6]$ provides near-optimal results.
+A sufficiently large value of $\mu_s$ forces $\valpha$ to converge to a vector with all components equal to $1/M$, weighting all source domains equally. Setting $\mu_s$ close to zero corresponds to the most optimistic scenario: the sparsity penalization is dropped and so, after sufficiently many training iterations, $\valpha$ would converge to a one-hot vector, choosing the source domain with the minimum difference of classification and discrimination losses ($\gL_{class} - \mu_d\gL_{disc}$). \Figref{fig:hyperparam_mu_s} shows that, for MNIST, similar results are obtained with any of those strategies. The fact that digits classification in MNIST is significantly easier than in any of the remaining datasets likely explains this behavior. Domain adaptation for MNIST-M is slightly favored by smaller values of $\mu_s$, meaning that a more optimistic approach works better here. For SVHN, the opposite holds and the results are very poor when low sparsity regularization is employed. There is even a strong discontinuity in the accuracy plot for this domain around $\mu_s \approx 0.2$. This discontinuity divides situations where $\valpha$ collapses into the easiest source domain ($\mu_s < 0.2$) and those where it does not collapse ($\mu_s > 0.2$). We elaborate more on this in \ref{sec:alpha_evol}. In all cases, we observe that a $\mu_s \in [0.2, 0.6]$ provides near-optimal results.
 
 The effect of varying $\mu_c$ is plotted in \Figref{fig:hyperparam_mu_c}. Values of $\mu_c$ close to zero drop the consistency regularization and, therefore, we obtain results close to those of MODA. Significant performance gains are obtained for $\mu_c > 0.01$ and the optimal is reached for $\mu_c \in [0.4, 1.0]$ for all domains.
 
@@ -377,20 +377,20 @@ The effect of varying $\mu_c$ is plotted in \Figref{fig:hyperparam_mu_c}. Values
 
 \subsection{Evolution of the source weights}
 \label{sec:alpha_evol}
-Here, we study the evolution of the source weights $\alpha$ along training. The behavior is determined by the evolution of the classification and discrimination losses of each source domain and also by the choice of the hyperparameter $\mu_s$. The effect of varying $\mu_s$ on the model performance was analyzed in \ref{sec:hyperparam}. Now, we are interested in observing the dynamics of $\alpha$ along the training epochs, for different source domains, using the corresponding optimal $\mu_s$. We use the digits datasets for this purpose and we present the results in \Figref{fig:alpha_train}.
+Here, we study the evolution of the source weights $\valpha$ over training. The behavior is determined by the evolution of the classification and discrimination losses of each source domain and also by the choice of the hyperparameter $\mu_s$. The effect of varying $\mu_s$ on the model performance was analyzed in \ref{sec:hyperparam}. Now, we are interested in observing the dynamics of $\valpha$ over the training epochs, for different source domains, using the corresponding optimal $\mu_s$. We use the digits datasets for this purpose and we present the results in \Figref{fig:alpha_train}.
 
-For MNIST, where the lowest $\mu_s$ is used, we observe that the mixture coefficients rapidly collapse into the easiest source domain (SynthDigits). Nonetheless, in \ref{sec:hyperparam} we have observed that the target accuracy for MNIST was almost insensitive to the choice of $\mu_s$, meaning that using only the data from the easiest source domain or weighting all source domains equally would produce identical results. When we take MNIST-M and SVHN as target domains, with a slightly increased $\mu_s$, a different behavior occurs. Early in the training process, the weight for the easiest source domain (MNIST) increases rapidly, following the fast decrease in the corresponding loss. Later, as the loss for the easiest source domain plateaus and the remaining keep decreasing, the  weights for the remaining active source domains start to increase. This behavior explains the discontinuity we have observed in the plot of target accuracy vs. $\mu_s$ for SVHN (\Figref{fig:hyperparam_mu_s}): if $\mu_s$ is sufficiently small to allow $\alpha$ to rapidly collapse into MNIST, the data of the remaining source domains is simply discarded for the remaining of the training process and the corresponding weights will never increase.
+For MNIST, where the lowest $\mu_s$ is used, we observe that the mixture coefficients rapidly collapse into the easiest source domain (SynthDigits). Nonetheless, in \ref{sec:hyperparam} we have observed that the target accuracy for MNIST was almost insensitive to the choice of $\mu_s$, meaning that using only the data from the easiest source domain or weighting all source domains equally would produce identical results. When we take MNIST-M and SVHN as target domains, with a slightly increased $\mu_s$, a different behavior occurs. Early in the training process, the weight for the easiest source domain (MNIST) increases rapidly, following the fast decrease in the corresponding loss. Later, as the loss for the easiest source domain plateaus and the remaining keep decreasing, the  weights for the remaining active source domains start to increase. This behavior explains the discontinuity we have observed in the plot of target accuracy vs. $\mu_s$ for SVHN (\Figref{fig:hyperparam_mu_s}): if $\mu_s$ is sufficiently small to allow $\valpha$ to rapidly collapse into MNIST, the data of the remaining source domains is simply discarded for the remaining of the training process and the corresponding weights will never increase.
 
 \begin{figure}
 	\centering
-	\hspace*{-0.50in}
+	%\hspace*{-0.50in}
 	\begin{subfigure}[b]{0.32\textwidth}
 		\begin{tikzpicture}[scale=0.58, every node/.style={scale=0.58}]
 		\begin{axis}[
 		enlargelimits=false,
 		legend style={at={(0.65,0.1)},anchor=south west,font=\large},
 		xlabel=\huge epoch, xmin=0, xmax=60, xtick={0,10,20,30,40,50,60},
-		ylabel=\huge $\alpha$, ymin=0., ymax=1., 
+		ylabel=\huge $\valpha$, ymin=0., ymax=1., 
 		grid=both, grid style={line width=.1pt, draw=gray!10},
 		title=\text{\huge $\mu_s=0.1$}
 		]   
@@ -414,7 +414,7 @@ For MNIST, where the lowest $\mu_s$ is used, we observe that the mixture coeffic
 		enlargelimits=false,
 		legend style={at={(0.65,0.1)},anchor=south west,font=\large},
 		xlabel=\huge epoch, xmin=0, xmax=60, xtick={0,10,20,30,40,50,60},
-		ylabel=\huge $\alpha$, ymin=0., ymax=1.,
+		ylabel=\huge $\valpha$, ymin=0., ymax=1.,
 		grid=both, grid style={line width=.1pt, draw=gray!10},
 		title=\text{\huge$\mu_s=0.2$}
 		]   
@@ -438,7 +438,7 @@ For MNIST, where the lowest $\mu_s$ is used, we observe that the mixture coeffic
 		enlargelimits=false,
 		legend style={at={(0.65,0.1)},anchor=south west,font=\large},
 		xlabel=\huge epoch, xmin=0, xmax=60, xtick={0,10,20,30,40,50,60},
-		ylabel=\huge $\alpha$, ymin=0., ymax=1,
+		ylabel=\huge $\valpha$, ymin=0., ymax=1,
 		grid=both, grid style={line width=.1pt, draw=gray!10},
 		title=\text{\huge$\mu_s=0.9$}
 		]   
@@ -454,13 +454,13 @@ For MNIST, where the lowest $\mu_s$ is used, we observe that the mixture coeffic
 		\end{tikzpicture}
 		\caption{SVHN}
 	\end{subfigure}
-	\caption{Source weights $\alpha$ for each domain along 60 training epochs in the digits datasets. The target domain and the value of $\mu_s$ that was used are indicated below and above each plot, respectively.}
+	\caption{Source weights $\valpha$ for each domain over 60 training epochs in the digits datasets. The target domain and the value of $\mu_s$ that was used are indicated below and above each plot, respectively.}
 	\label{fig:alpha_train}
 \end{figure}
 
 \subsection{Network architectures}
 \label{sec:arch}
-The following notation is used to designate network layers: \texttt{Conv(n, k)} -- 2-D convolutional layer with \texttt{n} output channels, square kernels with size \texttt{k}, and unit stride, followed by a rectified linear activation; \texttt{MaxPool(k)} -- 2-D max-pooling over non-overlapping regions of $\texttt{k} \times \texttt{k}$ pixels; \texttt{AdaptAvgPool(k)} -- 2-D adaptive average pooling where the output size is $\texttt{k} \times \texttt{k}$ pixels. \texttt{FC(n)} -- fully-connected layer with $\texttt{n}$ output neurons, followed by a rectified linear activation except for output layers; \texttt{Dropout(p)} -- dropout layer where $\texttt{p}$ is the probability of zeroing an element. A gradient reversal layer~\citep{Ganin2015} is present at the input of the domain discriminator in all models. All classifiers and domain discriminators are followed by a softmax layer that maps the output to the corresponding class probabilities.
+The following notation is used to designate network layers: \texttt{Conv(n, k)} -- 2-D convolutional layer with \texttt{n} output channels, square kernels with size \texttt{k}, and unit stride, followed by a rectified linear activation; \texttt{MaxPool(k)} -- 2-D max-pooling over non-overlapping regions of $\texttt{k} \times \texttt{k}$ pixels; \texttt{AdaptAvgPool(k)} -- 2-D adaptive average pooling where the output size is $\texttt{k} \times \texttt{k}$ pixels. \texttt{FC(n)} -- fully-connected layer with $\texttt{n}$ output neurons, followed by a rectified linear activation except for output layers; \texttt{Dropout(p)} -- dropout layer where $\texttt{p}$ is the probability of zeroing an element. A gradient reversal layer is present at the input of the domain discriminator in all models. All classifiers and domain discriminators are followed by a softmax layer that maps the output to the corresponding class probabilities.
 
 \paragraph{Digits classification} Input images have shape $3 \times 32 \times 32$. Feature extractor: \texttt{Conv(64, 3)}~$\rightarrow$ \texttt{MaxPool(2)}~$\rightarrow$ \texttt{Conv(128, 3)}~$\rightarrow$ \texttt{MaxPool(2)}~$\rightarrow$ \texttt{Conv(256, 3)}. Task classifier: \texttt{MaxPool(2)}~$\rightarrow$ \texttt{Conv(256, 3)}~$\rightarrow$ \texttt{FC(2048)}~$\rightarrow$ \texttt{FC(1024)}~$\rightarrow$ \texttt{FC(10)}. Domain discriminator: \texttt{MaxPool(2)}~$\rightarrow$ \texttt{FC(2048)}~$\rightarrow$ \texttt{FC(2048)}~$\rightarrow$ \texttt{FC(1024)}~$\rightarrow$ \texttt{FC(2)}.
 
@@ -525,7 +525,7 @@ The list of image transformations used in RandAugment is provided in~\Tableref{t
 
 \subsection{Sample images}
 \label{sec:sample_imgs}
-We present sample images from all image datasets used in our experiments in Figures~\ref{fig:digits_samples},~\ref{fig:office_samples},~and~\ref{fig:domainnet_samples}. The result of the RandAugment transformation is also shown for various values of the parameter $m$.
+We present sample images from all image datasets used in our experiments in Figures \ref{fig:digits_samples}, \ref{fig:office_samples}, and \ref{fig:domainnet_samples}. The result of the RandAugment transformation is also shown for various values of the parameter $m$.
 
 \begin{figure}[h!]
 	\includegraphics[width=\linewidth]{ChapterThree/digits}

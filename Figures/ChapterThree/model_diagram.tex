@@ -178,41 +178,41 @@
 
 % Text Node
 \draw (117.68,44.61) node    {$ \begin{array}{l}
-x_{s} \ \sim \mathcal{S}_{j} \ \\
-( j\in \{1,2,...,M\})
+\vx_{s} \ \sim \mathcal{S}_{j} \ \\
+( j\in \{1,2,...,k\})
 \end{array}$};
 % Text Node
 \draw (286.74,74.5) node   [align=left] {\textit{feat. extractor}};
 % Text Node
-\draw (283.7,190.44) node    {$g( \cdot ,\mathnormal{\theta _{g}})$};
+\draw (283.7,190.44) node    {$g( \cdot ,\mathnormal{\vtheta _{g}})$};
 % Text Node
 \draw (450.48,22.66) node   [align=left] {\textit{classifier}};
 % Text Node
-\draw (139.68,132.11) node    {$x_{t} \ \sim \mathcal{T}$};
+\draw (139.68,132.11) node    {$\vx_{t} \ \sim \mathcal{T}$};
 % Text Node
 \draw (79,156.4) node [anchor=north west][inner sep=0.75pt]    {$\xi \ \in \Xi $};
 % Text Node
 \draw (119.95,214.3) node    {$\omega $};
 % Text Node
-\draw (123.68,267.11) node    {$\omega ( x_{t} ,\ \xi )$};
+\draw (123.68,267.11) node    {$\omega ( \vx_{t} ,\ \xi )$};
 % Text Node
-\draw (427.33,94.07) node [anchor=north west][inner sep=0.75pt]    {$h( \cdot ,\mathnormal{\theta _{h}})$};
+\draw (427.33,94.07) node [anchor=north west][inner sep=0.75pt]    {$h( \cdot ,\mathnormal{\vtheta _{h}})$};
 % Text Node
 \draw (524.14,164) node   [align=left] {\textit{domain disc.}};
 % Text Node
-\draw (502,233.73) node [anchor=north west][inner sep=0.75pt]    {$d( \cdot ,\mathnormal{\theta _{d}})$};
+\draw (502,233.73) node [anchor=north west][inner sep=0.75pt]    {$d( \cdot ,\mathnormal{\vtheta _{d}})$};
 % Text Node
 \draw (434.61,171.29) node   [align=left] {\textit{{\small grad. rev.}}};
 % Text Node
-\draw (575.94,17.23) node [anchor=north west][inner sep=0.75pt]    {$p( y_{s} |x_{s})$};
+\draw (575.94,17.23) node [anchor=north west][inner sep=0.75pt]    {$p( y_{s} \mid \vx_{s})$};
 % Text Node
-\draw (575.94,52.62) node [anchor=north west][inner sep=0.75pt]    {$p(\tilde{y} |x_{t})$};
+\draw (575.94,52.62) node [anchor=north west][inner sep=0.75pt]    {$p(\tilde{y} \mid \vx_{t})$};
 % Text Node
 \draw (575.94,90.29) node [anchor=north west][inner sep=0.75pt]    {$\tilde{y}$};
 % Text Node
-\draw (645.94,158.57) node [anchor=north west][inner sep=0.75pt]    {$p( d=0|x_{s})$};
+\draw (645.94,158.57) node [anchor=north west][inner sep=0.75pt]    {$p(\rd=0 \mid \vx_{s})$};
 % Text Node
-\draw (645.94,192.22) node [anchor=north west][inner sep=0.75pt]    {$p( d=1|x_{t})$};
+\draw (645.94,192.22) node [anchor=north west][inner sep=0.75pt]    {$p(\rd=1 \mid \vx_{t})$};
 % Text Node
 \draw (434.81,282.89) node   [align=left] {\textit{{\small grad. rev.}}};
 % Text Node
@@ -224,15 +224,15 @@ x_{s} \ \sim \mathcal{S}_{j} \ \\
 % Text Node
 \draw (328.81,284.22) node   [align=left] {\textit{softmax}};
 % Text Node
-\draw (374.67,300.57) node [anchor=north west][inner sep=0.75pt]    {$\alpha $};
+\draw (374.67,300.57) node [anchor=north west][inner sep=0.75pt]    {$\valpha $};
 % Text Node
-\draw (261.67,307.24) node [anchor=north west][inner sep=0.75pt]    {$\beta \ $};
+\draw (261.67,307.24) node [anchor=north west][inner sep=0.75pt]    {$\vbeta \ $};
 % Text Node
 \draw (686.91,315.84) node    {${\textstyle \mathcal{\textcolor[rgb]{0.82,0.01,0.11}{L}}\textcolor[rgb]{0.82,0.01,0.11}{_{\text{disc}}}}$};
 % Text Node
-\draw (487,311.07) node [anchor=north west][inner sep=0.75pt]    {$\alpha _{\text{grad. rev.}}$};
+\draw (487,311.07) node [anchor=north west][inner sep=0.75pt]    {$\valpha _{\text{grad. rev.}}$};
 % Text Node
-\draw (364.6,238.97) node [anchor=north west][inner sep=0.75pt]    {$||\alpha ||^{2}_{2}$};
+\draw (364.6,238.97) node [anchor=north west][inner sep=0.75pt]    {$||\valpha ||^{2}_{2}$};
 
 
 \end{tikzpicture}
