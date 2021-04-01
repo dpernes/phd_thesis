@@ -341,65 +341,59 @@ The following anomalous scenarios were simulated:
 	\item miscelaneous anomalies, where multiple anomalies occur on the same day.
 \end{itemize}
 
-Table \ref{tbl:sohmmm_results} presents the results for anomaly detection in the aforementioned scenarios. In this table, the AUC values and F1 scores of each anomalous scenario are presented for the HMM-UBM, Z-SOHMMM, and SOHMMM models. The anomalous APs are also indicated. The higher AUC values demonstrate that SOHMMM outperforms the remaining models since it is better at discriminating normal and anomalous samples. The F1 score, on the other hand, is a measure of the accuracy, considering both the precision and recall to compute the score. The obtained values for the F1 score once again confirm the superiority of the SOHMMM algorithm.
+Table \ref{tbl:sohmmm_results} presents the results for anomaly detection in the aforementioned scenarios. In this table, the AUC values of each anomalous scenario are presented for the HMM-UBM, Z-SOHMMM, and SOHMMM models. The anomalous APs are also indicated. The higher AUC values demonstrate that SOHMMM outperforms the remaining models since it is better at discriminating normal and anomalous samples.
 
 Please refer to \citet{SOHMMM} for more details about the experiments and further experimental results.
 
 \begin{table*}[h]
 \centering
-\caption{Summary of the information regarding the wireless anomalous scenarios. The best results for each scenario are in bold. \\(HU-- HMM-UBM, ZS-- Z-SOHMMM, S-- SOHMMM)}
-\label{tbl:sohmmm_results}
 \small
-\begin{tabular}{cc|ccc|ccc|}
-	\cline{3-8}
-	& &\multicolumn{3}{c|}{AUC Value} & \multicolumn{3}{c|}{F1 Score} \\ 
-	\cline{3-8}
-	& & HU & ZS & S & HU & ZS & S \\
-		
+\begin{tabular}{cc|ccc}	
+	& & HU & ZS & S \\
 	\hline
 		
-	\multicolumn{1}{|c|}{\multirow{2}{*}{AP Shutdown/Halt}} &
-	\multicolumn{1}{c|}{AP2} & 0.91 & 0.95 & \textbf{0.99} & 0.84 & 0.85 & \textbf{0.86} \\ \cline{2-8}
-	\multicolumn{1}{|c|}{}                        &
-	\multicolumn{1}{c|}{AP4} & 0.71 & 0.93 & \textbf{1.00} & 0.84 & 0.85 & \textbf{0.98} \\ \cline{2-8}
-	\hline
+	\multicolumn{1}{c}{\multirow{2}{*}{AP Shutdown/Halt}} &
+	\multicolumn{1}{c|}{AP2} & 0.91 & 0.95 & \textbf{0.99}  \\ 
+	\multicolumn{1}{c}{}                        &
+	\multicolumn{1}{c|}{AP4} & 0.71 & 0.93 & \textbf{1.00}  \\ 
+	\hdashline[0.5pt/5pt]
 		
-	\multicolumn{1}{|c|}{\multirow{2}{*}{AP Overload}} &
+	\multicolumn{1}{c}{\multirow{2}{*}{AP Overload}} &
 	\multicolumn{1}{c|}{\multirow{2}{*}{AP2}} & 
-	\multirow{2}{*}{0.99} & \multirow{2}{*}{0.99} & \multirow{2}{*}{\textbf{1.00}} & \multirow{2}{*}{0.87} & \multirow{2}{*}{0.87} & \multirow{2}{*}{0.87}\\
-	\multicolumn{1}{|c|}{}                        & 
-	\multicolumn{1}{c|}{} & & & & & & \\ \cline{3-8}
-	\hline
+	\multirow{2}{*}{0.99} & \multirow{2}{*}{0.99} & \multirow{2}{*}{\textbf{1.00}} \\
+	\multicolumn{1}{c}{}                        & 
+	\multicolumn{1}{c|}{} & & & \\
+	\hdashline[0.5pt/5pt]
 		
-	\multicolumn{1}{|c|}{\multirow{2}{*}{Noise}} &
+	\multicolumn{1}{c}{\multirow{2}{*}{Noise}} &
 	\multicolumn{1}{c|}{\multirow{2}{*}{AP2}} & 
-	\multirow{2}{*}{0.78} & \multirow{2}{*}{0.62} & \multirow{2}{*}{\textbf{0.82}} & \multirow{2}{*}{0.89} & \multirow{2}{*}{0.89} & \multirow{2}{*}{\textbf{0.92}}\\
-	\multicolumn{1}{|c|}{}                        &
-	\multicolumn{1}{c|}{} & & & & & & \\ \cline{3-8}
-	\hline
+	\multirow{2}{*}{0.78} & \multirow{2}{*}{0.62} & \multirow{2}{*}{\textbf{0.82}} \\
+	\multicolumn{1}{c}{}                        &
+	\multicolumn{1}{c|}{} & & & \\
+	\hdashline[0.5pt/5pt]
 		
-	\multicolumn{1}{|c|}{\multirow{2}{*}{Flash Crowd - Arrival}} &
+	\multicolumn{1}{c}{\multirow{2}{*}{Flash Crowd - Arrival}} &
 	\multicolumn{1}{c|}{\multirow{2}{*}{AP2}} & 
-	\multirow{2}{*}{0.80} & \multirow{2}{*}{0.91} & \multirow{2}{*}{\textbf{0.94}} & \multirow{2}{*}{0.85} & \multirow{2}{*}{0.85} & \multirow{2}{*}{\textbf{0.86}}\\
-	\multicolumn{1}{|c|}{}                        &
-	\multicolumn{1}{c|}{} & & & & & & \\ \cline{3-8}
-	\hline
+	\multirow{2}{*}{0.80} & \multirow{2}{*}{0.91} & \multirow{2}{*}{\textbf{0.94}} \\
+	\multicolumn{1}{c}{}                        &
+	\multicolumn{1}{c|}{} & & & \\
+	\hdashline[0.5pt/5pt]
 		
-	\multicolumn{1}{|c|}{\multirow{2}{*}{Flash Crowd - Departure}} &
+	\multicolumn{1}{c}{\multirow{2}{*}{Flash Crowd - Departure}} &
 	\multicolumn{1}{c|}{\multirow{2}{*}{AP2}} & 
-	\multirow{2}{*}{0.96} & \multirow{2}{*}{\textbf{0.97}} & \multirow{2}{*}{\textbf{0.97}} & \multirow{2}{*}{0.82} & \multirow{2}{*}{\textbf{0.83}} & \multirow{2}{*}{\textbf{0.83}}\\
-	\multicolumn{1}{|c|}{}                        &
-	\multicolumn{1}{c|}{} & & & & & & \\ \cline{3-8}
-	\hline
+	\multirow{2}{*}{0.96} & \multirow{2}{*}{\textbf{0.97}} & \multirow{2}{*}{\textbf{0.97}} \\
+	\multicolumn{1}{c}{}                        &
+	\multicolumn{1}{c|}{} & & & \\
+	\hdashline[0.5pt/5pt]
 		
-	\multicolumn{1}{|c|}{\multirow{2}{*}{Miscellaneous Anomalies}} &
-	\multicolumn{1}{c|}{AP2} & 0.74 & 0.73 & \textbf{0.88} & 0.70 & 0.70 & \textbf{0.82}  \\ \cline{2-8}
-	\multicolumn{1}{|c|}{}                        &
-	\multicolumn{1}{c|}{AP3} & 0.69 & 0.69 & \textbf{0.71} & 0.70 & 0.70 & \textbf{0.77} \\ \cline{3-8}
-	\hline
+	\multicolumn{1}{c}{\multirow{2}{*}{Miscellaneous Anomalies}} &
+	\multicolumn{1}{c|}{AP2} & 0.74 & 0.73 & \textbf{0.88} \\
+	\multicolumn{1}{c}{}                        &
+	\multicolumn{1}{c|}{AP3} & 0.69 & 0.69 & \textbf{0.71} \\
 		
 \end{tabular}
-%}
+\caption{AUC values for each model in each anomalous scenario. The best results for each scenario are in bold. (HU-- HMM-UBM, ZS-- Z-SOHMMM, S-- SOHMMM)}
+\label{tbl:sohmmm_results}
 \end{table*}
 
 \subsection{Conclusion}
@@ -407,7 +401,7 @@ Please refer to \citet{SOHMMM} for more details about the experiments and furthe
 
 In the current work, we applied a hybrid integration of the self-organizing map (SOM) and the hidden Markov model (HMM), called the SOHMMM, for anomaly detection in 802.11 wireless networks. We further extended the online gradient-descent unsupervised-learning algorithm of the SOHMMM for multivariate Gaussian emissions. We employed this algorithm specifically for anomaly detection in 802.11 wireless AP usage data. 
 
-The experimental analysis investigated two main data sets: \textit{synthetic data} and \textit{wireless simulation data}. In the synthetic data analysis, we generated six random HMMs and trained them with the observation sequences of two reference HMMs with predefined parameters. We then estimated the distance between HMMs as the Monte Carlo approximation of the Kullback-Leibler divergence, and computed the final HMM clusters, based on the minimum distance between the random HMMs and reference HMMs. We repeated the experiment for various observation-sequence lengths and different neighborhood sizes, and showed that, for the large neighborhood, the SOHMMM algorithm provided a better estimation of the reference models, including all the HMMs in the vicinity. Moreover, we presented the decay of the learning rate and the convergence of the loss function.
+The experimental analysis investigated two main data sets: \textit{synthetic data} and \textit{wireless simulation data}. In the synthetic data analysis, we generated six random HMMs and trained them with the observation sequences of two reference HMMs with predefined parameters. We then estimated the distance between HMMs as the Monte Carlo approximation of the Kullback-Leibler divergence, and computed the final HMM clusters, based on the minimum distance between the random HMMs and reference HMMs. We repeated the experiment for various sequence lengths and different neighborhood sizes, and showed that, for the large neighborhood, the SOHMMM algorithm provided a better estimation of the reference models, including all the HMMs in the vicinity. Moreover, we presented the decay of the learning rate and the convergence of the loss function.
 
 In the analysis regarding the wireless simulation data, we showed how the SOHMMM algorithm improved the anomaly-detection accuracy and sensitivity, compared to the HMM-UBM and Z-SOHMMM techniques in the AP shutdown/halt, AP overload, noise, and flash-crowd anomalous scenarios. We further investigated the combination of several anomalies in one observation sequence as miscellaneous anomalies and showed that the SOHMMM was capable of detecting contrasting anomalous cases while the HMM-UBM was not. 
 
@@ -636,7 +630,7 @@ The bad performance of k-HMM likely results mostly from the small amount of data
 \begin{table}
 	\centering
 	\begin{tabular}{l|r|r r}
-		\multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{c}{Average log-likelihood} \\
+		\multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{|c}{Average log-likelihood} \\
 		& \multicolumn{1}{c|}{AUC} & Normal data & Anomalous data \\
 		\hline
 		1-HMM & $0.806~(\pm 0.01)$ & $-6.36~(\pm 0.66)$ & $-129.40~(\pm 22.22)$ \\

@@ -84,7 +84,6 @@ In the digits datasets~(\Figref{fig:digits_dist}, \Tableref{tab:digits_js}), MNI
 
 \begin{table}
 	\centering
-	\caption{Jensen-Shannon distances between the label distributions of each pair of digits domains. On each column, the largest distance is in bold and the smallest is underlined.}
 	\small
 	\begin{tabular}{l|cccc}
 		& MNIST                & MNIST-M              & SVHN & SynthDigits \\ \hline
@@ -94,6 +93,7 @@ In the digits datasets~(\Figref{fig:digits_dist}, \Tableref{tab:digits_js}), MNI
 		SynthDigits & $1.83 \cdot 10^{-2}$ & $1.84 \cdot 10^{-2}$ & $\boldsymbol{1.26 \cdot 10^{-1}}$     & $0$ \\ \hline
 		Average & $4.51 \cdot 10^{-2}$ &  $4.52 \cdot 10^{-2}$ & $1.20 \cdot 10^{-1}$ & $5.42 \cdot 10^{-2}$
 	\end{tabular}
+	\caption{Jensen-Shannon distances between the label distributions of each pair of digits domains. On each column, the largest distance is in bold and the smallest is underlined.}
 	\label{tab:digits_js}
 \end{table}
 
@@ -122,7 +122,6 @@ In the digits datasets~(\Figref{fig:digits_dist}, \Tableref{tab:digits_js}), MNI
 
 \begin{table}
 	\centering
-	\caption{Jensen-Shannon distances between the label distributions of each pair of domains in Office-31. On each column, the largest distance is in bold.}
 	\small
 	\begin{tabular}{l|ccc}
 		& Amazon                    & DSLR                      & Webcam                    \\ \hline
@@ -131,6 +130,7 @@ In the digits datasets~(\Figref{fig:digits_dist}, \Tableref{tab:digits_js}), MNI
 		Webcam & $9.76 \cdot 10^{-2}$      & $\boldsymbol{1.45 \cdot 10^{-1}}$ & 0 \\ \hline
 		Average & $1.15 \cdot 10^{-1}$ & $1.39 \cdot 10^{-1}$ & $1.21 \cdot 10^{-1}$
 	\end{tabular}
+	\caption{Jensen-Shannon distances between the label distributions of each pair of domains in Office-31. On each column, the largest distance is in bold.}
 	\label{tab:office_js}
 \end{table}
 
@@ -165,7 +165,6 @@ In the digits datasets~(\Figref{fig:digits_dist}, \Tableref{tab:digits_js}), MNI
 
 \begin{table}
 	\centering
-	\caption{Jensen-Shannon distances between the label distributions of each pair of domains in Amazon Reviews. On each column, the largest distance is in bold and the smallest is underlined.}
 	\small
 	\begin{tabular}{l|cccc}
 		& Books                & DVD                  & Electronics          & Kitchen              \\ \hline
@@ -175,12 +174,12 @@ In the digits datasets~(\Figref{fig:digits_dist}, \Tableref{tab:digits_js}), MNI
 		Kitchen     & $\boldsymbol{5.09 \cdot 10^{-3}}$ & $\boldsymbol{3.42 \cdot 10^{-3}}$ & $\boldsymbol{3.17 \cdot 10^{-3}}$ & 0 \\ \hline
 		Average & $2.90 \cdot 10^{-3}$ & $1.78 \cdot 10^{-3}$ & $1.78 \cdot 10^{-3}$ & $3.89 \cdot 10^{-3}$
 	\end{tabular}
+	\caption{Jensen-Shannon distances between the label distributions of each pair of domains in Amazon Reviews. On each column, the largest distance is in bold and the smallest is underlined.}
 	\label{tab:amazon_js}
 \end{table}
 
 \begin{table}
 	\centering
-	\caption{Jensen-Shannon distances between the label distributions of each pair of domains in the DomainNet dataset. On each column, the largest distance is in bold and the smallest is underlined.}
 	\small
 	\hspace*{-0.50in}
 	\begin{tabular}{l|cccccc}
@@ -193,6 +192,7 @@ In the digits datasets~(\Figref{fig:digits_dist}, \Tableref{tab:digits_js}), MNI
 		\textit{skt}  & $2.60 \cdot 10^{-1}$ & $3.26 \cdot 10^{-1}$ & $3.10 \cdot 10^{-1}$ & $2.27 \cdot 10^{-1}$ & $2.67 \cdot 10^{-1}$ & $0$ \\ \hline
 		Average & $2.67 \cdot 10^{-1}$ & $3.21 \cdot 10^{-1}$ & $3.20 \cdot 10^{-1}$ & $2.24 \cdot 10^{-1}$ & $2.47 \cdot 10^{-1}$ & $2.78 \cdot 10^{-1}$ \\
 	\end{tabular}
+	\caption{Jensen-Shannon distances between the label distributions of each pair of domains in the DomainNet dataset. On each column, the largest distance is in bold and the smallest is underlined.}
 	\label{tab:domainnet_js}
 \end{table}
 
@@ -204,7 +204,7 @@ In this experiment, we want to evaluate if the increased robustness of the featu
 
 \begin{figure}
 	\centering
-	\hspace*{-0.30in}
+	%\hspace*{-0.30in}
 	\begin{subfigure}[b]{0.32\textwidth}
 		\begin{tikzpicture}[scale=0.58, every node/.style={scale=0.58}]
 		\begin{axis}[
@@ -476,8 +476,6 @@ The following notation is used to designate network layers: \texttt{Conv(n, k)} 
 
 \begin{table}
 	\centering
-	\caption{Values and search ranges for all hyperparameters in all experiments.}
-	\label{tab:hyperparameters}
 	\small
 	\hspace*{-0.30in}
 	\begin{tabular}{r|cccc}
@@ -496,6 +494,8 @@ The following notation is used to designate network layers: \texttt{Conv(n, k)} 
 		dropout: $p_{\text{min}}$           & n.a.                  & n.a.                  & $0.2$  & n.a.                 \\ \hdashline[0.5pt/5pt]
 		dropout: $p_{\text{max}}$           & n.a.                  & n.a.                  & $0.8$  & n.a.                
 	\end{tabular}
+	\caption{Values and search ranges for all hyperparameters in all experiments.}
+	\label{tab:hyperparameters}
 \end{table}
 
 
@@ -506,8 +506,6 @@ The list of image transformations used in RandAugment is provided in~\Tableref{t
 \begin{savenotes}
 	\begin{table}[!h]
 		\centering
-		\caption{RandAugment image transformations and respective ranges.}
-		\label{tab:randaugment}
 		\small
 		\begin{tabular}{r|c||rc}
 			\multicolumn{1}{c|}{Transformation} & Range         & \multicolumn{1}{c|}{Transformation} & \multicolumn{1}{c}{Range} \\ \hline
@@ -520,6 +518,8 @@ The list of image transformations used in RandAugment is provided in~\Tableref{t
 			Invert                              & $\{0, 1\}$    & \multicolumn{1}{r|}{TranslateY}     & $[-0.45, 0.45]$           \\ \hdashline[0.5pt/5pt]
 			Posterize                           & $[4, 8]$ &                                     &              
 		\end{tabular}
+		\caption{RandAugment image transformations and respective ranges.}
+		\label{tab:randaugment}
 	\end{table}%
 \end{savenotes}
 

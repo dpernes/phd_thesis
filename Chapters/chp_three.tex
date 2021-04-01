@@ -404,21 +404,18 @@ Each camera point of view corresponds to a domain in our experiments, named \tex
 	\end{minipage} 
 \end{figure}
 
-Table \ref{tab:ucspeds_domains} shows the mean and standard deviation for the number of people in a frame, for each domain. There is a strong target shift between domains as the mean number of people in domain \textit{vidf} is more than $4$ times higher than the mean number of people in domain \textit{vidd} and, therefore, the DA task is challenging for this dataset.
+Table \ref{tab:ucsdpeds_domains} shows the mean and standard deviation for the number of people in a frame, for each domain. There is a strong target shift between domains as the mean number of people in domain \textit{vidf} is more than $4$ times higher than the mean number of people in domain \textit{vidd} and, therefore, the DA task is challenging for this dataset.
 
 \begin{table}[!ht]
 	\centering
-	\begin{tabular}{|c|c|c|}
-		\hline
-		Domain & Mean & Std  \\
+	\begin{tabular}{c| c c}
+		 & mean & std.\ dev.\  \\
 		\hline
 		\textit{vidd} & 6.448 & 3.089\\
-		\hline
 		\textit{vidf} & 27.570 & 7.393 \\
-		\hline
 	\end{tabular}
-	\caption{UCSPeds domains mean and standard deviation for the number of people in a frame}
-	\label{tab:ucspeds_domains}
+	\caption{Mean number of people and respective standard deviation for each domain in the UCSDPeds dataset.}
+	\label{tab:ucsdpeds_domains}
 \end{table}
 
 For each frame, we computed its density map, by placing a $15 \times 8$ Gaussian kernel with sum $1$ on the center of each person. Figure \ref{fig:ucsdpeds_density_map} shows an example of a density map, where the Gaussian kernel around each person is shown in red. The region of interest is also indicated in the figure. As we had only $800$ frames in each domain, we performed data augmentation by adding the mirrored image of each frame to the dataset. 
@@ -468,18 +465,13 @@ Figures \ref{fig:webcamt_511}-\ref{fig:webcamt_846} show examples of frames in e
 
 \begin{table}[!ht]
 	\centering
-	\begin{tabular}{|c|c|c|}
-		\hline
-		Domain & Mean & Std  \\
+	\begin{tabular}{c| c c}
+		 & mean & std.\ dev.\  \\
 		\hline
 		\textit{511} & 12.039 & 6.32 \\
-		\hline
 		\textit{551} & 18.362 & 4.21 \\
-		\hline
 		\textit{691} & 25.470 & 10.738 \\
-		\hline
 		\textit{846} & 6.873 & 2.477 \\
-		\hline
 	\end{tabular}
 	\caption{Mean number of vehicles and respective standard deviation for each domain in the WebCamT dataset.}
 	\label{tab:webcamt_domains}
@@ -502,20 +494,13 @@ In the WebCamT dataset, we have three different source domains, so this is a mul
 
 \begin{table}[!ht]
 	\centering
-	\begin{tabular}{| c | c | c | c |}
-		\cline{2-4}
-		\multicolumn{1}{c|}{} & \multicolumn{3}{c|}{Optimization problem} \\
-		\cline{1-4}
-		Model & Hard-max & Soft-max & Average\\
+	\begin{tabular}{ c | c  c  c }
+		 & Hard-max & Soft-max & Average\\
 		\hline
 		Non-Temporal & 18.15 & 11.16 & \textbf{9.91}  \\
-		\hline 
 		SingleLSTM & 10.54 & \textbf{9.33} & 11.10  \\
-		\hline
 		DoubleLSTM & 9.59 & 7.73 & \textbf{6.14} \\
-		\hline
 		CommonLSTM & \textbf{9.85} & 12.07 & 10.22 \\
-		\hline
 	\end{tabular}
 	\caption{Comparison of different optimization problems. The values indicate the average MAE count across domains in the WebCamT dataset. The experiments were run with $\mu_d=10^{-3}$. }
 	\label{table:optimization_experiments}
@@ -526,24 +511,23 @@ In the WebCamT dataset, we have three different source domains, so this is a mul
 \Tableref{table:results_unsup} shows the results in the unsupervised setting for both datasets. For each domain, the best MAE obtained with different values of $\mu_d$ is shown.
 \begin{table}[!ht]
 	\centering
-	\begin{tabular}{| c | c | c | c || c | c | c | c | c | c | c | c |}
-		\cline{2-9}
-		\multicolumn{1}{c|}{} & \multicolumn{3}{c||}{UCSDPeds} & \multicolumn{5}{c|}{WebCamT} \\
-		\cline{1-9}
-		Model & \textit{vidd} & \textit{vidf} & Avg & \textit{511} & \textit{551} & \textit{691} & \textit{846} & Avg\\
+	\begin{tabular}{ c | c  c : c | c  c  c  c : c}
+		\multicolumn{1}{c|}{} & \multicolumn{3}{c|}{UCSDPeds} & \multicolumn{5}{c}{WebCamT} \\
+		
+		 & \textit{vidd} & \textit{vidf} & Avg & \textit{511} & \textit{551} & \textit{691} & \textit{846} & Avg\\
 		\hline
 		FCN-HA & 15.23 & 7.14 & 11.19 & \textbf{5.01} & \textbf{2.58} & 17.22 & 4.67 & 7.37\\
-		\hline
+		
 		FCN-rLSTM & 11.04  & 5.98 &  8.51 & 6.26 & 8.79 & 13.63 & 6.31 & 8.75\\
-		\hline
+		
 		Non-Temporal & \textbf{6.24} & 22.52 & 14.38 & 9.63 & 3.50 & 18.27 & 5.58 & 9.85 \\
-		\hline 
+		 
 		SingleLSTM & 7.75 & 9.07 & 9.32 & 6.58 & 5.10 & 15.26  & 9.55 & 10.53 \\
-		\hline
+		
 		DoubleLSTM & 8.04 & \textbf{3.89} & 6.49 & 5.01 & 4.58 & 10.97 & \textbf{3.03} & \textbf{6.15}\\
-		\hline
+		
 		CommonLSTM & 6.83 & 4.80 & \textbf{6.18} & 6.11 & 5.55 & \textbf{10.51} & 3.56 & 8.15 \\
-		\hline
+		
 	\end{tabular}
 	\caption{MAE count per domain in UCSDPeds and WebCamT datasets (unsupervised setting). Column Avg indicates the average MAE count across domains.}
 	\label{table:results_unsup}
@@ -561,12 +545,14 @@ Results regarding the sensitivity to the hyperparameter $\mu_d$ are shown in \Fi
 	\begin{subfigure}{.5\textwidth}
 		\centering
 		\includegraphics[width=0.95\textwidth]{ChapterThree/ucsdpeds_unsupervised.png}
+		\caption{UCSDPeds}
 	\end{subfigure}
 	\begin{subfigure}{.5\textwidth}
 		\centering
 		\includegraphics[width=0.95\textwidth]{ChapterThree/webcamt_unsupervised.png}
+		\caption{WebCamT}
 	\end{subfigure}
-	\caption{Average MAE count across domains for each $\mu_d$ in the unsupervised setting in UCSDPeds (left) and WebCamT (right) datasets.}
+	\caption{Average MAE count across domains for each $\mu_d$ in the unsupervised setting in UCSDPeds and WebCamT datasets.}
 	\label{fig:lambda_d_unsup}
 \end{figure}
 
@@ -578,26 +564,19 @@ This plot confirms that the DoubleLSTM model was the best-performing in the WebC
 
 \begin{table}[!ht]
 	\centering
-	\begin{tabular}{| c | c | c | c || c | c | c | c | c | c | c | c |}
-		\cline{2-9}
-		\multicolumn{1}{c|}{} & \multicolumn{3}{c||}{UCSDPeds} & \multicolumn{5}{c|}{WebCamT} \\
-		\cline{1-9}
-		Model & \textit{vidd} & \textit{vidf} & Avg & \textit{511} & \textit{551} & \textit{691} & \textit{846} & Avg\\
+	\begin{tabular}{ c | c  c : c | c  c  c  c : c}
+		\multicolumn{1}{c|}{} & \multicolumn{3}{c|}{UCSDPeds} & \multicolumn{5}{c}{WebCamT} \\
+		 & \textit{vidd} & \textit{vidf} & Avg & \textit{511} & \textit{551} & \textit{691} & \textit{846} & Avg\\
 		\hline
 		FCN-HA & 1.43 & 4.48  & 2.96 & \textbf{2.05} & \textbf{2.59} & 6.56 & 2.394 & \textbf{3.40} \\
-		\hline
 		FCN-rLSTM & 2.01 & \textbf{2.07} & 2.04 & 5.40 & 3.49 & 9.15 & 3.54 &  5.39 \\
 		\hline
 		Non-Temporal & 0.84 & 3.49 & 2.21 & 3.11 & 3.57 & 10.96 & 2.05 & 5.04 \\
-		\hline 
 		SingleLSTM & 0.94 & 5.07 & 3.00 & 4.24 & 4.39 & 7.03 & \textbf{1.52} & 4.34 \\
-		\hline
 		DoubleLSTM & 0.95 & 2.84 & \textbf{1.89} & 4.22 & 4.55 & \textbf{6.46} & 1.58 & 4.27 \\ 
-		\hline
 		CommonLSTM & \textbf{0.88} & 2.61 & 1.94 & 4.23 & 4.54 & 8.67 & 1.63 & 4.98 \\
-		\hline
 	\end{tabular}
-	\caption{MAE count per domain in UCSDPeds and WebCamT datasets (unsupervised setting). Column Avg indicates the average MAE count across domains.}
+	\caption{MAE count per domain in UCSDPeds and WebCamT datasets (semi-supervised setting). Column Avg indicates the average MAE count across domains.}
 	\label{table:results_semisup}
 \end{table}
 
@@ -730,10 +709,10 @@ It remains to discuss how to build the transformation $\omega$ in such a way tha
 
 For generic, non-vision problems, adding random noise sampled from some known distribution (e.g.\ Gaussian) is a trivial realization of $\omega$. Another possibility is to apply a strong dropout (\citet{Srivastava2014}) transformation at the input and inner layers of the neural network. Although such transformation is not necessarily label-preserving, dropout is known to be a successful regularization technique when applied at fully connected layers. We employ this idea in one of the experiments conducted here.
 
-\section{Experiments}
+\subsection{Experiments}
 \label{sec:modafm_experiments}
 
-\subsection{Experimental protocol}
+\subsubsection{Experimental protocol}
 We now conduct several experiments using standard benchmark datasets for multi-source DA. We follow established evaluation protocols for every dataset and, as far as possible, we use the same network architecture for our model and baselines. Notably, comparing with MDAN (\citet{Zhao2018}), our single domain discriminator has the same architecture as each of the $k$ domain discriminators in their model. Consequently, our model has less trainable parameters than theirs. Our parameter $\vbeta$ is initialized uniformly at random in $[0,1]^k$, so the resulting $\valpha$ initially weights all source domains roughly equally, but it may become sparse as training evolves. We illustrate this behavior in \ref{sec:alpha_evol}. Hyperparameter tuning was performed through cross-validation over source domains and a hyperparameter sensitivity analysis is conducted in \ref{sec:hyperparam}. Further details about the experiments, including the label distributions on each domain (\ref{sec:label_dist}), network architectures (\ref{sec:arch}), search ranges for each hyperparameter (\ref{sec:cross_val}), and image transformations (\ref{sec:img_transf}), are also provided as appendices. The PyTorch-based implementation of our model is publicly available.\footnote{\url{https://github.com/dpernes/modafm}} To facilitate the presentation, from now on we refer to our model as MODA-FM (Multi-source mildly Optimistic Domain Adaptation with FixMatch regularization). 
 
 \paragraph{Baselines} DANN-SS (\citet{Ganin2015}): a single-source DA model, where the best results among all source domains are reported. DANN-MS: the same model as before trained on the combined data from all source domains. MADA (\citet{Pei2018})I: a state of the art model for single-source DA which tries to align conditional distributions by using one domain discriminator per class (results extracted from \citet{Pei2018}, we report the best accuracy among all source domains). MDAN (\citet{Zhao2018}): a model for multi-source DA, widely described before. MoE (\citet{Guo2018}): a state of the art model for multi-source DA that uses one classifier per source domain whose predictions are weighted in an example-dependent way. M$^3$SDA-$\beta$ (\citet{Peng2019}): a moment-matching model for multi-source DA in which two classifiers per source domain are trained to have maximum label discrepancy on the target domain (results extracted from \citet{Peng2019}). Fully supervised: fully supervised model trained on the target data, to provide an empirical upper bound on the performance of the DA task. MODA: our model without consistency regularization (i.e.\ $\mu_c = 0$). FM: our model without domain discriminator, trained on the naively combined data from all source domains and using FixMatch consistency regularization as described in \Secref{sec:modafm_consistency}.
@@ -742,11 +721,10 @@ We now conduct several experiments using standard benchmark datasets for multi-s
 
 \begin{table}
 	\centering
-	\caption{Average accuracy $\pm$ standard deviation (\%) over 5 independent runs on digits and objects classification (Office-31). The domain on each column corresponds to the target.}
 	\footnotesize
-	\label{tab:digits_office_acc}
 	%\hspace*{-1.0in}
 	\begin{tabular}{l|ccc:c|ccc:c}
+		\multicolumn{1}{c|}{} & \multicolumn{4}{c|}{Digits} & \multicolumn{4}{c}{Office-31} \\
 		& MNIST                        & MNIST-M                       & SVHN  & Avg.                        & Amazon                        & DSLR                              & Webcam & Avg.                      \\ \hline
 		DANN-SS \cite{Ganin2015}  & $ 97.9 $ \tiny{$ \pm 0.4 $}  & $ 73.2 $\tiny{$ \pm 1.6 $}   & $ 72.8 $ \tiny{$ \pm 3.3 $} & $81.3$ & $ 60.5 $ \tiny{$ \pm 1.4 $}   & $\boldsymbol{100.0}$ \tiny{$\pm 0.0$}     & $ 98.0$ 	\tiny{$ \pm 0.3 $} & $86.2$\\
 		DANN-MS \cite{Ganin2015}  & $ 97.9 $ \tiny{$ \pm 1.6 $}  & $ 67.5 $ \tiny{$ \pm 1.4 $}   & $ 71.5 $ \tiny{$ \pm 1.6 $} & $79.0$ & $ 61.2 $ \tiny{$ \pm 1.3 $}   & $ 99.9 $ \tiny{$ \pm 0.2 $}       & $ 98.8 $ \tiny{$ \pm 0.3 $} & $86.6$\\
@@ -758,6 +736,8 @@ We now conduct several experiments using standard benchmark datasets for multi-s
 		MODA-FM                      & $ 98.8 $ \tiny{$ \pm 0.1 $}  & $\boldsymbol{95.4}$ \tiny{$\pm 0.4$}  & $ 89.4 $ \tiny{$ \pm 1.4 $} & $\boldsymbol{94.5}$ & $\boldsymbol{70.7}$ \tiny{$\pm 0.9$}  & $ \boldsymbol{100.0} $ \tiny{$ \pm 0.0 $} & $ 99.1 $ \tiny{$ \pm 0.1 $} & $\boldsymbol{89.9}$\\ \hline
 		Fully supervised            & $ 98.9 $ \tiny{$ \pm 0.1 $}  & $ 96.2 $ \tiny{$ \pm 0.1 $}   & $ 90.3 $ \tiny{$ \pm 0.5 $} & $95.1$ & $ 88.1 $ \tiny{$ \pm 1.6 $}   & $ 99.3 $ \tiny{$ \pm 1.1 $}       & $ 99.5 $ \tiny{$ \pm 0.7 $} & $95.6$
 	\end{tabular}
+	\caption{Average accuracy $\pm$ standard deviation (\%) over 5 independent runs on digits and objects classification (Office-31). The domain on each column corresponds to the target.}
+	\label{tab:digits_office_acc}
 \end{table}
 
 \paragraph{Object classification on Office-31 dataset} Office-31 (\citet{Saenko2010}) is a standard benchmark dataset for domain adaptation. It comprises 31 object categories extracted from 3 domains: Amazon, which contains 2817 images downloaded from \url{amazon.com}, DSLR and Webcam, which contain 498 and 795 images captured with DSLR cameras and webcams, respectively, under different environments. In this experiment, we adopt the fully-transductive setting, following \citet{Pei2018}, where all unlabeled data from the target domain are used for training (except for the fully supervised model, where we use 80\% of the data for training and the remaining for testing). All models are implemented using a pre-trained (on ImageNet) ResNet-50 (\citet{He2016}) as the base architecture. We take each domain as the target in turn and all remaining are used as sources. The results are presented in \Tableref{tab:digits_office_acc}.
@@ -766,8 +746,6 @@ We now conduct several experiments using standard benchmark datasets for multi-s
 
 \begin{table}[]
 	\centering
-	\caption{Average accuracy $\pm$ standard deviation (\%) over 5 independent runs on sentiment analysis (Amazon Reviews). The domain on each column corresponds to the target.}
-	\label{tab:amazon_acc}
 	\footnotesize
 	\hspace*{-0.10in}
 	\begin{tabular}{l|cccc:c}
@@ -781,14 +759,14 @@ We now conduct several experiments using standard benchmark datasets for multi-s
 		MODA-FM    & $\boldsymbol{80.9}$ \tiny{$\pm 1.1$} & $\boldsymbol{82.0}$ \tiny{$\pm 1.0$} & $ 85.3 $ \tiny{$ \pm 0.4 $} & $\boldsymbol{88.4}$ \tiny{$\pm 0.3$} & $\boldsymbol{84.2}$\\ \hline
 		Fully supervised & $ 83.6 $ \tiny{$ \pm 0.4 $} & $ 83.6 $ \tiny{$ \pm 0.6 $} & $ 85.4 $ \tiny{$ \pm 0.4 $} & $ 87.8 $ \tiny{$ \pm 0.2 $} & $85.1$
 	\end{tabular}
+	\caption{Average accuracy $\pm$ standard deviation (\%) over 5 independent runs on sentiment analysis (Amazon Reviews). The domain on each column corresponds to the target.}
+	\label{tab:amazon_acc}
 \end{table}
 
 \paragraph{Large scale object classification on DomainNet dataset} To the best of our knowledge, the DomainNet dataset (\citet{Peng2019}) is the largest domain adaptation image dataset to date. It consists of 6 domains, each containing 345 categories of common objects. The domains are: clipart images (\textit{clp}), infographic images (\textit{inf}), artist paintings (\textit{pnt}), drawings made by worldwide players of the game ``Quick, Draw!" (\textit{qdr}), real world images (\textit{rel}), and sketches of objects (\textit{skt}). The dataset consists of around 423.5k images split in prespecified train/test partitions. For training the models, we use all the data from the training partition, excluding the labels for the target domain. For testing, we use the target domain data from the test partition. All models were implemented on top of a pre-trained (on ImageNet) ResNet-152. All domains are taken as the target in turn and all remaining are used as sources. The results are in~\Tableref{tab:domainnet_acc}.
 
 \begin{table}[]
 	\centering
-	\caption{Accuracy on object classification (DomainNet). The domain on each column corresponds to the target.}
-	\label{tab:domainnet_acc}
 	\footnotesize
 	\begin{tabular}{l|cccccc:c}
 		& \textit{clp} & \textit{inf} & \textit{pnt} & \textit{qdr}  & \textit{rel} & \textit{skt} & Avg. \\ \hline
@@ -798,13 +776,15 @@ We now conduct several experiments using standard benchmark datasets for multi-s
 		MODA-FM       & $61.2$ & $24.5$  & $51.2$  & $\boldsymbol{17.2}$  & $62.3$ & $\boldsymbol{52.4}$ & $\boldsymbol{44.8}$\\ \hline
 		Fully supervised & $68.5$ & $28.7$ & $61.5$ & $64.5$ & $78.5$ & $59.3$ & $60.2$
 	\end{tabular}
+	\caption{Accuracy on object classification (DomainNet). The domain on each column corresponds to the target.}
+	\label{tab:domainnet_acc}
 \end{table}
 
-\subsection{Discussion}
+\subsubsection{Discussion}
 Tables \ref{tab:digits_office_acc}, \ref{tab:amazon_acc}, and \ref{tab:domainnet_acc} show that our model outperforms the baselines in most settings and performs comparably to the fully-supervised model in many. When no consistency regularization is used (MODA), our approach exhibits a higher accuracy than DANN-SS, DANN-MS and MDAN in most cases. This observation shows that our mildly optimistic combination of source domains works better than using only the data from the best source domain (DANN-SS) or naively combining the data from all source domains (DANN-MS). It also suggests that MDAN wastes too much computational effort on optimizing itself for the hardest source domain. MADA and MoE perform better than our non-regularized model in some cases, which is not surprising since both methods try to mitigate somehow the curse of domain-invariant representations. Their advantage is, therefore, mostly noticeable when the target shift is large (e.g.\ SVHN and all domains in Office-31 -- see \ref{sec:label_dist}), but the performance is still below MODA-FM.
 
 Very significant performance gains are observed when we apply the consistency regularization, particularly in the visual datasets (digits and Office-31). These gains are more expressive in the most challenging settings, i.e. when the target data are perceptually very different from the source data (e.g.\ MNIST-M -- see \ref{sec:sample_imgs}) or when the target shift is large. The latter observation suggests that this regularization succeeds on mitigating the curse of domain-invariant representations, as hypothesized before. This is strongly corroborated by an experiment we present in \ref{sec:overtrain}, where we show that the model accuracy on the target domain keeps stably high when the model is trained for a large number of epochs. Interestingly, though, we observe that, in some settings, FM outperforms MODA-FM, although the differences are small. In these cases domain-invariant representations are slightly hurting the performance and/or the source weights $\alpha$ are sub-optimal. Besides being the largest dataset, DomainNet is also the most challenging for the DA task. For almost all domains, there is a large gap between the performance of all DA models (including ours) and the fully supervised. Interestingly, none of the multi-source DA algorithms does much better than the naive DANN-MS for this particular dataset. This might be explained by the large dissimilarity across domains in DomainNet: since no source domain is particularly close to the target domain, weighting all source domains equally works ends up working fairly well. Nonetheless, our model achieves the best average performance across all source domains.  Finally, it is worth highlighting the positive effect provided by using dropout as the label-preserving transformation $\omega$ in the experiment with Amazon Reviews. This observation suggests that this methodology can be applied successfully to non-visual data too.
 
-\section{Conclusion}
+\subsection{Conclusion}
 \label{sec:modafm_conclusion}
 We have presented a novel algorithm that achieves state of the art results in unsupervised multi-source domain adaptation. In our approach, the problem is formulated as DA from a single source domain whose distribution corresponds to a mixture of the original source domains. The mixture weights are adjusted dynamically throughout the training process, according to a mildly optimistic objective. Additionally, we employ FixMatch on the target samples, a form of consistency regularization that proves to have a strong impact on the model performance and to be capable of mitigating the curse of domain invariant representations. This regularization relies on a label-preserving transformation, which is hard to construct for non-visual data. Moreover, better results could be achieved if both the label-preserving transformation and the source weights were learned to approximate the augmented target samples to the source samples. Both problems are interesting lines for future research.
