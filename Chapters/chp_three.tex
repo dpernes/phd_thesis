@@ -21,7 +21,7 @@
 			\item[] \cite{ThesisFrancisco} \bibentry{ThesisFrancisco} (presented in \Secref{sec:da_sensors})
 			\item[] \cite{MODAFM} \bibentry{MODAFM} (presented in \Secref{sec:modafm})
 		\end{itemize}
-		
+
 		The Master's thesis \cite{ThesisFrancisco} was supervised by Jaime S. Cardoso and co-supervised by Diogo Pernes.
 	}
 \end{tcolorbox}
@@ -99,7 +99,7 @@ Unsurprisingly, the bound in Theorem \ref{thm:da_bound_multi_source} is essentia
 
 \subsection{State of the art}
 \label{sec:da_sota}
-We now do a brief overview of the most relevant DA algorithms, both in the single source and multi-source settings. 
+We now do a brief overview of the most relevant DA algorithms, both in the single source and multi-source settings.
 
 As we have just seen from a theoretical point of view, the success of the DA task depends on how similar the target domain is to the source(s), which is equivalent to saying that some properties of the underlying distributions must be invariant across domains. Different DA algorithms can therefore be categorized according to the invariance properties they assume.
 
@@ -109,15 +109,15 @@ As we have just seen from a theoretical point of view, the success of the DA tas
 	\centering
 	\begin{tikzpicture}[every loop/.style={},thick,
 		main node/.style={circle,draw},font=\sffamily\Large\bfseries]
-		
+
 		\node[main node,minimum size=1.5cm] (D) {$\gD$};
 		\node[main node,minimum size=1.5cm] (y) [right=1.5cm of D] {$\ry$};
 		\node[main node,minimum size=1.5cm] (x) [right=1.5cm of y] {$\rvx$};
-		
+
 		\draw[->]
 		(D) edge (y)
 		(y) edge (x);
-		
+
 	\end{tikzpicture}
 	\caption{Graphical representation of the target shift setting as a Bayesian network.}
 	\label{fig:target_shift}
@@ -148,15 +148,15 @@ Other approaches involve learning class-dependent weights to match the mean cond
 	\centering
 	\begin{tikzpicture}[every loop/.style={},thick,
 	main node/.style={circle,draw},font=\sffamily\Large\bfseries]
-	
+
 	\node[main node,minimum size=1.5cm] (y) {$\ry$};
 	\node[main node,minimum size=1.5cm] (x) [right=1.5cm of y] {$\rvx$};
 	\node[main node,minimum size=1.5cm] (D) [right=1.5cm of x] {$\gD$};
-	
+
 	\draw[->]
 	(y) edge (x)
 	(D) edge (x);
-	
+
 	\end{tikzpicture}
 	\caption{Graphical representation of the conditional shift setting as a Bayesian network.}
 	\label{fig:cond_shift}
@@ -169,15 +169,15 @@ In the \newterm{conditional shift} setting, the marginal distribution of labels 
 	\centering
 	\begin{tikzpicture}[every loop/.style={},thick,
 	main node/.style={circle,draw},font=\sffamily\Large\bfseries]
-	
+
 	\node[main node,minimum size=1.5cm] (x) {$\rvx$};
 	\node[main node,minimum size=1.5cm] (y) [right=1.5cm of x] {$\ry$};
 	\node[main node,minimum size=1.5cm] (D) [right=1.5cm of y] {$\gD$};
-	
+
 	\draw[->]
 	(x) edge (y)
 	(D) edge (y);
-	
+
 	\end{tikzpicture}
 	\caption{Graphical representation of the concept shift setting as a Bayesian network.}
 	\label{fig:concept_shift}
@@ -190,15 +190,15 @@ In the \newterm{conditional shift} setting, the marginal distribution of labels 
 	\centering
 	\begin{tikzpicture}[every loop/.style={},thick,
 	main node/.style={circle,draw},font=\sffamily\Large\bfseries]
-	
+
 	\node[main node,minimum size=1.5cm] (D) {$\gD$};
 	\node[main node,minimum size=1.5cm] (x) [right=1.5cm of D] {$\rvx$};
 	\node[main node,minimum size=1.5cm] (y) [right=1.5cm of x] {$\ry$};
-	
+
 	\draw[->]
 	(D) edge (x)
 	(x) edge (y);
-	
+
 	\end{tikzpicture}
 	\caption{Graphical representation of the covariate shift setting as a Bayesian network.}
 	\label{fig:cov_shift}
@@ -217,7 +217,7 @@ Hence, $(1/n) \sum_{i=1}^{n} w(\vx_i) \ell(h(\vx_i),y_i)$ is an unbiased estimat
 
 For high-dimensional data (e.g.\ images), where the marginal distributions are typically unknown and hard to estimate from finite data, deep learning models play an important role by providing a successful tool learn semantically rich low-dimensional feature representations. It is then possible to learn a function $g:\gX \mapsto \gZ$ mapping input data to a new feature space $\gZ$ such that $p_{\gT}(g(\rvx))/p_{\gS}(g(\rvx)) \approx 1$, i.e.\ where the marginal feature distributions of the two domains coincide. This approach has the additional benefit of moving the overlapping support assumption to a lower-dimensional space, where it is less likely to be violated than in the original space (e.g.\ pixel space). In this new feature space the covariate shift has vanished and therefore any classifier $h:\gZ \mapsto \gY$ that achieves low error on the source domain will also perform well in the target. An alternative way of motivating these approaches follows from analyzing again the target risk bound provided in \eqref{eq:da_bound_single_source}. When we presented this bound, we assumed for simplicity that the feature space was fixed and therefore the upper bound would be minimized by minimizing the source risk. However, if the feature space can itself be optimized, the term $\widehat{d}_{\gH \Delta \gH}(\gS, \gT)$ can be minimized by finding a feature space where the source and target marginal distributions coincide. This idea has been exploited extensively in recent years, either by matching the distributions using maximum mean discrepancy (e.g.\ \citet{Long2015,Guo2018}) or, in most cases, using an adversarial neural network (e.g.\ \citet{Zhao2018,Ganin2015,Pei2018,Sebag2019}).
 
-Adversarial-based DA was originally introduced by \citet{Ganin2015} and results from the observation that 
+Adversarial-based DA was originally introduced by \citet{Ganin2015} and results from the observation that
 computing $\widehat{d}_{\gH \Delta \gH}(\gS, \gT)$ is equivalent to finding a classifier that maximally discriminates between samples of the source and target domains (Lemma \ref{lemma:emp_h_div}). Intuitively, if no classifier exists that can distinguish between source and target features, then the distributions of these two must coincide. Thus, if we have access to sets $\widehat{\gS}$ and $\widehat{\gT}$ of labeled samples from the source domain and unlabeled samples from the target, respectively, we can train a feature extractor network $g:\gX \mapsto \gZ$, a classifier $h:\gZ \mapsto \gY$, and a domain discriminator $d:\gZ \mapsto \{0,1\}$ to solve the following minimax problem\footnote{This objective is merely formal since the 0-1 loss is non-smooth and intractable. In practice, the usual classification losses are used instead.}:
 \begin{equation}
 	\label{eq:dann_obj}
@@ -286,7 +286,7 @@ yields exactly update equations \plaineqref{eq:grad_feature_extractor}, \plaineq
 \subsection{FCN-rLSTM: Spatio-temporal deep neural network for object counting}
 \label{sec:da_sensors_fcn_rltsm}
 
-\citet{Zhang2017} proposed FCN-rLSTM, a deep neural network architecture for counting vehicles in low-quality videos captured by city cameras that will constitute the backbone of our models. 
+\citet{Zhang2017} proposed FCN-rLSTM, a deep neural network architecture for counting vehicles in low-quality videos captured by city cameras that will constitute the backbone of our models.
 
 Although each video frame should contain all the information required to identify the number of vehicles in it, issues with the quality of the collected data can make vehicle counting a difficult problem, namely low resolution, vehicle occlusion, and different vehicle scales, particularly noticeable when the camera is too close to the road. Thus, assuming that the frame rate is sufficiently large when compared to the vehicles speed, leveraging information from the previous frames should help improving the accuracy of the prediction for the current frame. For this reason, FCN-rLSTM combines a fully convolutional network with a recurrent module, which preserves memory from the previous frames in LSTM cells. This is a density-based estimation method, being able to deal well with low frame rates, low resolutions, and vehicle occlusions, but having difficulty in accounting for different vehicle scales.
 
@@ -319,7 +319,7 @@ The non-temporal model uses a sub-network in the FCN-rLSTM model as its backbone
 	\label{fig:non_temporal_model}
 \end{figure}
 
-The component F-HAC in that figure corresponds to all layers of the FCN-rLSTM up to the hyper-atrous combination. It is used as a feature extractor, whereas the rest of the convolutional layers are used for the object counting task. The $k$ domain discriminators consist of two fully connected layers which are preceded by a gradient reversal layer. 
+The component F-HAC in that figure corresponds to all layers of the FCN-rLSTM up to the hyper-atrous combination. It is used as a feature extractor, whereas the rest of the convolutional layers are used for the object counting task. The $k$ domain discriminators consist of two fully connected layers which are preceded by a gradient reversal layer.
 
 This model will be our baseline as we are primarily interested in merging the benefits of DA techniques and sequential modeling.
 
@@ -385,7 +385,7 @@ In all experiments, we train the model for $50$ epochs, using Adam optimizer (\c
 \subsubsection{UCSDPeds dataset}
 \label{sec:da_sensors_ucsdpeds}
 
-UCSDPeds (\citet{Chan2008}) is a crowd counting dataset that contains videos of pedestrians on University of California, San Diego, walkways, taken from a stationary camera in two different viewpoints. All videos are 8-bit grayscale, with dimensions $158 \times 238$ at a $2$ frames per second rate. For each video frame, the dataset has a mask indicating the region of interest in the image and another file indicating the centers, in image coordinates, of every person in the frame. 
+UCSDPeds (\citet{Chan2008}) is a crowd counting dataset that contains videos of pedestrians on University of California, San Diego, walkways, taken from a stationary camera in two different viewpoints. All videos are 8-bit grayscale, with dimensions $158 \times 238$ at a $2$ frames per second rate. For each video frame, the dataset has a mask indicating the region of interest in the image and another file indicating the centers, in image coordinates, of every person in the frame.
 
 Each camera point of view corresponds to a domain in our experiments, named \textit{vidd} and \textit{vidf}. Figures \ref{fig:ucsdpeds_vidd}-\ref{fig:ucsdpeds_vidf} show examples of frames in each one of the two domains.
 
@@ -401,7 +401,7 @@ Each camera point of view corresponds to a domain in our experiments, named \tex
 		\includegraphics[width=\textwidth]{ChapterThree/vidf_example.png}
 		\caption{Domain \textit{vidf} from the UCSDPeds dataset.}
 		\label{fig:ucsdpeds_vidf}
-	\end{minipage} 
+	\end{minipage}
 \end{figure}
 
 Table \ref{tab:ucsdpeds_domains} shows the mean and standard deviation for the number of people in a frame, for each domain. There is a strong target shift between domains as the mean number of people in domain \textit{vidf} is more than $4$ times higher than the mean number of people in domain \textit{vidd} and, therefore, the DA task is challenging for this dataset.
@@ -418,11 +418,11 @@ Table \ref{tab:ucsdpeds_domains} shows the mean and standard deviation for the n
 	\label{tab:ucsdpeds_domains}
 \end{table}
 
-For each frame, we computed its density map, by placing a $15 \times 8$ Gaussian kernel with sum $1$ on the center of each person. Figure \ref{fig:ucsdpeds_density_map} shows an example of a density map, where the Gaussian kernel around each person is shown in red. The region of interest is also indicated in the figure. As we had only $800$ frames in each domain, we performed data augmentation by adding the mirrored image of each frame to the dataset. 
+For each frame, we computed its density map, by placing a $15 \times 8$ Gaussian kernel with sum $1$ on the center of each person. Figure \ref{fig:ucsdpeds_density_map} shows an example of a density map, where the Gaussian kernel around each person is shown in red. The region of interest is also indicated in the figure. As we had only $800$ frames in each domain, we performed data augmentation by adding the mirrored image of each frame to the dataset.
 
 \begin{figure}[!ht]
 	\centering
-	\includegraphics[width=0.75\textwidth]{ChapterThree/ucsdpeds_density_map.png}   
+	\includegraphics[width=0.75\textwidth]{ChapterThree/ucsdpeds_density_map.png}
 	\caption{Sample density map for the UCSDPeds dataset.}
 	\label{fig:ucsdpeds_density_map}
 \end{figure}
@@ -430,7 +430,7 @@ For each frame, we computed its density map, by placing a $15 \times 8$ Gaussian
 \subsubsection{WebCamT dataset}
 \label{sec:da_sensors_webcamt}
 
-WebCamT (\citet{Zhang2017b}) is a vehicle counting dataset that contains city camera videos, taken from a stationary camera in different points of the city of New York. All videos are in color, with dimensions $240 \times 352$, at a $1$ frame per second rate. Every frame in the dataset has a ground truth file with annotations that indicate the center of each vehicle and also its bounding box. 
+WebCamT (\citet{Zhang2017b}) is a vehicle counting dataset that contains city camera videos, taken from a stationary camera in different points of the city of New York. All videos are in color, with dimensions $240 \times 352$, at a $1$ frame per second rate. Every frame in the dataset has a ground truth file with annotations that indicate the center of each vehicle and also its bounding box.
 
 There are $14$ cameras that cover multiple scenes, camera perspectives, congestion states, and weather conditions. We chose four cameras from those $14$ to correspond to our domains. Each of those four cameras had a number of videos, from which we selected $1000$ frames. The frames were selected consecutively, so that if frames $f_1$ and $f_2$ from the same video $V$ were selected, then every frame between $f_1$ and $f_2$ in video $V$ was also selected.
 
@@ -454,7 +454,7 @@ Figures \ref{fig:webcamt_511}-\ref{fig:webcamt_846} show examples of frames in e
 		\includegraphics[width=\textwidth]{ChapterThree/691_example.png}
 		\caption{Domain \textit{691} from the WebCamT dataset.}
 		\label{fig:webcamt_691}
-	\end{minipage} 
+	\end{minipage}
 	\hfill
 	\begin{minipage}[b]{0.4\textwidth}
 		\includegraphics[width=\textwidth]{ChapterThree/846_example.png}
@@ -481,7 +481,7 @@ After extracting each frame from the videos, we computed its density map by plac
 
 \begin{figure}[!ht]
 	\centering
-	\includegraphics[width=0.75\textwidth]{ChapterThree/webcamt_density_map.png}   
+	\includegraphics[width=0.75\textwidth]{ChapterThree/webcamt_density_map.png}
 	\caption{Sample density map for the WebCamT dataset.}
 	\label{fig:webcamt_density_map}
 \end{figure}
@@ -513,21 +513,21 @@ In the WebCamT dataset, we have three different source domains, so this is a mul
 	\centering
 	\begin{tabular}{ c | c  c : c | c  c  c  c : c}
 		\multicolumn{1}{c|}{} & \multicolumn{3}{c|}{UCSDPeds} & \multicolumn{5}{c}{WebCamT} \\
-		
+
 		 & \textit{vidd} & \textit{vidf} & Avg & \textit{511} & \textit{551} & \textit{691} & \textit{846} & Avg\\
 		\hline
 		FCN-HA & 15.23 & 7.14 & 11.19 & \textbf{5.01} & \textbf{2.58} & 17.22 & 4.67 & 7.37\\
-		
+
 		FCN-rLSTM & 11.04  & 5.98 &  8.51 & 6.26 & 8.79 & 13.63 & 6.31 & 8.75\\
-		
+
 		Non-Temporal & \textbf{6.24} & 22.52 & 14.38 & 9.63 & 3.50 & 18.27 & 5.58 & 9.85 \\
-		 
+
 		SingleLSTM & 7.75 & 9.07 & 9.32 & 6.58 & 5.10 & 15.26  & 9.55 & 10.53 \\
-		
+
 		DoubleLSTM & 8.04 & \textbf{3.89} & 6.49 & 5.01 & 4.58 & 10.97 & \textbf{3.03} & \textbf{6.15}\\
-		
+
 		CommonLSTM & 6.83 & 4.80 & \textbf{6.18} & 6.11 & 5.55 & \textbf{10.51} & 3.56 & 8.15 \\
-		
+
 	\end{tabular}
 	\caption{MAE count per domain in UCSDPeds and WebCamT datasets (unsupervised setting). Column Avg indicates the average MAE count across domains.}
 	\label{table:results_unsup}
@@ -535,7 +535,7 @@ In the WebCamT dataset, we have three different source domains, so this is a mul
 
 In UCSDPeds, CommonLSTM showed the best results, followed by DoubleLSTM. In fact, any LSTM-based model showed a better average performance than any model where LSTMs are absent. This validates our initial hypothesis that making temporal considerations would significantly improve the accuracy. When it comes to the comparison between DA models and non-DA models, we can verify that DA models performed better, as models DoubleLSTM and CommonLSTM showed the best results for average MAE count. Still, in this case, the advantage of promoting domain-invariant representations is not as clear as the advantage of leveraging temporal information. For example, the Non-Temporal model, that includes a domain discriminator, showed worse results than FCN-rLSTM.
 
-In WebCamT, even though the double-temporal showed the best results, the second best was the FCN-HA, a model that does not make any temporal consideration. We also could not verify a marked difference in the average MAE count of the DA and non-DA methods. These observations ascertain that it is not enough to apply domain adaptation or consider the temporal nature of data to obtain good results. Thus, the careful design of models and its integration with the two mentioned techniques is essential. 
+In WebCamT, even though the double-temporal showed the best results, the second best was the FCN-HA, a model that does not make any temporal consideration. We also could not verify a marked difference in the average MAE count of the DA and non-DA methods. These observations ascertain that it is not enough to apply domain adaptation or consider the temporal nature of data to obtain good results. Thus, the careful design of models and its integration with the two mentioned techniques is essential.
 
 We find that the model with the most balanced performance across domains and datasets was the DoubleLSTM as its MAE count in a given domain was always in the top-3. This observation coupled with the fact that the DoubleLSTM was also the model with the best average MAE count in UCSDPeds and the second best in WebCamT allows us to conclude that this method was the best-performing overall.
 
@@ -573,7 +573,7 @@ This plot confirms that the DoubleLSTM model was the best-performing in the WebC
 		\hline
 		Non-Temporal & 0.84 & 3.49 & 2.21 & 3.11 & 3.57 & 10.96 & 2.05 & 5.04 \\
 		SingleLSTM & 0.94 & 5.07 & 3.00 & 4.24 & 4.39 & 7.03 & \textbf{1.52} & 4.34 \\
-		DoubleLSTM & 0.95 & 2.84 & \textbf{1.89} & 4.22 & 4.55 & \textbf{6.46} & 1.58 & 4.27 \\ 
+		DoubleLSTM & 0.95 & 2.84 & \textbf{1.89} & 4.22 & 4.55 & \textbf{6.46} & 1.58 & 4.27 \\
 		CommonLSTM & \textbf{0.88} & 2.61 & 1.94 & 4.23 & 4.54 & 8.67 & 1.63 & 4.98 \\
 	\end{tabular}
 	\caption{MAE count per domain in UCSDPeds and WebCamT datasets (semi-supervised setting). Column Avg indicates the average MAE count across domains.}
@@ -590,7 +590,7 @@ Please refer to \citet{ThesisFrancisco} for an extended discussion and further e
 
 \subsection{Conclusion}
 
-We have proposed several sensible model architectures to solve the problem of domain adaptation for the task of counting objects in videos. All of those result from the combination of two state of the art models, one for the object counting task (FCN-rLSTM) and the other one for multi-source DA (MDAN). 
+We have proposed several sensible model architectures to solve the problem of domain adaptation for the task of counting objects in videos. All of those result from the combination of two state of the art models, one for the object counting task (FCN-rLSTM) and the other one for multi-source DA (MDAN).
 
 Among the proposed models, it stands out that DoubleLSTM and CommonLSTM showed a significant improvement over the non-DA model FCN-rLSTM in most cases. Models Non-Temporal and SingleLSTM, on the other hand, had a very unsatisfactory performance, by not showing better results than methods FCN-rLSTM and FCN-HA. We have thus verified that integrating domain adaptation with a method does not automatically guarantee better results. Careful considerations on how to divide the previous method between feature extractor and task executor should be made, just like careful deliberations on the domain discriminator design and choice of the hyperparameter $\mu_d$. Unfortunately, informed choices about these become especially difficult in the unsupervised setting, where it is impossible to obtain a direct evaluation of how a given choice will perform on the target domain.
 
@@ -653,7 +653,7 @@ We first address the problem of casting the objective~\plaineqref{eq:formal_obj}
 \begin{equation}
 \min_{\alpha \in \Delta, \theta_g, \theta_h} \max_{\theta_d} \; \Big\{ \gL(\alpha, \theta_g, \theta_h, \theta_d) = \gL_\text{class}(\alpha, \theta_g, \theta_h) - \mu_d \gL_\text{disc}(\alpha, \theta_g, \theta_d) + \mu_s ||\alpha||_2^2 \Big\},
 \end{equation}
-where 
+where
 \begin{align}
 &\gL_\text{class}(\alpha, \vtheta_g, \vtheta_h) = -\sum_{j=1}^M \alpha_j\E_{\rvz \sim \gS_j^g}\log p(\ry=f_{\gS_j^g}(\rvz) \mid \rvz, \vtheta_h), \\
 %
@@ -679,7 +679,7 @@ L_\text{disc}(\vbeta, \vtheta_g, \vtheta_d) \approx& -\frac{1}{m}\sum_{j=1}^k \f
 \end{align}
 where $\widehat{\gS}_j^{(m)}$ and $\widehat{\gT}^{(m)}$ are mini-batches of $m$ examples each from $\widehat{\gS}_j$ and $\widehat{\gT}$, respectively.
 
-It is instructive to compare our approach with MDAN (\citet{Zhao2018}), as that model is the most similar to ours. The bound in \eqref{eq:bound} uses one single $\gH \Delta \gH$-divergence and, therefore, our model comprises one single domain discriminator, which aims to distinguish between the target and the $\valpha$-weighted mixture of source domains. \citet{Zhao2018} use $k$ discriminator networks, i.e.\ one per source domain. More importantly, regarding the choice of $\valpha$, we treat it as one further parameter that can be optimized to minimize the loss. To avoid the objective to collapse into the easiest source domain, as explained in \Secref{sec:modafm_choose_alpha}, we include an extra term that penalizes a sparse $\valpha$. Unlike us, they do not include the sparsity penalization term and choose $\valpha$ to minimize the worst case scenario, by assigning a larger weight to the maximum loss among the $k$ source domains on each training iteration. 
+It is instructive to compare our approach with MDAN (\citet{Zhao2018}), as that model is the most similar to ours. The bound in \eqref{eq:bound} uses one single $\gH \Delta \gH$-divergence and, therefore, our model comprises one single domain discriminator, which aims to distinguish between the target and the $\valpha$-weighted mixture of source domains. \citet{Zhao2018} use $k$ discriminator networks, i.e.\ one per source domain. More importantly, regarding the choice of $\valpha$, we treat it as one further parameter that can be optimized to minimize the loss. To avoid the objective to collapse into the easiest source domain, as explained in \Secref{sec:modafm_choose_alpha}, we include an extra term that penalizes a sparse $\valpha$. Unlike us, they do not include the sparsity penalization term and choose $\valpha$ to minimize the worst case scenario, by assigning a larger weight to the maximum loss among the $k$ source domains on each training iteration.
 
 \subsection{Consistency regularization on the target domain}
 \label{sec:modafm_consistency}
@@ -701,7 +701,7 @@ L_{\text{cons}}(\vtheta_g, \vtheta_h) = -\frac{1}{m}\sum_{\vx \in \widehat{\gT}^
 \end{equation}
 where $\tilde{y} = \argmax_{\ry \in \gY} p(\ry \mid \vx; \theta_g, \theta_h)$ is the pseudo-label, $\xi$ is chosen randomly for each $\vx$, and $\tau \geq 0$ is a hyperparameter defining the minimum confidence threshold for the loss to be active. This threshold prevents the loss to be applied too early in the training process and, in our setting, may discard augmented samples that fall too far from the source distributions. The overall objective is then written as follows:
 \begin{equation}
-\min_{\valpha \in \Delta, \vtheta_g, \vtheta_h}\max_{\vtheta_d} \Big\{ L = L_\text{class}(\valpha, \vtheta_g, \vtheta_h) + \mu_c \gL_\text{cons}(\vtheta_g, \vtheta_h) - \mu_d \gL_\text{disc}(\valpha, \vtheta_g, \vtheta_d) + \mu_s ||\valpha||_2^2 \Big\}, 
+\min_{\valpha \in \Delta, \vtheta_g, \vtheta_h}\max_{\vtheta_d} \Big\{ L = L_\text{class}(\valpha, \vtheta_g, \vtheta_h) + \mu_c \gL_\text{cons}(\vtheta_g, \vtheta_h) - \mu_d \gL_\text{disc}(\valpha, \vtheta_g, \vtheta_d) + \mu_s ||\valpha||_2^2 \Big\},
 \end{equation}
 where $\mu_c > 0$ controls the relative weight of the consistency loss. A full schematic of our model is provided in Appendix~\ref{sec:model_overview}.\todo{Maybe add something about the causal interpretation of this heuristic}
 
@@ -713,7 +713,7 @@ For generic, non-vision problems, adding random noise sampled from some known di
 \label{sec:modafm_experiments}
 
 \subsubsection{Experimental protocol}
-We now conduct several experiments using standard benchmark datasets for multi-source DA. We follow established evaluation protocols for every dataset and, as far as possible, we use the same network architecture for our model and baselines. Notably, comparing with MDAN (\citet{Zhao2018}), our single domain discriminator has the same architecture as each of the $k$ domain discriminators in their model. Consequently, our model has less trainable parameters than theirs. Our parameter $\vbeta$ is initialized uniformly at random in $[0,1]^k$, so the resulting $\valpha$ initially weights all source domains roughly equally, but it may become sparse as training evolves. We illustrate this behavior in Appendix~\ref{sec:alpha_evol}. Hyperparameter tuning was performed through cross-validation over source domains and a hyperparameter sensitivity analysis is conducted in Appendi x~\ref{sec:hyperparam}. Further details about the experiments, including the label distributions on each domain (Appendix~\ref{sec:label_dist}), network architectures (Appendix~\ref{sec:arch}), search ranges for each hyperparameter (Appendix~\ref{sec:cross_val}), and image transformations (Appendix~\ref{sec:img_transf}), are also provided as appendices. The PyTorch-based implementation of our model is publicly available.\footnote{\url{https://github.com/dpernes/modafm}} To facilitate the presentation, from now on we refer to our model as MODA-FM (Multi-source mildly Optimistic Domain Adaptation with FixMatch regularization). 
+We now conduct several experiments using standard benchmark datasets for multi-source DA. We follow established evaluation protocols for every dataset and, as far as possible, we use the same network architecture for our model and baselines. Notably, comparing with MDAN (\citet{Zhao2018}), our single domain discriminator has the same architecture as each of the $k$ domain discriminators in their model. Consequently, our model has less trainable parameters than theirs. Our parameter $\vbeta$ is initialized uniformly at random in $[0,1]^k$, so the resulting $\valpha$ initially weights all source domains roughly equally, but it may become sparse as training evolves. We illustrate this behavior in Appendix~\ref{sec:alpha_evol}. Hyperparameter tuning was performed through cross-validation over source domains and a hyperparameter sensitivity analysis is conducted in Appendi x~\ref{sec:hyperparam}. Further details about the experiments, including the label distributions on each domain (Appendix~\ref{sec:label_dist}), network architectures (Appendix~\ref{sec:arch}), search ranges for each hyperparameter (Appendix~\ref{sec:cross_val}), and image transformations (Appendix~\ref{sec:img_transf}), are also provided as appendices. The PyTorch-based implementation of our model is publicly available.\footnote{\url{https://github.com/dpernes/modafm}} To facilitate the presentation, from now on we refer to our model as MODA-FM (Multi-source mildly Optimistic Domain Adaptation with FixMatch regularization).
 
 \paragraph{Baselines} DANN-SS (\citet{Ganin2015}): a single-source DA model, where the best results among all source domains are reported. DANN-MS: the same model as before trained on the combined data from all source domains. MADA (\citet{Pei2018})I: a state of the art model for single-source DA which tries to align conditional distributions by using one domain discriminator per class (results extracted from \citet{Pei2018}, we report the best accuracy among all source domains). MDAN (\citet{Zhao2018}): a model for multi-source DA, widely described before. MoE (\citet{Guo2018}): a state of the art model for multi-source DA that uses one classifier per source domain whose predictions are weighted in an example-dependent way. M$^3$SDA-$\beta$ (\citet{Peng2019}): a moment-matching model for multi-source DA in which two classifiers per source domain are trained to have maximum label discrepancy on the target domain (results extracted from \citet{Peng2019}). Fully supervised: fully supervised model trained on the target data, to provide an empirical upper bound on the performance of the DA task. MODA: our model without consistency regularization (i.e.\ $\mu_c = 0$). FM: our model without domain discriminator, trained on the naively combined data from all source domains and using FixMatch consistency regularization as described in \Secref{sec:modafm_consistency}.
 
