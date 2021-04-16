@@ -28,4 +28,14 @@
 	}
 \end{tcolorbox}
 
+\section{Introduction}
+\label{sec:chp4_intro}
+In Chapters \ref{chp:networked_data_streams} and \ref{chp:domain_adaptation}, the target entities/domains were known at training time. In Chapter \ref{chp:networked_data_streams}, we exploited the correlations between different but related entities to augment the amount of data available for each of those and hence improve the in-distribution generalization. Chapter \ref{chp:domain_adaptation} was dedicated to the problem of domain adaptation, whose purpose is to improve the out-of-distribution (OOD) generalization in a specific target domain for which no labeled data is available. 
+
+In this chapter, we shall continue focusing on OOD generalization. However, now, the target domain is unknown and, therefore, no data from this domain is available at training time, neither labeled nor unlabeled. The purpose, then, is to use labeled data from multiple source domains to build a discriminative model that generalizes well to unknown OOD target domains -- a problem known as \emph{domain generalization} (\citet{Blanchard2011, Muandet2013}). Our main assumption to accomplish this goal is that the set of features that are relevant for the learning task are domain-invariant. Formally, we assume that, for each domain $\gD$, there exists a bijection $b_\gD: \gX \mapsto \gZ \times \gW$, where $\gZ$ is the domain-invariant space of features used for classification and $\gW$ are domain-specific auxiliary features carrying no relevant signal for the considered learning task. Thus, for $(\rz, \rw) \triangleq b_\gD(\rvx)$, we assume that $p_\gD(\ry \mid \rx) = p(\ry \mid \rz)$, i.e.\ the optimal classifier for any domain $\gD$ can be reconstructed from features in $\gZ$ and a domain-invariant classifier $p(\ry \mid \rz)$.  This is closely related with the covariate shift assumption for domain adaptation, described in \secref{sec:cov_shift_sota}.
+
+A computer vision application where this problem is particularly relevant is sign language recognition (SLR). Large inter-signer variability in the manual signing process of sign languages is one of the challenges associated with this task. Due to this issue, models trained on data from a given set of signers often fail to generalize well when tested on previously unseen signers. Since, ideally, an SLR system should be able to recognize the gestures of any signer, this problem should be tackled with domain generalization techniques. For this reason, SLR will be the main application considered in this chapter. Nonetheless, we will also show that the same principles can be applied successfully to develop a fingerprint presentation attack detection method that exhibits robust performance on detecting unseen attacks.
+
+The remainder of this chapter is organized as follows: 
+
 
