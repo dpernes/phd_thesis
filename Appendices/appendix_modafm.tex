@@ -13,7 +13,7 @@ The presented bound is an immediate consequence of two theorems of \cite{BenDavi
 \begin{lemma}
 	\label{lemma:bound_mixture}
 	(Lemma 4 from \citet{Blitzer2008}) Let $\gH$ be a hypothesis class with VC-dimension $d$. For each $j \in \{1,2,...,k\}$, consider a labeled set of $n/k$ samples drawn from the source domain $\gS_j$. For any $h \in \gH$ and any $\valpha \in \Delta$, with probability at least $1-\delta$ over the choice of samples,
-	
+
 	\begin{equation}
 	|\widehat{\epsilon}_\valpha(h) - \epsilon_\valpha(h)| \leq 2\sqrt{\frac{k}{n} \left(2d\log(2(n+1)) + \log \frac{4}{\delta}\right) \sum_{j=1}^k \evalpha_j^2}.
 	\end{equation}
@@ -22,10 +22,10 @@ The presented bound is an immediate consequence of two theorems of \cite{BenDavi
 \begin{lemma}
 	\label{lemma:bound_single_source}
 	(Theorem 2 from \citet{BenDavid2010}) Let $\gH$ be a hypothesis class with VC-dimension $d$. Consider $n$ unlabeled samples drawn from each of the two domains $\gS$ (source) and $\gT$ (target). Then, for every $h \in \gH$, with probability at least $1-\delta$ over the choice of samples,
-	
+
 	\begin{equation}
 	\epsilon_\gT(h) \leq \epsilon_\gS(h) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS, \gT) + 2\sqrt{\frac{1}{n} \left( 2d\log(2n) + \log \frac{2}{\delta} \right)} + \lambda,
-	\end{equation}    
+	\end{equation}
 	where $\lambda = \min_{h \in \gH} \epsilon_\gS(h) + \epsilon_\gT(h)$.
 \end{lemma}
 
@@ -34,7 +34,7 @@ Proving our result is now straightforward. We can apply Lemma \ref{lemma:bound_s
 \section{Model overview}
 \label{sec:model_overview}
 
-\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt      
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt
 \begin{figure}[h!]
 	\centering
 	\hspace*{-0.30in}
@@ -61,24 +61,24 @@ In the digits datasets~(\Figref{fig:digits_dist}, \Tableref{tab:digits_js}), MNI
 		\caption{MNIST}
 	\end{subfigure}
 	\hfill
-	\begin{subfigure}[b]{0.24\textwidth}  
-		\centering 
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
 		\includegraphics[width=\textwidth]{ChapterThree/mnist_m_dist}
 		\caption{MNIST-M}
 	\end{subfigure}
 	\hfill
-	\begin{subfigure}[b]{0.24\textwidth}   
-		\centering 
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
 		\includegraphics[width=\textwidth]{ChapterThree/svhn_dist}
 		\caption{SVHN}
 	\end{subfigure}
 	\hfill
-	\begin{subfigure}[b]{0.24\textwidth}   
-		\centering 
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
 		\includegraphics[width=\textwidth]{ChapterThree/synthdigits_dist}
 		\caption{SynthDigits}
 	\end{subfigure}
-	\caption{Label distributions in the digits datasets.} 
+	\caption{Label distributions in the digits datasets.}
 	\label{fig:digits_dist}
 \end{figure}
 
@@ -105,18 +105,18 @@ In the digits datasets~(\Figref{fig:digits_dist}, \Tableref{tab:digits_js}), MNI
 		\caption{Amazon}
 	\end{subfigure}
 	\;%\hspace{-0.5cm}
-	\begin{subfigure}[b]{0.35\textwidth}  
-		\centering 
+	\begin{subfigure}[b]{0.35\textwidth}
+		\centering
 		\includegraphics[width=\textwidth]{ChapterThree/dslr_dist}
 		\caption{DSLR}
 	\end{subfigure}
 	\vskip\baselineskip
-	\begin{subfigure}[b]{0.35\textwidth}   
-		\centering 
+	\begin{subfigure}[b]{0.35\textwidth}
+		\centering
 		\includegraphics[width=\textwidth]{ChapterThree/webcam_dist}
 		\caption{Webcam}
 	\end{subfigure}
-	\caption{Label distributions in Office-31.} 
+	\caption{Label distributions in Office-31.}
 	\label{fig:office_dist}
 \end{figure}
 
@@ -142,24 +142,24 @@ In the digits datasets~(\Figref{fig:digits_dist}, \Tableref{tab:digits_js}), MNI
 		\caption{Books}
 	\end{subfigure}
 	\hfill
-	\begin{subfigure}[b]{0.24\textwidth}  
-		\centering 
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
 		\includegraphics[width=\textwidth]{ChapterThree/dvd_dist}
 		\caption{DVD}
 	\end{subfigure}
 	\hfill
-	\begin{subfigure}[b]{0.24\textwidth}   
-		\centering 
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
 		\includegraphics[width=\textwidth]{ChapterThree/electronics_dist}
 		\caption{Electronics}
 	\end{subfigure}
 	\hfill
-	\begin{subfigure}[b]{0.24\textwidth}   
-		\centering 
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
 		\includegraphics[width=\textwidth]{ChapterThree/kitchen_dist}
 		\caption{Kitchen}
 	\end{subfigure}
-	\caption{Label distributions in Amazon Reviews.} 
+	\caption{Label distributions in Amazon Reviews.}
 	\label{fig:amazon_dist}
 \end{figure}
 
@@ -213,16 +213,16 @@ In this experiment, we want to evaluate if the increased robustness of the featu
 		xlabel=\huge epoch, xmin=0, xmax=60, xtick={0,10,20,30,40,50,60},
 		ylabel=\huge accuracy, ymin=0.55, ymax=0.75, ytick={0.55,0.6,0.65,0.7,0.75},
 		grid=both, grid style={line width=.1pt, draw=gray!10},
-		]   
+		]
 		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MDAN, col sep=comma]{Figures/ChapterThree/amazon_long.txt};
 		\addlegendentry{MDAN ($\pgfmathprintnumber{\slopeMDAN}$)}
-		
+
 		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MixMDAN, col sep=comma]{Figures/ChapterThree/amazon_long.txt};
 		\addlegendentry{MODA ($\pgfmathprintnumber{\slopeMODA}$)}
-		
+
 		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=Ours, col sep=comma]{Figures/ChapterThree/amazon_long.txt};
 		\addlegendentry{MODA-FM ($\pgfmathprintnumber{\slopeMODAFM}$)}
-		
+
 		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=1}},skip first n=2]{Figures/ChapterThree/amazon_long.txt};
 		\xdef\slopeMDAN{\pgfplotstableregressiona}
 		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=2}},skip first n=2]{Figures/ChapterThree/amazon_long.txt};
@@ -244,16 +244,16 @@ In this experiment, we want to evaluate if the increased robustness of the featu
 		xlabel=\huge epoch, xmin=0, xmax=60, xtick={0,10,20,30,40,50,60},
 		ylabel=\huge accuracy, ymin=0.8, ymax=1, ytick={0.8,0.85,0.9,0.95,1},
 		grid=both, grid style={line width=.1pt, draw=gray!10},
-		]   
+		]
 		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MDAN, col sep=comma]{Figures/ChapterThree/dslr_long.txt};
 		\addlegendentry{MDAN ($\pgfmathprintnumber{\slopeMDAN}$)}
-		
+
 		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MixMDAN, col sep=comma]{Figures/ChapterThree/dslr_long.txt};
 		\addlegendentry{MODA ($\pgfmathprintnumber{\slopeMODA}$)}
-		
+
 		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=Ours, col sep=comma]{Figures/ChapterThree/dslr_long.txt};
 		\addlegendentry{MODA-FM ($\pgfmathprintnumber{\slopeMODAFM}$)}
-		
+
 		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=1}},skip first n=2]{Figures/ChapterThree/dslr_long.txt};
 		\xdef\slopeMDAN{\pgfplotstableregressiona}
 		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=2}},skip first n=2]{Figures/ChapterThree/dslr_long.txt};
@@ -275,16 +275,16 @@ In this experiment, we want to evaluate if the increased robustness of the featu
 		xlabel=\huge epoch, xmin=0, xmax=60, xtick={0,10,20,30,40,50,60},
 		ylabel=\huge accuracy, ymin=0.8, ymax=1, ytick={0.8,0.85,0.9,0.95,1},
 		grid=both, grid style={line width=.1pt, draw=gray!10},
-		]   
+		]
 		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MDAN, col sep=comma]{Figures/ChapterThree/webcam_long.txt};
 		\addlegendentry{MDAN ($\pgfmathprintnumber{\slopeMDAN}$)}
-		
+
 		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MixMDAN, col sep=comma]{Figures/ChapterThree/webcam_long.txt};
 		\addlegendentry{MODA ($\pgfmathprintnumber{\slopeMODA}$)}
-		
+
 		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=Ours, col sep=comma]{Figures/ChapterThree/webcam_long.txt};
 		\addlegendentry{MODA-FM ($\pgfmathprintnumber{\slopeMODAFM}$)}
-		
+
 		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=1}},skip first n=2]{Figures/ChapterThree/webcam_long.txt};
 		\xdef\slopeMDAN{\pgfplotstableregressiona}
 		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=2}},skip first n=2]{Figures/ChapterThree/webcam_long.txt};
@@ -303,7 +303,7 @@ In this experiment, we want to evaluate if the increased robustness of the featu
 \label{sec:hyperparam}
 Our model comprises three main hyperparameters: $\mu_d$, $\mu_s$ and $\mu_c$. The hyperparameter $\mu_d$ controls the relative weight of the domain discriminator loss and is present in every work on adversarial DA, thus its effect has already been studied extensively. For this reason, we focus on the effect of $\mu_s$ and $\mu_c$. We use the digits datasets and evaluate the accuracy on each target domain while varying either $\mu_s$ or $\mu_c$ and keeping the other one constant at the optimal value.
 
-A sufficiently large value of $\mu_s$ forces $\valpha$ to converge to a vector with all components equal to $1/M$, weighting all source domains equally. Setting $\mu_s$ close to zero corresponds to the most optimistic scenario: the sparsity penalization is dropped and so, after sufficiently many training iterations, $\valpha$ would converge to a one-hot vector, choosing the source domain with the minimum difference of classification and discrimination losses ($\gL_{class} - \mu_d\gL_{disc}$). \Figref{fig:hyperparam_mu_s} shows that, for MNIST, similar results are obtained with any of those strategies. The fact that digits classification in MNIST is significantly easier than in any of the remaining datasets likely explains this behavior. Domain adaptation for MNIST-M is slightly favored by smaller values of $\mu_s$, meaning that a more optimistic approach works better here. For SVHN, the opposite holds and the results are very poor when low sparsity regularization is employed. There is even a strong discontinuity in the accuracy plot for this domain around $\mu_s \approx 0.2$. This discontinuity divides situations where $\valpha$ collapses into the easiest source domain ($\mu_s < 0.2$) and those where it does not collapse ($\mu_s > 0.2$). We elaborate more on this in \ref{sec:alpha_evol}. In all cases, we observe that a $\mu_s \in [0.2, 0.6]$ provides near-optimal results.
+A sufficiently large value of $\mu_s$ forces $\valpha$ to converge to a vector with all components equal to $1/k$, weighting all source domains equally. Setting $\mu_s$ close to zero corresponds to the most optimistic scenario: the sparsity penalization is dropped and so, after sufficiently many training iterations, $\valpha$ would converge to a one-hot vector, choosing the source domain with the minimum difference of classification and discrimination losses ($\gL_{class} - \mu_d\gL_{disc}$). \Figref{fig:hyperparam_mu_s} shows that, for MNIST, similar results are obtained with any of those strategies. The fact that digits classification in MNIST is significantly easier than in any of the remaining datasets likely explains this behavior. Domain adaptation for MNIST-M is slightly favored by smaller values of $\mu_s$, meaning that a more optimistic approach works better here. For SVHN, the opposite holds and the results are very poor when low sparsity regularization is employed. There is even a strong discontinuity in the accuracy plot for this domain around $\mu_s \approx 0.2$. This discontinuity divides situations where $\valpha$ collapses into the easiest source domain ($\mu_s < 0.2$) and those where it does not collapse ($\mu_s > 0.2$). We elaborate more on this in \ref{sec:alpha_evol}. In all cases, we observe that a $\mu_s \in [0.2, 0.6]$ provides near-optimal results.
 
 The effect of varying $\mu_c$ is plotted in \Figref{fig:hyperparam_mu_c}. Values of $\mu_c$ close to zero drop the consistency regularization and, therefore, we obtain results close to those of MODA. Significant performance gains are obtained for $\mu_c > 0.01$ and the optimal is reached for $\mu_c \in [0.4, 1.0]$ for all domains.
 
@@ -326,13 +326,13 @@ The effect of varying $\mu_c$ is plotted in \Figref{fig:hyperparam_mu_c}. Values
 		},
 		legend style={at={(0.65,0.1)},anchor=south west,font=\normalsize},
 		grid=both, grid style={line width=.1pt, draw=gray!10}]
-		
+
 		\addplot[color=myblue,only marks,sharp plot,mark=*]table[x index={0}, y index={1}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_s.txt};
 		\addlegendentry{MNIST}
-		
+
 		\addplot[color=myorange,only marks,sharp plot,mark=*]table[x index={0}, y index={2}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_s.txt};
 		\addlegendentry{MNIST-M}
-		
+
 		\addplot[color=mygreen,only marks,sharp plot,mark=*]table[x index={0}, y index={3}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_s.txt};
 		\addlegendentry{SVHN}
 		\end{semilogxaxis}
@@ -357,13 +357,13 @@ The effect of varying $\mu_c$ is plotted in \Figref{fig:hyperparam_mu_c}. Values
 		},
 		legend style={at={(0.65,0.1)},anchor=south west,font=\normalsize},
 		grid=both, grid style={line width=.1pt, draw=gray!10}]
-		
+
 		\addplot[color=myblue,only marks,sharp plot,mark=*]table[x index={0}, y index={1}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_c.txt};
 		\addlegendentry{MNIST}
-		
+
 		\addplot[color=myorange,only marks,sharp plot,mark=*]table[x index={0}, y index={2}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_c.txt};
 		\addlegendentry{MNIST-M}
-		
+
 		\addplot[color=mygreen,only marks,sharp plot,mark=*]table[x index={0}, y index={3}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_c.txt};
 		\addlegendentry{SVHN}
 		\end{semilogxaxis}
@@ -379,7 +379,7 @@ The effect of varying $\mu_c$ is plotted in \Figref{fig:hyperparam_mu_c}. Values
 \label{sec:alpha_evol}
 Here, we study the evolution of the source weights $\valpha$ over training. The behavior is determined by the evolution of the classification and discrimination losses of each source domain and also by the choice of the hyperparameter $\mu_s$. The effect of varying $\mu_s$ on the model performance was analyzed in \ref{sec:hyperparam}. Now, we are interested in observing the dynamics of $\valpha$ over the training epochs, for different source domains, using the corresponding optimal $\mu_s$. We use the digits datasets for this purpose and we present the results in \Figref{fig:alpha_train}.
 
-For MNIST, where the lowest $\mu_s$ is used, we observe that the mixture coefficients rapidly collapse into the easiest source domain (SynthDigits). Nonetheless, in \ref{sec:hyperparam} we have observed that the target accuracy for MNIST was almost insensitive to the choice of $\mu_s$, meaning that using only the data from the easiest source domain or weighting all source domains equally would produce identical results. When we take MNIST-M and SVHN as target domains, with a slightly increased $\mu_s$, a different behavior occurs. Early in the training process, the weight for the easiest source domain (MNIST) increases rapidly, following the fast decrease in the corresponding loss. Later, as the loss for the easiest source domain plateaus and the remaining keep decreasing, the  weights for the remaining active source domains start to increase. This behavior explains the discontinuity we have observed in the plot of target accuracy vs. $\mu_s$ for SVHN (\Figref{fig:hyperparam_mu_s}): if $\mu_s$ is sufficiently small to allow $\valpha$ to rapidly collapse into MNIST, the data of the remaining source domains is simply discarded for the remaining of the training process and the corresponding weights will never increase.
+For MNIST, where the lowest $\mu_s$ is used, we observe that the mixture coefficients rapidly collapse into the easiest source domain (SynthDigits). Nonetheless, in \ref{sec:hyperparam} we have observed that the target accuracy for MNIST was almost insensitive to the choice of $\mu_s$, meaning that using only the data from the easiest source domain or weighting all source domains equally would produce identical results. When we take MNIST-M and SVHN as target domains, with a slightly increased $\mu_s$, a different behavior occurs. Early in the training process, the weight for the easiest source domain (MNIST) increases rapidly, following the fast decrease in the corresponding loss. Later, as the loss for the easiest source domain plateaus and the remaining keep decreasing, the  weights for the remaining active source domains start to increase. This behavior explains the discontinuity we have observed in the plot of target accuracy vs.\ $\mu_s$ for SVHN (\Figref{fig:hyperparam_mu_s}): if $\mu_s$ is sufficiently small to allow $\valpha$ to rapidly collapse into MNIST, the data of the remaining source domains is simply discarded for the remaining of the training process and the corresponding weights will never increase.
 
 \begin{figure}
 	\centering
@@ -390,16 +390,16 @@ For MNIST, where the lowest $\mu_s$ is used, we observe that the mixture coeffic
 		enlargelimits=false,
 		legend style={at={(0.65,0.1)},anchor=south west,font=\large},
 		xlabel=\huge epoch, xmin=0, xmax=60, xtick={0,10,20,30,40,50,60},
-		ylabel=\huge $\valpha$, ymin=0., ymax=1., 
+		ylabel=\huge $\valpha$, ymin=0., ymax=1.,
 		grid=both, grid style={line width=.1pt, draw=gray!10},
 		title=\text{\huge $\mu_s=0.1$}
-		]   
+		]
 		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MNIST_M, col sep=comma]{Figures/ChapterThree/mnist_coef.txt};
 		\addlegendentry{MNIST-M}
-		
+
 		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=SVHN, col sep=comma]{Figures/ChapterThree/mnist_coef.txt};
 		\addlegendentry{SVHN}
-		
+
 		\addplot[color=myred,smooth,thick]table[x=Epoch, y=SynthDigits, col sep=comma]{Figures/ChapterThree/mnist_coef.txt};
 		\addlegendentry{SynthDigits}
 		\end{axis}
@@ -417,13 +417,13 @@ For MNIST, where the lowest $\mu_s$ is used, we observe that the mixture coeffic
 		ylabel=\huge $\valpha$, ymin=0., ymax=1.,
 		grid=both, grid style={line width=.1pt, draw=gray!10},
 		title=\text{\huge$\mu_s=0.2$}
-		]   
+		]
 		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MNIST, col sep=comma]{Figures/ChapterThree/mnist_m_coef.txt};
 		\addlegendentry{MNIST}
-		
+
 		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=SVHN, col sep=comma]{Figures/ChapterThree/mnist_m_coef.txt};
 		\addlegendentry{SVHN}
-		
+
 		\addplot[color=myred,smooth,thick]table[x=Epoch, y=SynthDigits, col sep=comma]{Figures/ChapterThree/mnist_m_coef.txt};
 		\addlegendentry{SynthDigits}
 		\end{axis}
@@ -441,13 +441,13 @@ For MNIST, where the lowest $\mu_s$ is used, we observe that the mixture coeffic
 		ylabel=\huge $\valpha$, ymin=0., ymax=1,
 		grid=both, grid style={line width=.1pt, draw=gray!10},
 		title=\text{\huge$\mu_s=0.9$}
-		]   
+		]
 		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MNIST, col sep=comma]{Figures/ChapterThree/svhn_coef.txt};
 		\addlegendentry{MNIST}
-		
+
 		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MNIST_M, col sep=comma]{Figures/ChapterThree/svhn_coef.txt};
 		\addlegendentry{MNIST-M}
-		
+
 		\addplot[color=myred,smooth,thick]table[x=Epoch, y=SynthDigits, col sep=comma]{Figures/ChapterThree/svhn_coef.txt};
 		\addlegendentry{SynthDigits}
 		\end{axis}
@@ -492,7 +492,7 @@ The following notation is used to designate network layers: \texttt{Conv(n, k)} 
 		RandAugment: $m_{\text{min}}$       & $3$                   & $3$                   & n.a. &  $3$                 \\ \hdashline[0.5pt/5pt]
 		RandAugment: $m_{\text{max}}$       & $10$                  & $10$                  & n.a.  &  $10$                \\ \hdashline[0.5pt/5pt]
 		dropout: $p_{\text{min}}$           & n.a.                  & n.a.                  & $0.2$  & n.a.                 \\ \hdashline[0.5pt/5pt]
-		dropout: $p_{\text{max}}$           & n.a.                  & n.a.                  & $0.8$  & n.a.                
+		dropout: $p_{\text{max}}$           & n.a.                  & n.a.                  & $0.8$  & n.a.
 	\end{tabular}
 	\caption{Values and search ranges for all hyperparameters in all experiments.}
 	\label{tab:hyperparameters}
@@ -516,7 +516,7 @@ The list of image transformations used in RandAugment is provided in~\Tableref{t
 			Equalize                            & $\{0, 1\}$    & \multicolumn{1}{r|}{Solarize}       & $[0, 255]$                \\ \hdashline[0.5pt/5pt]
 			FlipX\footnote{Excluded in the digits experiment since it is not label-preserving.}                  & $\{0, 1\}$    & \multicolumn{1}{r|}{TranslateX}     & $[-0.45, 0.45]$           \\ \hdashline[0.5pt/5pt]
 			Invert                              & $\{0, 1\}$    & \multicolumn{1}{r|}{TranslateY}     & $[-0.45, 0.45]$           \\ \hdashline[0.5pt/5pt]
-			Posterize                           & $[4, 8]$ &                                     &              
+			Posterize                           & $[4, 8]$ &                                     &
 		\end{tabular}
 		\caption{RandAugment image transformations and respective ranges.}
 		\label{tab:randaugment}
