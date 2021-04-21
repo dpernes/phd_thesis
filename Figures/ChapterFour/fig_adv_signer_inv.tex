@@ -3,7 +3,7 @@
 \centering
 \tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt
 
-\scalebox{0.7}{
+\scalebox{0.6}{
 
 
 
@@ -159,21 +159,21 @@
 % Text Node
 \draw (145.74,72.5) node  [align=left] {{\small \textit{Encoder network:}}};
 % Text Node
-\draw (215.7,74.44) node   {$h(\mathbf{X}\mathrm{;}\mathnormal{\theta _{h}})$};
+\draw (215.7,74.44) node   {$h(\boldsymbol{X}\mathrm{;}\mathnormal{\theta _{h}})$};
 % Text Node
 \draw (387.48,20.66) node  [align=left] {{\small \textit{Sign-classifier:}}};
 % Text Node
-\draw (448.89,20.95) node   {$f(\boldsymbol{h}\mathrm{;}\mathnormal{\theta _{f}})$};
+\draw (448.89,20.95) node   {$f(\boldsymbol{z}\mathrm{;}\mathnormal{\theta _{f}})$};
 % Text Node
 \draw (393.24,162.34) node  [align=left] {{\small \textit{Signer-classifier:}}};
 % Text Node
-\draw (456.63,161.64) node   {$g(\boldsymbol{h}\mathrm{;}\mathnormal{\theta _{g}})$};
+\draw (456.63,161.64) node   {$g(\boldsymbol{z}\mathrm{;}\mathnormal{\theta _{g}})$};
 % Text Node
 \draw (589.25,204.03) node   {${\textstyle \mathcal{\textcolor[rgb]{0.82,0.01,0.11}{L}}\textcolor[rgb]{0.82,0.01,0.11}{_{\mathrm{signer}}}}$};
 % Text Node
-\draw (489.39,48.2) node   {$p( y_{i} |\boldsymbol{h}_{i} ;\mathnormal{\theta _{f}})$};
+\draw (489.39,48.2) node   {$p( y_{i} |\boldsymbol{z}_{i} ;\mathnormal{\theta _{f}})$};
 % Text Node
-\draw (247.56,124.01) node   {$\boldsymbol{h}_{i}$};
+\draw (247.56,124.01) node   {$\boldsymbol{z}_{i}$};
 % Text Node
 \draw (179.66,212.92) node   {${\textstyle \mathcal{\textcolor[rgb]{0.82,0.01,0.11}{L}}\textcolor[rgb]{0.82,0.01,0.11}{_{\mathrm{transfer}}}}$};
 % Text Node
@@ -191,7 +191,7 @@
 % Text Node
 \draw (588.85,295.43) node   {${\textstyle \mathcal{\textcolor[rgb]{0.82,0.01,0.11}{L}}\textcolor[rgb]{0.82,0.01,0.11}{_{\mathrm{adv}}}}$};
 % Text Node
-\draw (591.85,345.22) node   {$\mathcal{U}_{\mathbb{S}}(\mathrm{s})$};
+\draw (591.85,345.22) node   {$\mathcal{U}(\mathrm{s})$};
 % Text Node
 \draw (755,289) node  [align=left] {{\scriptsize Block of convolutional layers}};
 % Text Node
@@ -199,7 +199,7 @@
 % Text Node
 \draw (53.96,327) node [scale=0.9]  {$\mathnormal{s_{j} \neq s_{i}}$};
 % Text Node
-\draw (489.89,190.7) node   {$p( s_{i} |\boldsymbol{h}_{i} ;\mathnormal{\theta _{g}})$};
+\draw (489.89,190.7) node   {$p( s_{i} |\boldsymbol{z}_{i} ;\mathnormal{\theta _{g}})$};
 
 
 \end{tikzpicture}

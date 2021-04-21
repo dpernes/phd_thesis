@@ -100,7 +100,7 @@ The former signer adaptation approaches were greatly inspired by speaker adaptat
 
 The aforementioned methods are all supervised adaptation approaches, in the sense that the adaptation data from the new signer must be labeled. However, in practice, collecting labeled data may be a cumbersome and time-consuming task. To overcome this issue, a few works have resorted to unsupervised adaptation strategies. \citet{Yin2015} proposed a two-step weakly supervised metric learning framework to perform signer adaptation with some unlabeled sign data of the new signer. In the first step, a generic metric is learnt from the available labeled data of several different signers. In the second step, the generic metric is adapted to the new signer by considering clustering and manifold constraints along with the collected unlabeled data.
 
-Although signer adaptation is a reasonable approach, there is still the need to collect either labeled or unlabeled data to retrain and adapt the model for a new signer. Therefore, a truly signer-independent approach, which does not require any data from the new signers, would be the ideal solution for a practical SLR system. Examples of such works can be found are those by \citet{Zieren2005, Shanableh2011, Agris2008b, Kong2014, Kelly2010, Dahmani2014, Yin2016}. Most of them involved a huge feature engineering effort in order to build normalized feature descriptors robust to the physical variations of the signers (e.g.\ height, hand size and length of the arm) and different acquisition conditions (e.g.\ distance to the camera). Afterwards, most of these works use HMMs or their variants for sign recognition. It is the example of the work proposed by \citet{Agris2008b}, in which a set of 11 regional features are extracted (e.g. 2-D coordinates, hand blobs area, orientation of the main axis, inertia ratio, eccentricity and compactness) and, then, normalized according to the head position and shoulders distance of the signer. \citet{Kelly2010} introduced a novel signer-independent hand posture feature descriptor, along with an eigenspace size function which represents both qualitative and quantitative properties of a visual shape. \citet{Kong2014} gave particular importance to the movement of epenthesis (ME), which appears as the transition movement that connects successive signs. Concretely speaking, they removed the ME by using a segment and merge approach to decrease the inter-signer variations in ME and used a two-layer Conditional Random Field classifier for sign recognition. More recently, \citet{Yin2016} proposed an interesting and alternative approach that relies on distance metric learning. In particular, the metric is learnt by constraining the distances between the training samples and generic references of the sign classes. The references are constructed by signer invariant representations of each sign class (i.e.\ the average of all samples within the specific class). Afterwards, a two-step iterative optimization strategy is employed to obtain more appropriate references and update the corresponding distance metric alternately.
+Although signer adaptation is a reasonable approach, there is still the need to collect either labeled or unlabeled data to retrain and adapt the model for a new signer. Therefore, a truly signer-independent approach, which does not require any data from the new signers, would be the ideal solution for a practical SLR system. Examples of such works can be found are those by \citet{Zieren2005, Shanableh2011, Agris2008b, Kong2014, Kelly2010, Dahmani2014, Yin2016}. Most of them involved a huge feature engineering effort in order to build normalized feature descriptors robust to the physical variations of the signers (e.g.\ height, hand size and length of the arm) and different acquisition conditions (e.g.\ distance to the camera). Afterwards, most of these works use HMMs or their variants for sign recognition. It is the example of the work proposed by \citet{Agris2008b}, in which a set of 11 regional features are extracted (e.g.\ 2-D coordinates, hand blobs area, orientation of the main axis, inertia ratio, eccentricity and compactness) and, then, normalized according to the head position and shoulders distance of the signer. \citet{Kelly2010} introduced a novel signer-independent hand posture feature descriptor, along with an eigenspace size function which represents both qualitative and quantitative properties of a visual shape. \citet{Kong2014} gave particular importance to the movement of epenthesis (ME), which appears as the transition movement that connects successive signs. Concretely speaking, they removed the ME by using a segment and merge approach to decrease the inter-signer variations in ME and used a two-layer Conditional Random Field classifier for sign recognition. More recently, \citet{Yin2016} proposed an interesting and alternative approach that relies on distance metric learning. In particular, the metric is learnt by constraining the distances between the training samples and generic references of the sign classes. The references are constructed by signer invariant representations of each sign class (i.e.\ the average of all samples within the specific class). Afterwards, a two-step iterative optimization strategy is employed to obtain more appropriate references and update the corresponding distance metric alternately.
 
 Although the aforementioned methods have promoted a significant evolution in the signer-independent research, there are still many opportunities for improvement. A major weakness across all the methods is related to the fact that representation and metric learning is not jointly performed. It is well known that the recent success of deep learning approaches, particularly those using CNNs, in tasks like object detection and recognition, has been extended to the SLR problem. The underlying motivation is to automatically learn multiple levels of representations directly from the data (\citet{Pigou2015, Koller2016, Wu2016, Neverova2016, Kumar2017}). However, none of these works explicitly constrains the learned representations to be signer invariant.
 
@@ -109,7 +109,7 @@ Although the aforementioned methods have promoted a significant evolution in the
 
 The ultimate goal of our model is to learn signer-invariant latent representations that preserve the relevant part of the information about the signs while discarding the signer-specific traits that may hamper the sign classification task. To accomplish this purpose, we introduce a deep neural network along with an adversarial training scheme that is able to learn feature representations that combine both sign discriminativeness and signer-invariance.
 
-More specifically, let $\sX=\{\mX_{i},y_{i},s_{i}\}_{i=1}^{N}$ denote a labeled dataset of $N$ samples, where $\mX_{i}$ represents the $i$-th colour image, and $y_{i}$ and $s_{i}$ denote the corresponding class (sign) label and signer identity, respectively. To induce the model to learn signer-invariant representations, the proposed model comprises three distinct sub-networks:
+More specifically, let $\{\mX_{i},y_{i},s_{i}\}_{i=1}^{n}$ be a labeled dataset of $n$ samples, where $\mX_{i}$ represents the $i$-th colour image, and $y_{i}$ and $s_{i}$ denote the corresponding class (sign) label and signer identity, respectively. To induce the model to learn signer-invariant representations, the proposed model comprises three distinct sub-networks:
 \begin{itemize}
     \item an encoder network, which aims at learning an encoding function $h(\rmX;\theta_h)$, parameterized by $\theta_h$, that maps from an input image $\rmX$ to a latent representation $\vh$;
     \item a sign-classifier network, which operates on top of this underlying latent representation $\vh$ to learn our task-specific function $f(\vh; \theta_f)$, parameterized by $\theta_f$, that maps from $\vh$ to the predicted probabilities $p(\ry|\vh; \theta_f)$ of each sign class.
@@ -121,71 +121,188 @@ During the learning stage, the parameters of both classifiers are optimized in o
 \subsubsection{Architecture}
 As illustrated in \Figref{fig:model_archi}, the architecture of the proposed model is composed by three main sub-networks or blocks, i.e. an encoder, a sign-classifier, and a signer-classifier.
 
-The encoder network attempts to learn a mapping from an input image $\rmX$ to a latent representation $\vh$. It simply consists of a sequence of $L_{e}$ pairs of consecutive $3\times 3$ convolutional layers with Rectified  Linear  Units (ReLUs) as non-linearities. For downsampling, the last convolutional layer of each pair has a stride of 2. On top of that, there is a fully-connected layer, also with a ReLU, representing the desired signer-invariant latent representations $\vh$.
+The encoder network attempts to learn a mapping from an input image $\mX$ to a latent representation $\vz$. It consists of a sequence of $L_{e}$ pairs of consecutive $3\times 3$ convolutional layers with Rectified  Linear  Units (ReLUs) as non-linearities. For downsampling, the last convolutional layer of each pair has a stride of 2. On top of that, there is a fully-connected layer, also with a ReLU, representing the desired signer-invariant latent representations $\vz$.
 
-Taking the latent representations $\vh$ as input, the sign-classifier block is composed by a sequence of $L_{s}$ fully-connected layers, with ReLUs as the non-linear functions, for predicting the sign class $\hat{y}=\argmax f(\vh; \theta_f)$. Therefore, the last fully-connected layer has a softmax activation function which outputs the probabilities for each sign class.
+Taking the latent representations $\vz$ as input, the sign-classifier block is composed by a sequence of $L_{s}$ fully-connected layers, with ReLUs as the non-linear functions, for predicting the sign class $\hat{y} \triangleq \argmax f(\vz; \theta_f)$. Therefore, the last fully-connected layer has a softmax activation function which outputs the probabilities for each sign class.
 
-The signer-classifier network has exactly the same topology as the sign-classifier. However, it maps the latent representations $\vh$ to the predicted signer identity $\hat{s}=\argmax g(\vh; \theta_g)$. Therefore, the number of nodes of the output layer is defined accordingly to the number of signers in the training set.
+The signer-classifier network has exactly the same topology as the sign-classifier. However, it maps the latent representations $\vh$ to the predicted signer identity $\hat{s} \triangleq \argmax g(\vz; \theta_g)$. Therefore, the number of nodes of the output layer is defined accordingly to the number of signers in the training set.
 
 \input{Figures/ChapterFour/fig_adv_signer_inv.tex}
 
 \subsubsection{Adversarial training}
-\hspace{\parindent}By definition, signer-invariant representations discard all signer-specific information and, as such, no function (i.e.\ classifier) exists that maps such representations into the correct signer identity. This naturally leads to an adversarial problem, in which: (i) a signer-classifier network $g(\bcdot; \theta_g)$ receives latent representations $\vh=h(\rmX;\theta_h)$ from an encoder network $h(\bcdot;\theta_h)$ and tries to predict the signer identity $s$ corresponding to image $\rmX$ and (ii) the encoder network tries to fool the signer-classifier network while still providing good representations for the sign-classifier network $f(\bcdot; \theta_f)$, which in turn receives the same representations $\vh$ and aims to predict the sign label $y$ corresponding to image $\rmX$.
+By definition, signer-invariant representations discard all signer-specific information and, as such, no function (i.e.\ classifier) exists that maps such representations into the correct signer identity. This naturally leads to an adversarial problem, in which: (i) a signer-classifier network $g(\bcdot; \theta_g)$ receives latent representations $\vz \triangleq h(\rmX;\theta_h)$ from an encoder network $h(\bcdot;\theta_h)$ and tries to predict the signer identity $s$ corresponding to image $\mX$ and (ii) the encoder network tries to fool the signer-classifier network while still providing good representations for the sign-classifier network $f(\bcdot; \theta_f)$, which in turn receives the same representations $\vz$ and aims to predict the sign label $y$ corresponding to image $\mX$.
 
 Therefore, the signer-classifier network shall be trained to minimize the negative log-likelihood of correct signer predictions:
 \begin{equation}
 \label{eq:signer_loss}
-\min_{\theta_g}~\gL_{\text{signer}}(\theta_h, \theta_g) = -\frac{1}{N}\sum_{i=1}^N \log p(s_i | h(\mX_{i}; \theta_h); \theta_g)
+\min_{\theta_g} \; \left\lbrace \gL_{\text{signer}}(\theta_h, \theta_g) \triangleq -\frac{1}{n}\sum_{i=1}^n \log p(s_i \mid h(\mX_{i}; \theta_h); \theta_g) \right\rbrace
 \end{equation}
 
-In the perspective of the encoder, the predictions of the sign-classifier should be as accurate as possible and the predictions of the signer-classifier should be kept close to uniform, meaning that this latter classifier is not capable of doing better than random guessing the signer identity. Formally, this may be translated into the following constrained objective:
+In the perspective of the encoder, the predictions of the sign-classifier should be as accurate as possible and the predictions of the signer-classifier should be kept close to uniform, meaning that this latter model is not capable of doing better than random guessing the signer identity. Formally, this may be translated into the following constrained objective:
 \begin{align}
 \label{eq:sign_loss}
-&\min_{\theta_h, \theta_f}~\gL_{\text{sign}}(\theta_h, \theta_f)=-\frac{1}{N}\sum_{i=1}^N \log p(y_i | h(\mX_{i}; \theta_h); \theta_f),\\
+&\min_{\theta_h, \theta_f} \; \left\lbrace \gL_{\text{sign}}(\theta_h, \theta_f)\triangleq-\frac{1}{n}\sum_{i=1}^n \log p(y_i \mid h(\mX_{i}; \theta_h); \theta_f)\right\rbrace,\\
 \label{eq:kl_obj}
-&\text{subject to }~\frac{1}{N}\sum_{i=1}^N \KL(\gU_{\sS}(\rs) || p(\rs | h(\mX_{i}; \theta_h); \theta_g) \leq \epsilon,
+&\text{subject to } \; \frac{1}{n}\sum_{i=1}^n \KL(\gU(\rs) || p(\rs \mid h(\mX_{i}; \theta_h); \theta_g) \leq \epsilon,
 \end{align}
-where $\KL$ is the Kullback-Leibler (KL) divergence and $\gU_{\sS}(\rs)$ denotes the discrete uniform distribution on the random variable $\rs$, defined over the set of identities $\sS$ in the training set. Here, $\epsilon \geq 0$ determines how far from uniform the signer-classifier predictions are allowed to be (as measured by the KL divergence). The choice of the uniform distribution implies the underlying assumption that the training set is balanced relatively to the number of examples per signer (which should be true for most practical datasets). When this is not the case, the empirical distribution of signer identities in the training set may be used instead.
+where $\KL$ is the Kullback-Leibler (KL) divergence and $\gU_{\sS}(\rs)$ denotes the discrete uniform distribution on the random variable $\rs$, defined over the set of signer identities $\{1, 2, \dots, k\}$ in the training set. Here, $\epsilon \geq 0$ determines how far from uniform the signer-classifier predictions are allowed to be (as measured by the KL divergence). The choice of the uniform distribution implies the underlying assumption that the training set is balanced relatively to the number of examples per signer (which should be true for most practical datasets). When this is not the case, the empirical distribution of signer identities in the training set may be used instead.
 
-The constraint inequality~\plaineqref{eq:kl_obj} may be rewritten as:
-\begin{align}
+The inequality constraint~\plaineqref{eq:kl_obj} may be rewritten as:
+\begin{equation}
 \label{eq:adv_loss}
-&\gL_{\text{adv}}(\theta_h, \theta_g)~=~\nonumber\\
-&~=~\frac{1}{N|\sS|}\sum_{i=1}^N \sum_{\rs \in \sS} \log p(\rs | h(\mX_{i}; \theta_h); \theta_g) \leq \epsilon + \log |\sS|,
-\end{align}
+\gL_{\text{adv}}(\theta_h, \theta_g) \triangleq \frac{1}{nk}\sum_{i=1}^n \sum_{\rs} \log p(\rs \mid h(\mX_{i}; \theta_h); \theta_g) \leq \epsilon + \log k,
+\end{equation}
 and the constrained optimization problem may be equivalently formulated as:
 \begin{equation}
 \label{eq:tr_obj}
-\min_{\theta_h, \theta_f}~\gL(\theta_h, \theta_f, \theta_g) = \gL_{\text{sign}}(\theta_h, \theta_f) + \lambda \gL_{\text{adv}}(\theta_h, \theta_g),
+\min_{\theta_h, \theta_f}  \left\lbrace \gL(\theta_h, \theta_f, \theta_g) \triangleq \gL_{\text{sign}}(\theta_h, \theta_f) + \mu_d \gL_{\text{adv}}(\theta_h, \theta_g) \right\rbrace,
 \end{equation}
-where $\lambda \geq 0$ depends on $\epsilon$ and $\gL_{\text{adv}}$ plays the role of an adversarial loss with respect to the signer classification loss $\gL_{\text{signer}}$.
+where $\mu_d \geq 0$ depends on $\epsilon$ and $\gL_{\text{adv}}$ plays the role of an adversarial loss with respect to the signer classification loss $\gL_{\text{signer}}$.
 
-This objective and the structure of our model are similar to those used in \cite{Ganin2015}, in the context of domain adaptation, and in \cite{Feutry2018}, to learn anonymized representations for privacy purposes. However, the former uses the negative signer classification loss as the adversarial term (i.e.\ $\gL_{\text{adv}} \leftarrow -\gL_{\text{signer}}$), which is not lower bounded, leading to high gradients and difficult optimization. The latter addresses this problem by replacing this term with the absolute difference between the adversarial loss as defined in \eqref{eq:adv_loss} and the signer classification loss (i.e.\ $\gL_{\text{adv}} \leftarrow |\gL_{\text{adv}} - \gL_{\text{signer}}|$). This option has a nice information theoretic interpretation as being an empirical upper-bound for the mutual information between the distribution of signer identities and the distribution of latent representations. Nonetheless, there exist infinitely many (non-uniform) distributions for which this loss vanishes. Our choice, besides being clearly lower bounded by the entropy of the uniform distribution, $\log |\sS|$, is minimum if and only if $p(\rs | h(\mX_{i}; \theta_h); \theta_g) \equiv \gU_{\sS}(\rs)$, $\forall i$, meaning that the signer-classifier block is completely agnostic relatively to the signer identities of the training samples.
+This objective and the structure of our model are similar to those used by \citet{Ganin2015}, in the context of domain adaptation, and by \citet{Feutry2018}, to learn anonymized representations for privacy purposes. However, the former uses the negative signer classification loss as the adversarial term (i.e.\ $\gL_{\text{adv}} \leftarrow -\gL_{\text{signer}}$), which is not lower bounded, leading to high gradients and more difficult optimization. The latter addresses this problem by replacing this term with the absolute difference between the adversarial loss as defined in \eqref{eq:adv_loss} and the signer classification loss (i.e.\ $\gL_{\text{adv}} \leftarrow |\gL_{\text{adv}} - \gL_{\text{signer}}|$). This option has a nice information theoretic interpretation as being an empirical upper-bound for the mutual information between the distribution of signer identities and the distribution of latent representations. Nonetheless, there exist infinitely many (non-uniform) distributions for which this loss vanishes. Our choice, besides being clearly lower bounded by the entropy of the uniform distribution, $\log k$, is minimum if and only if $p(\rs \mid h(\mX_{i}; \theta_h); \theta_g) \equiv \gU(\rs)$, $\forall i$, meaning that the signer-classifier block is completely agnostic relatively to the signer identities of the training samples.
 
 \subsubsection{Signer-transfer training objective}
-To further encourage the latent representations $\vh$ to be signer-invariant, we introduce an additional term in objective~\plaineqref{eq:tr_obj}, the so-called signer-transfer loss $\gL_{\text{transfer}}$. The core idea of $\gL_{\text{transfer}}$ is to enforce the latent distributions of different signers to be as similar as possible. In practice, this is achieved by minimizing the difference between the hidden representations of different signers, at each layer of the encoder network. To measure the signers' distribution difference at the $m$-th layer, $m=1,...,M$, we compute a distance $\gD^{(m)}$ between the hidden representations $h^{(m)}(\bcdot;\theta_h)$ of two signers $s$ and $t$ at the output of that layer, as:
-%Signer distance between two signers $s$ and $t$:
-\begin{align}
-\label{eq:sign_transfer_pairwise_loss}
-\gD^{(m)}(s, t; \theta_h) = \Big|\Big|& \frac{1}{N_s} \sum_{\substack{i:~s_i = s}} h^{(m)}(\mX_{i}; \theta_h)~-~\nonumber\\ &\frac{1}{N_t}\sum_{\substack{j:~s_j = t}} h^{(m)}(\mX_{j}; \theta_h) \Big|\Big|_2^2,
-\end{align}
-where $||\bcdot||_2$ is the $\normltwo$-norm, and $N_s$ and $N_t$ denote the number of training examples of signers $s$ and $t$, respectively. Accordingly, the signer-transfer loss at the $m$-th layer is the sum of the pairwise distances between all signers, i.e.:
+To further encourage the latent representations $\vh$ to be signer-invariant, we introduce an additional term in objective~\plaineqref{eq:tr_obj}, the so-called signer-transfer loss $\gL_{\text{transfer}}$. The core idea of $\gL_{\text{transfer}}$ is to enforce the latent distributions of different signers to be as similar as possible. In practice, this is achieved by minimizing the difference between the hidden representations of different signers, at each layer of the encoder network. To measure the signers distribution difference at the $l$-th layer, $l \in \{1,...,m\}$, we compute a distance $\gD^{(m)}$ between the hidden representations $h^{(l)}(\bcdot;\theta_h)$ of two signers $s$ and $t$ at the output of that layer, as:
 \begin{equation}
-\gL_{\text{transfer}}^{(m)}(\theta_h) = \sum_{s \in \sS}~\sum_{\substack{t \in \sS, \\ t \neq s}} \gD^{(m)}(s,t; \theta_h)
+\label{eq:sign_transfer_pairwise_loss}
+\gD^{(l)}(s, t; \theta_h) \triangleq \Big|\Big| \frac{1}{n_s} \sum_{\substack{i: s_i = s}} h^{(m)}(\mX_{i}; \theta_h) - \frac{1}{n_t}\sum_{\substack{j: s_j = t}} h^{(m)}(\mX_{j}; \theta_h) \Big|\Big|_2^2,
 \end{equation}
-
+where $||\bcdot||_2$ is the $\normltwo$-norm, and $n_s$ and $n_t$ denote the number of training examples of signers $s$ and $t$, respectively. Accordingly, the signer-transfer loss at the $m$-th layer is the sum of the pairwise distances between all signers, i.e.:
+\begin{equation}
+\gL_{\text{transfer}}^{(l)}(\theta_h) \triangleq \sum_{s = 1}^k \sum_{\substack{t=1 \\ t \neq s}}^k \gD^{(l)}(s,t; \theta_h)
+\end{equation}
 The overall signer-transfer loss $\gL_{\text{transfer}}$ is then a weighted sum of the losses computed at each layer of the encoder network, such that:
 \begin{equation}
 \label{eq:signer_transfer_loss}
-\gL_{\text{transfer}}(\theta_h) = \sum_{m=1}^{M}~\beta^{(m)}~\gL_{\text{transfer}}^{(m)}(\theta_h),
+\gL_{\text{transfer}}(\theta_h) = \sum_{l=1}^{m}~\beta^{(l)}~\gL_{\text{transfer}}^{(l)}(\theta_h),
 \end{equation}
-where $\beta^{(m)}\geq 0$ is a hyperparameter that controls the relative importance of the loss obtained at the $m$-th layer.
+where $\beta^{(l)}\geq 0$ is a hyperparameter that controls the relative importance of the loss obtained at the $l$-th layer.
 By combining \plaineqref{eq:tr_obj} and \plaineqref{eq:signer_transfer_loss}, the encoder and sign-classifier networks are trained to minimize the following loss function:
-\begin{align}
+\begin{equation}
 \label{eq:enc_sign_loss}
-\min_{\theta_h, \theta_f}~\gL(\theta_h, \theta_f, \theta_g)~=~& \gL_{\text{sign}}(\theta_h, \theta_f)~+~\lambda \gL_{\text{adv}}(\theta_h, \theta_g)~+~\nonumber\\
-&\gamma \gL_{\text{transfer}}(\theta_h),
-\end{align}
-where $\gamma \geq 0$ is the weight that controls the relative importance of the signer-transfer term.
+\min_{\theta_h, \theta_f} \left\lbrace \gL(\theta_h, \theta_f, \theta_g) \triangleq \gL_{\text{sign}}(\theta_h, \theta_f) + \mu_d \gL_{\text{adv}}(\theta_h, \theta_g) +
+\mu_t \gL_{\text{transfer}}(\theta_h) \right\rbrace,
+\end{equation}
+where $\mu_t \geq 0$ is the weight that controls the relative importance of the signer-transfer term.
 
-Summing up, the adversarial training procedure is organized by alternatively either training both the encoder and the sign-classifier in order to minimize objective~\plaineqref{eq:enc_sign_loss} or training the signer-classifier in order to minimize objective~\plaineqref{eq:signer_loss}.
+Summing up, the adversarial training procedure is organized by alternating between the minimization of objective~\plaineqref{eq:enc_sign_loss} and the minimization of objective~\plaineqref{eq:signer_loss}.
+
+\subsection{Experimental evaluation}
+\label{sec:adv_signer_inv_experiments}
+
+%\subsection{Datasets and evaluation protocol}
+\hspace{\parindent}The experimental evaluation of the proposed model was performed using two publicly available SLR databases: the Jochen-Triesch database (\citet{Triesch2001}), and the Microsoft Kinect and Leap Motion American sign language (MKLM) database (\citet{Marin2014, Marin2016}).
+Jochen-Triesch is a dataset of 10 hand signs performed by 24 signers against three different types of backgrounds: uniform light, uniform dark and complex. Experiments on this dataset were conducted using its standard evaluation protocol (\citet{Just2006}), in which 8 signers are used for the training and the remaining 16 signers are used for the test. MKLM contains a total of 10 signs, each one repeated 10 times by 14 different signers. In this dataset, the performance of the models is assessed using 5 random splits, created with signer-independence, yielding at each split a training set of 10 signers, a validation set of 2 signers and a test set of 2 signers.
+
+\subsubsection{Implementation details}
+In order to extract the manual signs from the noisy background of the images, the automatic hand detection algorithm \cite{Ferreira2018} is used as a pre-processing step. The images are then cropped, resized to the average sign size of the training set, and normalized to be in the range $[-1,1]$.
+
+Throughout this section, the proposed model is compared with state-of-the-art methods for each dataset. Nevertheless, to further attest the robustness of the proposed model, two different baselines are also implemented:
+\begin{itemize}
+    \item (Baseline 1) A CNN trained from scratch with $\normltwo$ regularization. For a fair comparison, the architecture of the baseline CNN corresponds to the architecture of the encoder network followed by the sign-classifier network of the proposed model.
+    \item (Baseline 2) A CNN with the baseline 1 topology, but trained with the triplet loss (\citet{Schroff2015}).
+\end{itemize}
+Here, the triplet loss concept is explored in order to impose signer-independence in the representation space and, hence, build up a more robust baseline. The underlying idea is to minimize the distance between an \textit{anchor} and a \textit{positive} latent representation, $\vh_{y_{i}, s_{i}}$ and $\vh_{y_{p}, s_{p}}$, respectively; while maximizing the distance between the anchor $\vh_{y_{i}, s_{i}}$ and a \textit{negative} representation $\vh_{y_{n}, s_{n}}$. It is important to note that while anchor and positive latent representations have to be from the same sign class, their signer identity may or not change. On the other hand, anchor and negative representations are from different sign classes, whereas their signer identity may also change. In order to train baseline 2 in an end-to-end fashion for sign classification, the overall loss function to be minimized is a trade-off between the triplet loss $\mathcal{L}_{\text{triplet}}$, defined below, and the classification loss $\mathcal{L}_{\text{sign}}$:
+\begin{equation}
+\mathcal{L}_{\text{triplet}} \triangleq \frac{1}{n}\sum_{i=1}^{n}\Big[||\vh_{y_{i}, s_{i}}-\vh_{y_{p}, s_{p}}||^2_2 - ||\vh_{y_{i}, s_{i}}-\vh_{y_{n}, s_{n}}||^2_2 + \alpha\Big],
+\end{equation}
+where $y_{p}=y_{i}$ and $y_{n}\neq$ and the margin $\alpha$ enforced between \emph{positive} and \emph{negative} pairs was fixed at $\alpha=1$. In addition, following \citet{Schroff2015}, an \emph{online} triplet generation strategy, by selecting the hardest positive/negative samples within every mini-batch, was adopted. The overall loss for this model is therefore $\mathcal{L}_{\text{sign}} + \rho \mathcal{L}_{\text{triplet}}$, where $\rho \geq 0$ is a hyperparameter.
+
+All deep models were implemented in PyTorch and trained with the Adam optimization algorithm using a batch size of 32 samples. For reproducibility purposes, the source code as well as the weights of the trained models are publicly available online\footnote{\url{https://github.com/pmmf/SI-SLR}}. The hyperparameters that are common to all the implemented models (i.e.\ learning rate and $\normltwo$ regularization weight) as well as some hyperparameters that are specific to the proposed model (i.e.\ $\mu_d$ and $\mu_t$) and to the implemented baseline~2 (i.e.\ $\rho$) were optimized by means of a grid search approach and cross-validation on the training set (see \Tableref{tab:hyper} for more details).
+The signer-transfer penalty $\gL_{\text{transfer}}$ is applied to the last two layers of the encoder network with a relative weight of 1. Regarding the model architecture, the number of consecutive convolutional layers pairs $L_{e}$ was set to 3, which results in a total of 6 convolutional layers. The number of filters starts as 32 which is then doubled after each convolutional pair. The dense layer on top of the encoder network has 128 neurons. The number of dense layers of both classifiers $L_{s}$ was set to 3, and the number of nodes of each hidden layer was set as 128.
+
+\begin{table}[t]
+    \centering
+
+    \label{tab:hyper}
+    \resizebox{0.5\columnwidth}{!}{
+        \begin{tabular}{c|c|c}
+            Hyperparameters                    & Symbol & Set                \\ \hline
+            Leaning rate                                & --      & \{$1\text{e}^{-04}$,$1\text{e}^{-03}$\}             \\
+            $\normltwo$-norm coefficient                              & --       & \{$1\text{e}^{-05}$,$1\text{e}^{-04}$\}             \\
+            $\mathcal{L}_{\text{triplet}}$ weight                 & $\rho$                & \{0.1,0.5,1,5,10\}                  \\
+            $\mathcal{L}_{\text{adv}}$ weight                 & $\mu_d$                & \{0.1,0.5,0.8,1,3\}                  \\
+            $\mathcal{L}_{\text{transfer}}$ weight                 & $\mu_t$                & \{$1.5\text{e}^{-04}$,$2\text{e}^{-04}$,$4\text{e}^{-04}$,$1\text{e}^{-03}$\}                  \\
+        \end{tabular}
+    }
+    \caption{Hyperparameters sets.}
+\end{table}
+
+\subsubsection{Results and discussion}
+Experiments on the Jochen-Triesch and MKLM databases are summarized in Tables~\ref{tab:joint_table}(a) and ~\ref{tab:joint_table}(b), respectively. We compare our method with other state-of-the-art approaches that have published results on these datasets (\citet{Dahmani2014, Just2006, Kelly2010, Marin2014, Ferreira2018}). The results on the Jochen-Triesch database are presented in terms of average classification accuracy in the overall test set as well as against each specific background type (i.e.\ uniform and complex). For the MKLM database, \Tableref{tab:joint_table}(b) depicts the average classification accuracy computed across all the 5 test splits, as well as the minimum and maximum accuracy value achieved by each method.
+
+\begin{table}[t]
+    \centering
+    \resizebox{1\textwidth}{!}{
+        \begin{tabular}{cc}
+
+            \begin{tabular}{c|c c c}
+                & \multicolumn{3}{c}{Background}                \\
+                & Uniform        & Complex         & Both          \\ \hline
+                \citet{Just2006}       & 92.79           & 81.25           & 87.92         \\
+                \citet{Kelly2010} & 91.80            & --               & --             \\
+                \citet{Dahmani2014} & 93.10            & --               & --             \\ \hline
+                CNN (Baseline 1)                            & 97.50           & 74.38           & 89.79         \\
+                CNN with Triplet loss (Baseline 2)          & 98.13           & 75.63           & 90.63              \\
+                Proposed method       &      \textbf{98.75}     & \textbf{ 91.25}
+                &   \textbf{96.25}     \\
+            \end{tabular}
+
+            &
+
+            \begin{tabular}{c|c c c}
+                & Average (std)  & min         & max \\ \hline
+                \citet{Marin2014}       & 89.71 ( -- )             & --                    & --            \\
+                \citet{Ferreira2018} & 93.17 ( -- )             & --                    & --            \\\hline
+                CNN (Baseline 1)                              & 89.90 (8.81)            & 73.00                & 98.00        \\
+                CNN with Triplet loss (Baseline 2)            & 91.40 (3.93)            & 86.50                & 96.50        \\
+                Proposed method        &    \textbf{94.80 (3.53)}      &   \textbf{89.50}
+                &  \textbf{100.00}       \\
+            \end{tabular} \\
+
+            (a) Jochen-Triesch & (b) MKLM \\
+        \end{tabular}}
+        \caption{Classification accuracy (\%) on (a) Jochen-Triesch and (b) MKLM datasets.}
+        \label{tab:joint_table}
+\end{table}
+
+The most relevant observation is the superior performance of the proposed model. Specifically, the proposed model provides the best overall classification accuracy on both SLR databases, clearly outperforming both implemented baselines and all the previous state-of-the-art models. In complex scenarios, as reported in \Tableref{tab:joint_table}(a), the proposed model surpasses all the other methods by a large margin. In addition, by analyzing the standard deviation as well as the minimum and maximum accuracy values, it possible to observe that the proposed model is the method with the lowest variability, yielding consistently high accuracy rates across all test splits of the MKLM dataset (see \Tableref{tab:joint_table}(b)). These results attest the robustness of the proposed model and its capability of better dealing with the large inter-signer variability that exists in the manual signing process of sign languages. Interestingly, the obtained results also reveal that the implemented baselines are in fact fairly strong models, both of them outperforming most of the state-of-the-art methods on both datasets.
+
+\Tableref{tab:loss_terms} illustrates the effect of each proposed training scheme by itself. For this purpose, the proposed model was trained either (i) with just the adversarial procedure, without the signer-transfer $\gL_{\text{transfer}}$ loss, or (ii) with just the $\gL_{\text{transfer}}$ penalty on the encoder network without adversarial training. The results clearly demonstrate the complementary effect between the two training procedures, as their combination provides the best overall classification accuracy. Interestingly, each training scheme outperforms on its own both baselines and state-of-the-art methods.
+
+\begin{table}[t]
+    \centering
+    \resizebox{0.55\columnwidth}{!}{
+        \begin{tabular}{c|c c c }
+            & Adversarial ($\gL_{\text{adv}}$) only  & Signer-transfer ($\gL_{\text{transfer}}$) only & Both \\ \hline
+            Jochen-Triesch                              & 95.21            & 94.38                & \textbf{96.25}        \\
+            MKLM            & 94.00            & 94.10                & \textbf{94.80}        \\
+        \end{tabular}
+    }
+    \caption{\centering The effect of each training procedure in the proposed model. The results in the last column are replicated from Tables~\ref{table:joint_table}(a) and \ref{table:joint_table}(b) as they include both training procedures.}
+    \label{tab:loss_terms}
+\end{table}
+
+\subsubsection{Latent space visualization}
+To further demonstrate the effectiveness of the proposed model in promoting signer-invariant latent representation spaces, we show in \Figref{fig:adv_signer_inv_tsne} a visual inspection of the latent representations through the t-distributed stochastic neighbor embedding (t-SNE, \citet{Maaten2008}). These plots clearly demonstrate the better capability of the proposed model of imposing signer-independence in the latent representations. The proposed model yields a latent representation space in which representations of different signers and same class are close to each other and well mixed, while it keeps latent representations of different classes far apart. By analyzing the t-SNE plot of baseline~1, it is possible to observe that the latent representations of different signers and the same class tend to be far apart in the latent space. In addition, there is some overlapping between clusters of different classes. Although baseline~2 (CNN with the triplet loss) promoted slightly improvements over the standard baseline CNN, the proposed model achieved by far the best signer-invariance and class separability.
+
+\begin{figure}
+    \resizebox{1\textwidth}{!}{
+        \setlength\tabcolsep{1pt}
+        \begin{tabular}{ccc}
+            \includegraphics[width=0.325\textwidth]{ChapterFour/tsne_baseline.png} &
+            \includegraphics[width=0.325\textwidth]{ChapterFour/tsne_triplet.png} &
+            \includegraphics[width=0.325\textwidth]{ChapterFour/tsne_proposed.png}\\
+            \footnotesize{(a) CNN - baseline 1} & \footnotesize{(b) CNN with triplet loss - baseline 2} & \footnotesize{(c) Proposed model}
+        \end{tabular}
+    }
+    \caption{\centering Two-dimensional projection of the latent representation space using the t-distributed stochastic neighbor embedding (t-SNE). Markers $\bullet$ and $\textbf{+}$ represent 2 different test signers, while the different colors denote the 10 sign classes.}
+    \label{fig:adv_signer_inv_tsne}
+\end{figure}
+
+%-------------------------------------------------------------------------
+\subsection{Conclusion}
+\label{sec:adv_signer_inv_conclusion}
+
+This paper presents a novel adversarial training objective, based on representation learning and deep neural networks, specifically designed to tackle the signer-independent SLR problem. The underlying idea is to learn signer-invariant latent representations that preserve as much information as possible about the signs, while discarding the signer-specific traits that are irrelevant for sign recognition. For this purpose, we introduce  an adversarial training procedure for simultaneously training an \textit{encoder} and a \textit{sign-classifier} over the target sign variables, while preventing the latent representations of the \textit{encoder} to be predictive of the signer identities. To further discourage the underlying representations of retaining any signer-specific information, we propose an additional training objective that enforces the latent distributions of different signers to be as similar as possible.
+Experimental results demonstrate the effectiveness of the proposed model in several SLR databases.
