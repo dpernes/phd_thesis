@@ -62,7 +62,7 @@ where $\1_h \triangleq \{\vx \in \gX: h(\vx)=1\}$ and $\mathrm{Pr}_{\gD}(\1_h)$ 
 	\label{lemma:emp_h_div}
 	(Lemma 2 from \citet{BenDavid2010}) Let $\gH$ be a hypothesis class such that if $h \in \gH$ then $1-h \in \gH$. Given two sets $\widehat{D}$ and $\widehat{D}'$ of $n$ samples each drawn from two domains $D$ and $D'$, the empirical $\gH$-divergence between $D$ and $D'$ is given by:
 	\begin{equation}
-		\widehat{d}_{\gH}(\gD,\gD') = 2 \left(1 - \min_{h \in \gH} \left[\frac{1}{n} \sum_{\vx: h(\vx)=1} \1_{\vx \in \widehat{\gD}} + \frac{1}{n} \sum_{\vx: h(\vx)=0} \1_{\vx \in \widehat{\gD}'}\right]\right).
+		\widehat{d}_{\gH}(\gD,\gD') = 2 \left(1 - \min_{h \in \gH} \left[\frac{1}{n} \sum_{\vx:~h(\vx)=1} \1_{\vx \in \widehat{\gD}} + \frac{1}{n} \sum_{\vx:~h(\vx)=0} \1_{\vx \in \widehat{\gD}'}\right]\right).
 	\end{equation}
 \end{lemma}
 Note that if the two sets $\widehat{\gD}$ and $\widehat{\gD}'$ can be discriminated perfectly by a hypothesis $h \in \gH$ (i.e.\ if there is an $h \in \gH$ such that $h(\vx) = 0$ if $x \in \widehat{\gD}$ and $h(\vx) = 1$ if $x \in \widehat{\gD}'$), then $\widehat{d}_{\gH}(\gD,\gD')$ is maximum and equal to 2.
