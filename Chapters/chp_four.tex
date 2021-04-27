@@ -112,8 +112,8 @@ The ultimate goal of our model is to learn signer-invariant latent representatio
 More specifically, let $\{(\mX_{i},y_{i},s_{i})\}_{i=1}^{n}$ be a labeled dataset of $n$ samples, where $\mX_{i}$ represents the $i$-th colour image, and $y_{i} \in \gY$ and $s_{i} \in \{1,2,\dots,k\}$ denote the corresponding class (sign) label and signer identity, respectively. To induce the model to learn signer-invariant representations, the proposed model comprises three distinct sub-networks:
 \begin{itemize}
     \item an encoder network, which aims at learning an encoding function $g(\cdot;\vtheta_g): \gX \mapsto \gZ$, parameterized by $\vtheta_g$, that maps from an input image $\mX \in \gX$ to a latent representation $\vz \in \gZ$;
-    \item a sign-classifier network, which operates on top of this underlying latent representation $\vz$ to learn our task-specific function $h(\cdot; \vtheta_h): \gZ \mapsto [0,1]^{|\gY|}$, parameterized by $\vtheta_h$, that maps latent vectors into the predicted probabilities of each sign class;
-    \item a signer-classifier network, with the purpose of learning a signer-specific function $d(\cdot; \vtheta_d): \gZ \mapsto [0,1]^k$, parameterized by $\vtheta_d$, that maps the same hidden representation $\vz$ into the predicted probabilities of each signer identity.
+    \item a sign-classifier network, which operates on top of this underlying latent representation $\vz$ to learn our task-specific function $h(\cdot; \vtheta_h): \gZ \mapsto \gY$, parameterized by $\vtheta_h$, that maps latent vectors into the predicted probabilities of each sign class;
+    \item a signer-classifier network, with the purpose of learning a signer-specific function $d(\cdot; \vtheta_d): \gZ \mapsto \{1,2,\dots,k\}$, parameterized by $\vtheta_d$, that maps the same hidden representation $\vz$ into the corresponding signer identity.
 \end{itemize}
 
 During the learning stage, the parameters of both classifiers are optimized in order to minimize their errors on their specific tasks on the training set. In addition, the parameters of the encoder network are optimized in order to minimize the loss of the sign-classifier network while forcing the signer-classifier to be a random guessing predictor. In the course of this adversarial training procedure, the learned latent representations $\vz$ are encouraged to be signer-invariant and highly discriminative for sign classification. To further discourage the latent representations of retaining any signer-specific traits, we introduce an additional training objective that enforces the latent distributions of different signers to be as similar as possible.
@@ -123,9 +123,9 @@ As illustrated in \Figref{fig:model_archi}, the architecture of the proposed mod
 
 The encoder network attempts to learn a mapping from an input image $\mX$ to a latent representation $\vz$. It consists of a sequence of three pairs of consecutive $3\times 3$ convolutional layers with Rectified  Linear  Units (ReLUs) as non-linearities. For downsampling, the last convolutional layer of each pair has a stride of 2. The number of filters starts as 32 and is doubled after each convolutional pair. The dense layer on top of the encoder network has 128 neurons. On top of that, there is a fully-connected layer, also with a ReLU, outputting the desired signer-invariant latent representations $\vz$.
 
-Taking the latent representations $\vz$ as input, the sign-classifier block is composed by a sequence of three fully-connected layers, with ReLUs as the non-linear functions, for predicting the sign class $\hat{y} \triangleq \argmax h(\vz; \vtheta_h)$. The number of nodes of each hidden layer was set to 128. The last fully-connected layer has a softmax activation function which outputs the probabilities for each sign class.
+Taking the latent representations $\vz$ as input, the sign-classifier block is composed by a sequence of three fully-connected layers, with ReLUs as the non-linear functions, for predicting the sign class $\hat{y} \triangleq h(\vz; \vtheta_h)$. The number of nodes of each hidden layer was set to 128. The last fully-connected layer has a softmax activation function which outputs the probabilities for each sign class.
 
-The signer-classifier network has exactly the same topology as the sign-classifier. However, it maps the latent representations $\vz$ to the predicted signer identity $\hat{s} \triangleq \argmax d(\vz; \vtheta_d)$. Therefore, the number of nodes of the output layer equals the number of signers in the training set.
+The signer-classifier network has exactly the same topology as the sign-classifier. However, it maps the latent representations $\vz$ to the predicted signer identity $\hat{s} \triangleq d(\vz; \vtheta_d)$. Therefore, the number of nodes of the output layer equals the number of signers in the training set.
 
 \input{Figures/ChapterFour/fig_adv_signer_inv.tex}
 
@@ -150,12 +150,12 @@ where $\KL$ is the Kullback-Leibler (KL) divergence and $\gU(\rs)$ denotes the d
 The inequality constraint~\plaineqref{eq:kl_obj} may be rewritten as:
 \begin{equation}
 \label{eq:adv_loss}
-L_{\text{adv}}(\vtheta_g, \vtheta_d) \triangleq \frac{1}{nk}\sum_{i=1}^n \sum_{\rs} \log p(\rs \mid g(\mX_{i}; \theta_g); \vtheta_d) \leq \epsilon + \log k,
+L_{\text{adv}}(\vtheta_g, \vtheta_d) \triangleq \frac{1}{nk}\sum_{i=1}^n \sum_{\rs} \log p(\rs \mid g(\mX_{i}; \vtheta_g); \vtheta_d) \leq \epsilon + \log k,
 \end{equation}
 and the constrained optimization problem may be equivalently formulated as:
 \begin{equation}
 \label{eq:tr_obj}
-\min_{\vtheta_g, \vtheta_h}  \left\lbrace L(\vtheta_g, \vtheta_h, \vtheta_d) \triangleq L_{\text{sign}}(\vtheta_g, \vtheta_h) + \mu_d L_{\text{adv}}(\theta_g, \theta_d) \right\rbrace,
+\min_{\vtheta_g, \vtheta_h}  \left\lbrace L(\vtheta_g, \vtheta_h, \vtheta_d) \triangleq L_{\text{sign}}(\vtheta_g, \vtheta_h) + \mu_d L_{\text{adv}}(\vtheta_g, \vtheta_d) \right\rbrace,
 \end{equation}
 where $\mu_d \geq 0$ depends on $\epsilon$ and $L_{\text{adv}}$ plays the role of an adversarial loss with respect to the signer classification loss $L_{\text{signer}}$.
 
@@ -448,35 +448,35 @@ The remainder of this section is organized as follows: The proposed signer-indep
 
 The high-level block diagram of the proposed DeSIRe model is depicted in Figure \ref{fig:model_archi}. As it is possible to observe, it is composed by a CVAE and a classifier. In our model, the underlying idea of the CVAE is to learn an invertible mapping to a space where the signer-specific information is disentangled from the discriminative properties of the sign class. The CVAE can be thought as a teacher model for the classifier, as the distribution over latent representations $\rvz$ is used to regularize the hidden representations $\tilde{\vz}$ of the classifier. These hidden representations $\tilde{\vz}$ are then fed into a multilayer perceptron (MLP) for a robust signer-independent SLR.
 
-Specifically, the CVAE consists of an encoder and a decoder network, parameterized by $\vtheta_e$ and $\vtheta_d$, respectively. The purpose of the encoder network is to learn a distribution $q(\rvz \mid \rmX, \ry, \rs; \theta_e)$ which approximates the true posterior distribution of the latent code $\rvz$ given the image $\rmX$, the class label $\ry$ and the signer identity $\rs$. By conditioning the posterior distribution on $\rs$ and $\ry$, we are empowering the encoder by learning a domain and class-dependent transformation. Here, the key idea is to learn latent codes whose conditional posterior distribution is independent of the signer identity, that is $q(\rvz \mid \rmX, \ry, \rs; \theta_e) \equiv q(\rvz \mid \rmX, \ry; \theta_e)$. Equivalently, latent codes are conditionally independent of the signer identity given the image and its class if and only if:
+Specifically, the CVAE consists of an encoder and a decoder network, parameterized by $\vtheta_e$ and $\vtheta_d$, respectively. The purpose of the encoder network is to learn a distribution $q(\rvz \mid \rmX, \ry, \rs; \vtheta_e)$ which approximates the true posterior distribution of the latent code $\rvz$ given the image $\rmX$, the class label $\ry$ and the signer identity $\rs$. By conditioning the posterior distribution on $\rs$ and $\ry$, we are empowering the encoder by learning a domain and class-dependent transformation. Here, the key idea is to learn latent codes whose conditional posterior distribution is independent of the signer identity, that is $q(\rvz \mid \rmX, \ry, \rs; \vtheta_e) \equiv q(\rvz \mid \rmX, \ry; \vtheta_e)$. Equivalently, latent codes are conditionally independent of the signer identity given the image and its class if and only if:
 \begin{equation}
     \label{eq:independence}
-    q(\rvz \mid \rmX, \ry, \rs=s; \theta_e)~=~q(\rvz \mid \rmX, \ry, \rs=s'; \theta_e),
+    q(\rvz \mid \rmX, \ry, \rs=s; \vtheta_e) \equiv q(\rvz \mid \rmX, \ry, \rs=s'; \vtheta_e),
 \end{equation}
 for any two distinct signers $s$ and $s'$. In order to promote this signer-independence property, the loss function includes a term that penalizes deviations from this equality. However, if no additional care is taken, this condition would compete with the reconstruction objective, since reconstructing an image implies preserving as much information about the image as possible, including signer-specific information. Therefore, the signer identity is sampled uniformly at random and fed as an additional input to the decoder network. By this mean, the decoder shall provide a disentangled representation of the signer identity which, combined with the signer-invariant latent code $\vz$, will be used to reconstruct the original sample.
 
-Intuitively, as the latent vector $\vz$ is sampled from $q(\rvz \mid \rmX, \ry, \rs; \theta_e)$, the latent representations $\vz$ will preserve as much information as possible about the class (sign), and discard the irrelevant parts that are characteristic of each signer. The loss function is defined in such a manner that it encourages similarity between the latent codes $\vz$ and the hidden representations $\tilde{\vz}$ of the classifier module. The classifier is then trained on these signer-invariant representations for a robust signer-independent SLR. Formally, $h(\cdot; \vtheta_h): \gZ \mapsto [0,1]^{|\gY|}$ represents our task-specific function, parameterized by $\vtheta_h$, that maps from the hidden representation to the predicted sign class $\hat{y}$, and $g(\cdot; \vtheta_g): \gX \mapsto \gZ$ denotes an encoding function, parameterized by $\vtheta_g$, that maps the input images to the corresponding hidden representations.
+Intuitively, as the latent vector $\vz$ is sampled from $q(\rvz \mid \rmX, \ry, \rs; \vtheta_e)$, the latent representations $\vz$ will preserve as much information as possible about the class (sign), and discard the irrelevant parts that are characteristic of each signer. The loss function is defined in such a manner that it encourages similarity between the latent codes $\vz$ and the hidden representations $\tilde{\vz}$ of the classifier module. The classifier is then trained on these signer-invariant representations for a robust signer-independent SLR. Formally, $h(\cdot; \vtheta_h): \gZ \mapsto \gY$ represents our task-specific function, parameterized by $\vtheta_h$, that maps from the hidden representation to the predicted sign class $\hat{y}$, and $g(\cdot; \vtheta_g): \gX \mapsto \gZ$ denotes an encoding function, parameterized by $\vtheta_g$, that maps the input images to the corresponding hidden representations.
 
 \subsubsection{Loss function}
 \label{sec:loss}
 Training the proposed DeSIRe model is achieved by minimizing the following loss function with respect to parameters $\Theta=\{\vtheta_{e},\vtheta_{d},\vtheta_{g},\vtheta_{h}\}$:
 \begin{equation}
-    L(\Theta) = L_{\text{CVAE}}(\vtheta_{d},\vtheta_{e}) + \lambda_{1} L_{\text{emb}}(\vtheta_{e},\vtheta_{f}) + \lambda_{2} L_{\text{class}}(\vtheta_{f},\vtheta_{g}),
+    L(\Theta) \triangleq L_{\text{CVAE}}(\vtheta_{d},\vtheta_{e}) + \lambda_{1} L_{\text{emb}}(\vtheta_{e},\vtheta_{f}) + \lambda_{2} L_{\text{class}}(\vtheta_{f},\vtheta_{g}),
 \end{equation}
 where $\lambda_{1},\lambda_{2}\geq 0$ are the weights that control the interaction between the loss terms.
 
 The ultimate goal of the CVAE loss, $L_{\text{CVAE}}$, is to explicitly impose signer independence by learning latent representations which are conditionally independent from the signer identity. In this regard, $L_{\text{CVAE}}$ is defined by:
 \begin{equation}
-    L_{\text{CVAE}}(\theta_{d},\theta_{e}) = L_{\text{rec}}(\theta_{d})~+~\alpha_{1}~L_{\text{prior}}(\theta_{e})~+~\alpha_{2}~L_{\text{signer\_inv}}(\theta_{e}),
+    L_{\text{CVAE}}(\vtheta_{d},\vtheta_{e}) \triangleq L_{\text{rec}}(\vtheta_{d}) + \alpha_{1} L_{\text{prior}}(\vtheta_{e}) + \alpha_{2} L_{\text{signer\_inv}}(\vtheta_{e}),
 \end{equation}
 where $\alpha_{1},\alpha_{2}\geq 0$ are hyperparameters that control the relative importance of each loss term. The first two terms, $L_{\text{rec}}$ and $L_{\text{prior}}$, correspond to the loss function of a standard CVAE, containing some special modifications for promoting signer-independence in the latent space. The reconstruction loss $L_{\text{rec}}$ encourages the decoder to learn how to reconstruct the input data $\rmX$. For the decoder, we assume that the conditional likelihood of the data $\rmX$ given the latent code $\rvz$ and the signer identity $\rs$ follows a Gaussian distribution. Accordingly, as explained in \Secref{sec:background_cvae}, the reconstruction loss corresponds to the mean-squared error between a training image and a generated image. Here, however, instead of working with pairs of ground-truth images together with their respective reconstructions, we make a slight modification that further promotes signer-invariant encodings. Let $\mX^{(r)}_{y,s}$ denote the $r$-th image of signer $s$ and sign class $y$. Specifically, we compute the mean-squared error between the $j$-th $d$-dimensional training image $\mX^{(r_{j})}_{y_{j},s_{j}}$ and the generated $d$-dimensional image $\vmu_d(\vz_{i},s_{j}; \theta_{d})$ which is produced by the decoder when fed with the encoding $\vz_{i}$ of the $i$-th training image $\mX^{(r_{i})}_{y_{i},s_{i}}$ and with the signer identity $s_j$ of the $j$-th training image:
 \begin{equation}
     \label{eq:loss_rec}
-    L_{\text{rec}}(\vtheta_{d}) = \frac{1}{n d}~\sum_{i=1}^{n}||\mX^{(r_{j})}_{y_{j},s_{j}}-\vmu_d(\vz_{i},s_{j}; \theta_{d})||^2_2,
+    L_{\text{rec}}(\vtheta_{d}) \triangleq \frac{1}{n d} \sum_{i=1}^{n}||\mX^{(r_{j})}_{y_{j},s_{j}}-\vmu_d(\vz_{i},s_{j}; \theta_{d})||^2_2,
 \end{equation}
 where $y_{j}=y_{i}$, $\vz_{i}$ is sampled from $q(\rvz_{i} \mid \mX^{(r_{i})}_{y_{i},s_{i}}, y_{i}, s_{i}; \theta_e)$ using the reparameterization trick \plaineqref{eq:reparam_trick}, $s_{j}$ is sampled from a distribution $w(\rs \mid s_{i})$, defined below, and $r_{j}$ is sampled uniformly from the set of available repetitions:
 \begin{equation}
-    w(\rs \mid s_{i}) =
+    w(\rs \mid s_{i}) \triangleq
     \begin{cases}
         1-\rho, \quad \rs=s_{i}, \\
         \frac{\rho}{k-1}, \quad \rs \in \{1,2,\dots,k\} \setminus \lbrace s_{i} \rbrace.
@@ -487,7 +487,7 @@ Here, as before, $\{1,2,\dots,k\}$ is the set of signer identities in the traini
 The $L_{\text{prior}}$ term corresponds to the KL divergence between the posterior and the prior as commonly used in a standard CVAE:
 \begin{align}
     \label{eq:loss_prior}
-    L_{\text{prior}}(\vtheta_{e}) &= \frac{1}{nl} \sum_{i=1}^n \KL(q(\rvz_{i} \mid \mX^{(r_{i})}_{y_{i},s_{i}}, y_{i}, s_{i}; \vtheta_e) || \gN(\rvz_{i}; 0, \mI)) \nonumber\\
+    L_{\text{prior}}(\vtheta_{e}) &\triangleq \frac{1}{nl} \sum_{i=1}^n \KL(q(\rvz_{i} \mid \mX^{(r_{i})}_{y_{i},s_{i}}, y_{i}, s_{i}; \vtheta_e) || \gN(\rvz_{i}; 0, \mI)) \nonumber\\
     &= \frac{1}{2nl} \sum_{i=1}^n \sum_{j=1}^l \left(\mu_{e,i,j}^2 + \sigma_{e,i,j}^2 -1 - \log \sigma_{e,i,j}^2\right),
 \end{align}
 where $l$ is the dimension of the latent space and $\mu_{e,i,j}$ and $\sigma_{e,i,j}$ denote the $j$-th elements of the vectors $\vmu_{e}(\mX_i, y_i, s_i; \vtheta_e)$ and $\vsigma_{e}(\mX_i, y_i, s_i; \vtheta_e)$, respectively.
@@ -495,7 +495,7 @@ where $l$ is the dimension of the latent space and $\mu_{e,i,j}$ and $\sigma_{e,
 An explicit constraint for signer-independence is also introduced in the CVAE loss function. $L_{\text{signer\_inv}}$ encourages the conditional posterior distribution of latent codes $\rvz$, given the image $\rmX$ and its class $\ry$, to be independent of the signer identity $\rs$. This loss is defined as the KL divergence between conditional posterior distributions of $\rvz$, conditioned on the same class but also on different signer identities:
 \begin{align}
     \label{eq:loss_signer_inv}
-    \mathcal{L}_{\text{signer\_inv}}(\vtheta_{e}) &= \frac{1}{nl} \sum_{i=1}^{n}\KL\left(q(\rvz_{i} \mid \mX^{(r_{i})}_{y_{i},s_{i}}, y_{i}, s_{i}; \vtheta_e) \big| \big| q(\rvz_{k} \mid \mX^{(r_{k})}_{y_{k},s_{k}}, y_{k}, s_{k}; \vtheta_e)\right) \nonumber\\
+    \mathcal{L}_{\text{signer\_inv}}(\vtheta_{e}) &\triangleq \frac{1}{nl} \sum_{i=1}^{n}\KL\left(q(\rvz_{i} \mid \mX^{(r_{i})}_{y_{i},s_{i}}, y_{i}, s_{i}; \vtheta_e) \big| \big| q(\rvz_{k} \mid \mX^{(r_{k})}_{y_{k},s_{k}}, y_{k}, s_{k}; \vtheta_e)\right) \nonumber\\
     &=\frac{1}{2nl}~\sum_{i=1}^{n}\sum_{j=1}^{l} \Biggl(\frac{(\mu_{e,i,j} - \mu_{e,k,j})^2}{\sigma_{e,k,j}^2} + \frac{\sigma_{e,i,j}^2}{\sigma_{e,k,j}^2} -1 + \log \sigma_{e,k,j}^2 - \log \sigma_{e,i,j}^2 \Biggr),
 \end{align}
 where $y_{k}=y_{i}$ and $s_k$ is sampled uniformly from $\{1,2,\dots,k\} \setminus \lbrace s_i \rbrace$. The second equality follows from the fact that both distributions are Gaussian and so their KL divergence may be computed analytically, as in \eqref{eq:loss_prior}.
@@ -503,17 +503,30 @@ where $y_{k}=y_{i}$ and $s_k$ is sampled uniformly from $\{1,2,\dots,k\} \setmin
 The signer-invariant latent representations $\rvz$ learned by the CVAE are then used to regularize the hidden representations $\vh$ of the classifier. Such regularization is promoted by the $L_{\text{emb}}$ loss term, which encourages the latent representations of the CVAE and the classifier to be as similar as possible. Following this idea, the embedding loss $L_{\text{emb}}$ is defined to minimize the expected mean-squared error between $\rvz$ and $\vh$, that is:
 \begin{equation}
     \label{eq:emb_loss}
-    L_{\text{emb}}(\theta_e, \theta_f)~=~\frac{1}{NL}~\sum_{i=1}^{N}\E_{\rvz_{i} \sim q(\rvz_{i} \mid \mX^{(r_{i})}_{y_{i},s_{i}}, y_{i}, s_{i}; \theta_e)}||\rvz_i-\vh_i||^2.
+    L_{\text{emb}}(\vtheta_e, \vtheta_g) \triangleq \frac{1}{nl} \sum_{i=1}^{n} \E_{\rvz_{i} \sim q(\rvz \mid \mX^{(r_{i})}_{y_{i},s_{i}}, y_{i}, s_{i}; \vtheta_e)}||\rvz_i-\tilde{\vz}_i||^2.
 \end{equation}
 In practice, we replace \eqref{eq:emb_loss} by its Monte Carlo approximation with one sample, which yields:
 \begin{equation}
-    L_{\text{emb}}(\theta_e, \theta_f)~=~\frac{1}{NL}~\sum_{i=1}^{N}||\vz_i-\vh_i||^2,
+    L_{\text{emb}}(\vtheta_e, \vtheta_g) \approx \frac{1}{nl} \sum_{i=1}^{n}||\vz_i-\tilde{\vz}_i||^2,
 \end{equation}
-where $\vz_i$ is sampled from $q(\rvz_{i} \mid \mX^{(r_{i})}_{y_{i},s_{i}}, y_{i}, s_{i}; \theta_e)$, again using the reparameterization trick \plaineqref{eq:reparam_trick}. This approximation has an extra regularizing effect on the classifier network, by introducing some stochastic noise in its training routine.
+where $\vz_i$ is sampled from $q(\rvz_{i} \mid \mX^{(r_{i})}_{y_{i},s_{i}}, y_{i}, s_{i}; \vtheta_e)$, again using the reparameterization trick \plaineqref{eq:reparam_trick}. This approximation has an extra regularizing effect on the classifier network, by introducing some stochastic noise in its training routine.
 
-Finally, the classification loss, $L_{class}$, trains the model to predict the output sign labels and corresponds to the categorical cross-entropy, defined by:
+Finally, the classification loss, $L_{\text{class}}$, trains the model to predict the output sign labels and corresponds to the categorical cross-entropy, defined by:
 \begin{equation}
     \label{eq:desire_loss_class}
-    L_{\text{class}}(\vtheta_{g},\vtheta_{h}) = -\frac{1}{n} \sum_{i=1}^{n}\log p(y_{i} \mid \mX^{(r_{i})}_{y_{i}, s_{i}};\vtheta_{g},\vtheta_{h}),
+    L_{\text{class}}(\vtheta_{g},\vtheta_{h}) \triangleq -\frac{1}{n} \sum_{i=1}^{n}\log p(y_{i} \mid \mX^{(r_{i})}_{y_{i}, s_{i}};\vtheta_{g},\vtheta_{h}),
 \end{equation}
 where $p(y \mid \mX; \vtheta_{g},\vtheta_{h})$ is the predicted probability that a given image $\mX$ belongs to its ground-truth class $y$, according to the current classifier parameters $\vtheta_{g}$ and $\vtheta_{h}$.
+
+A full schematic of the DeSIRe model is included in Appendix~\ref{sec:desire_arch}, where details about the model architecture are also provided. A few training heuristics which were employed to improve the training of the model are described in Appendix~\ref{sec:desire_training}.
+
+\subsubsection{Inference}
+\label{sec:desire_inference}
+During the training stage, the CVAE module plays the role of a teacher model for the classifier. Accordingly, the CVAE can be discarded at inference time. Therefore, inference in the DeSIRe simply consists of a forward pass through the classifier network, such that $\hat{y} \triangleq \argmax h(\tilde{\vz}; \vtheta_h)$ and $\tilde{\vz} = g(\mX; \vtheta_g)$.
+
+\subsubsection{Training strategies}
+\label{sec:desire_training}
+
+We have observed experimentally that the classification task is much easier than the reconstruction task of the CVAE. That is, the classifier tends to overfit the data with fewer training epochs than the CVAE, learning embeddings that are essentially not signer-invariant. In order to avoid this behavior, we have adopted an annealing strategy to define the classification weight $\lambda_2$. Specifically, at the start of training, this weight is set to zero, so that the CVAE learns to produce signer-invariant latent representations. At this stage, the CVAE behaves as a pure teacher model for the classifier network and, therefore, the $L_\text{emb}$ error is backpropagated only through the classifier. After a few epochs, the weight $\lambda_2$ starts increasing according to a sigmoid annealing schedule and the $L_\text{emb}$ loss starts to be backpropagated through the CVAE encoder as well. This procedure will endow the CVAE with a better sense of the classification task and hence promote class separability in the latent space. As a result, the model will be able to learn signer-invariant representations that are in fact highly discriminative for the sign recognition task.
+
+Following \citet{Bowman2015} and in order to stabilize the training of the CVAE, we have employed a similar annealing strategy to define the KL divergence weights of the prior and signer-invariant loss terms, $\alpha_1$ and $\alpha_2$, respectively.

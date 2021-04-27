@@ -1,0 +1,22 @@
+% Appendix Template
+
+\chapter{DeSIRe: Deep Signer-Invariant Representations for Sign Language Recognition -- supplementary material} % Main appendix title
+\chaptermark{DeSIRe -- supplementary material}
+
+\label{appendix:desire} % Change X to a consecutive letter; for referencing this appendix elsewhere, use \ref{AppendixX}
+
+\section{Architecture}
+\label{sec:desire_arch}
+As shown in \Figref{fig:desire_arch}, the architecture of the DeSIRe model comprises a CVAE and a classifier.
+
+\input{Figures/ChapterFour/fig_desire_arch.tex}
+
+\subsection{CVAE}
+The CVAE consists of an encoder and a decoder. The encoder network attempts to learn a stochastic mapping from an input image $\mX$, its class label $y$, and signer identity $s$ to a latent representation $\vz$. We condition the encoder on $y$ and $s$ by simply concatenating the class and signer identity as extra channels in the input image. In this case, both $y$ and $s$ are represented categorically using one-hot encoding. The encoder network then consists of a sequence of several $3\times 3$ convolutional layers with batch-normalization and leaky rectified linear units (LeakyReLUs) as non-linearities. For downsampling, the stride length of every convolution is set to 2. On top of that, there are two output fully connected (a.k.a.\ dense) layers, with linear activation functions, describing the mean $\vmu_e(\rmX,\ry,\rs; \vtheta_e)$ and the log-variance $\log \vsigma_e^2(\rmX,\ry,\rs; \vtheta_e)$ of the latent space distribution $q(\rvz \mid \rmX, \ry, \rs; \theta_e)$.
+
+The decoder module will then generate a latent code $\vz$ by sampling from $q(\rvz \mid \mX, y, s; \theta_e)$ and proceed to the reconstruction of the original input $\mX$. In practice, the latent code $\vz$ is concatenated with a one-hot representation of the signer identity $s$ to be fed to the decoder network. The decoder network comprises several 2-D transposed convolutions for up-sampling and densifying the incoming activations. Every transposed convolutional layer is followed by batch-normalization and a LeakyReLU. The output layer also consists of a transposed convolutional layer but with a hyperbolic tangent activation function in order to output the reconstruction $\vmu_d(\vz,s; \vtheta_d)$ of the normalized input $\mX$.
+
+\subsection{Classifier}
+The implemented classifier module follows a typical CNN architecture for classification tasks. It starts with a block of convolutional layers for feature extraction purposes, producing representations $\tilde{\vz} \triangleq g(\mX;\vtheta_g)$. This is followed by a block of fully-connected layers for sign classification, which predicts the sign class $\hat{y} \triangleq h(\tilde{\vz};\vtheta_h)$. In particular, the convolutional block comprises a sequence of several pairs of consecutive $3 \times 3$ convolutional layers with ReLUs as non-linearities. For downsampling, the last convolutional layer of each pair has a stride of 2.
+
+The fully-connected block consists of a sequence of fully-connected layers with ReLUs as the non-linear functions. The last fully-connected layer has a softmax activation function which outputs the probabilities for each sign class.
