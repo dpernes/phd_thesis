@@ -501,7 +501,7 @@ The following notation is used to designate network layers: \texttt{Conv(n, k)} 
 
 \subsection{Image transformations}
 \label{sec:img_transf}
-The list of image transformations used in RandAugment is provided in~\Tableref{tab:randaugment}. The cutout transformation is the first transformation to be applied to every image. This transformation occludes a randomly located square region with a length equal to $30\%$ of the image length. The remaining $n$ transformations are chosen at random from the provided list. All transformations were normalized such that a transformation of magnitude $m = 0$ corresponds to the identity (i.e., unchanged image) and a magnitude $m = 30$ (maximum admissible value) corresponds to the maximum distortion. We implemented the image transformations using the Python Imaging Library (PIL).
+The list of image transformations used in RandAugment is provided in~\Tableref{tab:randaugment}. The cutout transformation is the first transformation to be applied to every image. This transformation occludes a randomly located square region with a length equal to $30\%$ of the image length. The remaining $n$ transformations are chosen at random from the provided list. All transformations were normalized such that a transformation of magnitude $m = 0$ corresponds to the identity (i.e.\ unchanged image) and a magnitude $m = 30$ (maximum admissible value) corresponds to the maximum distortion. We implemented the image transformations using the Python Imaging Library (PIL).
 
 \begin{savenotes}
 	\begin{table}[!h]
