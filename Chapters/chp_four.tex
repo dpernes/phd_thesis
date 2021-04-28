@@ -187,16 +187,57 @@ where $\mu_t \geq 0$ is the weight that controls the relative importance of the 
 
 Summing up, the adversarial training procedure is organized by alternating between the minimization of objective~\plaineqref{eq:enc_sign_loss} and the minimization of objective~\plaineqref{eq:signer_loss}.
 
-\subsection{Experimental evaluation}
+\subsection{Experiments}
 \label{sec:adv_signer_inv_experiments}
 
-%\subsection{Datasets and evaluation protocol}
-\hspace{\parindent}The experimental evaluation of the proposed model was performed using two publicly available SLR databases: the Jochen-Triesch database (\citet{Triesch2001}), and the Microsoft Kinect and Leap Motion American sign language (MKLM) database (\citet{Marin2014, Marin2016}).
-Jochen-Triesch is a dataset of 10 hand signs performed by 24 signers against three different types of backgrounds: uniform light, uniform dark and complex. Experiments on this dataset were conducted using its standard evaluation protocol (\citet{Just2006}), in which 8 signers are used for training and the remaining 16 signers are used for the test. MKLM contains a total of 10 signs, each one repeated 10 times by 14 different signers. In this dataset, the performance of the models is assessed using 5 random splits, with disjoint sets of signers for training, validation, and testing, yielding at each split a training set of 10 signers, a validation set of 2 signers and a test set of 2 signers.
+\subsubsection{Datasets}
+The experimental evaluation of the proposed model was performed using two publicly available SLR databases: the Jochen-Triesch database (\citet{Triesch2001}) and the Microsoft Kinect and Leap Motion American sign language (MKLM) database (\citet{Marin2014, Marin2016}).
 
-\subsubsection{Implementation details}
-In order to extract the manual signs from the noisy background of the images, the automatic hand detection algorithm \cite{Ferreira2018} is used as a pre-processing step. The images are then cropped, resized to the average sign size of the training set, and normalized to be in the range $[-1,1]$.
+Jochen-Triesch is a static hand posture database, which consists of 10 hand posture signs performed by a total of 24 subjects against three types of backgrounds: uniform light, uniform dark and complex (see \Figref{fig:jochen_triesch}). There exist three images for each subject and sign, one for each background type. The images of the Jochen-Triesch database are in grey-scale with a resolution of $128\times 128$ pixels. Experiments on the Jochen-Triesch dataset were conducted using an available standard evaluation protocol for this dataset \cite{Just_2006}, in which 8 subjects are used for the training and the remaining 16 subjects are used for testing. For tuning the hyperparameters of the models, the training set is further divided, also with signer independence, in $80\%$ for training and $20\%$ for validation.
 
+MKLM is a balanced dataset of 10 classes, representing 10 static gestures from the American sign language (see \Figref{fig:mklm}). Each sign was performed by 14 different people, and repeated 10 times, which results in a total of 1400 gestures. Contrary to the Jochen-Triesch database, there is no standard evaluation protocol for the MKLM database. To maximize the usage of the data in the evaluation process, the performance of the models was assessed using a five-fold cross validation scheme with signer independence. This evaluation scheme yields at each split a training set composed by 10 signers, a validation set of 2 signers and a test set with the remaining 2 signers.
+
+In order to extract the manual signs from the noisy background of the images, the automatic hand detection algorithm (\citet{Ferreira2018}) is used as a pre-processing step. The images are then cropped, resized to the average sign size of the training set, and normalized to be in the range $[-1,1]$.
+
+\begin{figure}[t]
+    \centering
+    \def\altura{0.065}
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \setlength{\fboxsep}{0pt}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_1.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_2.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_3.png}} \\\vspace{3px}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_4.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_5.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_6.png}} \\\vspace{3px}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_7.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_8.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_9.png}}
+        \caption{Jochen-Triesch}
+        \label{fig:jochen_triesch}
+    \end{subfigure}
+    \quad
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \setlength{\fboxsep}{0pt}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_1.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_2.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_3.png}} \\\vspace{3px}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_4.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_6.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_7.png}} \\\vspace{3px}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_8.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_9.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_10.png}}
+        \caption{MKLM}
+        \label{fig:mklm}
+    \end{subfigure}
+    \caption{Illustrative samples of the two datasets used in the experiments.}
+    \label{fig:datasets}
+\end{figure}
+
+\subsubsection{Baselines}
 Throughout this section, the proposed model is compared with state of the art methods for each dataset. Nevertheless, to further attest the robustness of the proposed model, two different baselines are also implemented:
 \begin{itemize}
     \item (Baseline 1) A CNN trained from scratch with $\normltwo$ regularization. For a fair comparison, the architecture of the baseline CNN corresponds to the architecture of the encoder network followed by the sign-classifier network of the proposed model.
@@ -212,59 +253,44 @@ All deep models were implemented in PyTorch and trained with the Adam optimizati
 
 \begin{table}[t]
     \centering
-    \resizebox{0.5\columnwidth}{!}{
         \begin{tabular}{c|c|c}
             Hyperparameters                    & Symbol & Set                \\ \hline
             Leaning rate                                & --      & \{$1\text{e}^{-04}$,$1\text{e}^{-03}$\}             \\
             $\normltwo$-norm coefficient                              & --       & \{$1\text{e}^{-05}$,$1\text{e}^{-04}$\}             \\
             $L_{\text{triplet}}$ weight                 & $\rho$                & \{0.1,0.5,1,5,10\}                  \\
             $L_{\text{adv}}$ weight                 & $\mu_d$                & \{0.1,0.5,0.8,1,3\}                  \\
-            $L_{\text{transfer}}$ weight                 & $\mu_t$                & \{$1.5\text{e}^{-04}$,$2\text{e}^{-04}$,$4\text{e}^{-04}$,$1\text{e}^{-03}$\}                  \\
+            $L_{\text{transfer}}$ weight                 & $\mu_t$                & $\{1.5\text{e}^{-04}$,$2\text{e}^{-04}$,$4\text{e}^{-04}$,$1\text{e}^{-03}\}$
         \end{tabular}
-    }
-    \caption{Hyperparameter sets.}
+    \caption{Hyperparameter sets for the proposed adversarial model and baselines.}
     \label{tab:hyperparam}
 \end{table}
 
 \subsubsection{Results and discussion}
-Experiments on the Jochen-Triesch and MKLM databases are summarized in \Tableref{tab:joint_table}. We compare our method with other state of the art approaches that have published results on these datasets (\citet{Dahmani2014, Just2006, Kelly2010, Marin2014, Ferreira2018}). The results on the Jochen-Triesch database are presented in terms of average classification accuracy in the overall test set as well as against each specific background type (i.e.\ uniform and complex). For the MKLM database, \Tableref{tab:joint_table}~(B) shows the average classification accuracy computed across all test splits, as well as the minimum and maximum accuracy value achieved by each method.
+Experiments on the Jochen-Triesch and MKLM databases are summarized in \Tableref{tab:adv_signer_inv_results}. We compare our method with other state of the art approaches that have published results on these datasets (\citet{Dahmani2014, Just2006, Kelly2010, Marin2014, Ferreira2018}). The results on the Jochen-Triesch database are presented in terms of average classification accuracy in the overall test set as well as against each specific background type (i.e.\ uniform and complex). For the MKLM database, the table shows the average classification accuracy computed across all test splits, as well as the minimum and maximum accuracy value achieved by each method.
 
 \begin{table}[t]
     \centering
-    \resizebox{1\textwidth}{!}{
-        \begin{tabular}{cc}
-
-            \begin{tabular}{c|c c c}
-                & \multicolumn{3}{c}{Background}                \\
-                & Uniform        & Complex         & Both          \\ \hline
-                \citet{Just2006}       & 92.79           & 81.25           & 87.92         \\
-                \citet{Kelly2010} & 91.80            & --               & --             \\
-                \citet{Dahmani2014} & 93.10            & --               & --             \\ \hline
-                CNN (Baseline 1)                            & 97.50           & 74.38           & 89.79         \\
-                CNN with Triplet loss (Baseline 2)          & 98.13           & 75.63           & 90.63              \\
+    \resizebox{\linewidth}{!}{
+    \begin{tabular}{c|c c c|c c c}
+                & \multicolumn{3}{c|}{Jochen Triesch} & \multicolumn{3}{c}{MKLM}\\
+                & Uniform  Bg.      & Complex Bg.        & Both  & Avg. $\pm$ std.  & min         & max        \\ \hline
+                \citet{Just2006}       & 92.79           & 81.25           & 87.92         & -- & -- & --\\
+                \citet{Kelly2010} & 91.80 & -- & -- & -- & -- & --\\
+                \citet{Dahmani2014} & 93.10 & -- & -- & -- & -- & --\\
+                \citet{Marin2014}  & -- & --  & -- & 89.71 & -- & --\\
+                \citet{Ferreira2018} & -- & --  & -- & 93.17 & -- & -- \\
+                \hline
+                CNN (Baseline 1)                            & 97.50           & 74.38           & 89.79   & 89.90 \footnotesize{$\pm 8.81$}            & 73.00                & 98.00\\
+                CNN with Triplet loss (Baseline 2)          & 98.13           & 75.63           & 90.63 & 91.40 \footnotesize{$\pm 3.93$}             & 86.50                & 96.50\\
                 Proposed method       &      \textbf{98.75}     & \textbf{ 91.25}
-                &   \textbf{96.25}     \\
-            \end{tabular}
-
-            &
-
-            \begin{tabular}{c|c c c}
-                & Average (std)  & min         & max \\ \hline
-                \citet{Marin2014}       & 89.71 ( -- )             & --                    & --            \\
-                \citet{Ferreira2018} & 93.17 ( -- )             & --                    & --            \\\hline
-                CNN (Baseline 1)                              & 89.90 (8.81)            & 73.00                & 98.00        \\
-                CNN with Triplet loss (Baseline 2)            & 91.40 (3.93)            & 86.50                & 96.50        \\
-                Proposed method        &    \textbf{94.80 (3.53)}      &   \textbf{89.50}
-                &  \textbf{100.00}       \\
-            \end{tabular} \\
-
-            (A) Jochen-Triesch & (B) MKLM \\
+                &   \textbf{96.25} &    \textbf{94.80} \footnotesize{$\pm 3.53$}      &   \textbf{89.50}
+                &  \textbf{100.00}
     \end{tabular}}
-    \caption{Classification accuracy (\%) on (A) Jochen-Triesch and (B) MKLM datasets.}
-    \label{tab:joint_table}
+    \caption{Classification accuracy (\%) of the proposed adversarial method and baselines on Jochen-Triesch and MKLM datasets.}
+    \label{tab:adv_signer_inv_results}
 \end{table}
 
-The most relevant observation is the superior performance of the proposed model. Specifically, the proposed model provides the best overall classification accuracy on both SLR databases, clearly outperforming both implemented baselines and all the previous state of the art models. In complex scenarios, as reported in \Tableref{tab:joint_table}~(A), the proposed model surpasses all the other methods by a large margin. In addition, by analyzing the standard deviation as well as the minimum and maximum accuracy values, it is possible to observe that the proposed model is the method with the lowest variability, yielding consistently high accuracy rates across all test splits of the MKLM dataset (see \Tableref{tab:joint_table}~(B)). These results attest the robustness of the proposed model and its capability of better dealing with the large inter-signer variability that exists in the manual signing process of sign languages. Interestingly, the obtained results also reveal that the implemented baselines are in fact fairly strong models, both of them outperforming most of the state of the art methods on both datasets.
+The most relevant observation is the superior performance of the proposed model. Specifically, the proposed model provides the best overall classification accuracy on both SLR databases, clearly outperforming both implemented baselines and all the previous state of the art models. In Jochen-Triesch, the most challenging data are the images with complex background, where the proposed model surpasses all the remaining by a large margin. In addition, by analyzing the standard deviation as well as the minimum and maximum accuracy values, it is possible to observe that the proposed model is the method with the lowest variability, yielding consistently high accuracy rates across all test splits of the MKLM dataset. These results attest the robustness of the proposed model and its capability of better dealing with the large inter-signer variability that exists in the manual signing process of sign languages. Interestingly, the obtained results also reveal that the implemented baselines are in fact fairly strong models, both of them outperforming most of the state of the art methods on both datasets.
 
 \Tableref{tab:loss_terms} illustrates the effect of each proposed training scheme by itself. For this purpose, the proposed model was trained either (i) with just the adversarial procedure, without the signer-transfer $L_{\text{transfer}}$ loss, or (ii) with just the $L_{\text{transfer}}$ penalty on the encoder network without adversarial training. The results clearly demonstrate the complementary effect between the two training procedures, as their combination provides the best overall classification accuracy. Interestingly, each training scheme outperforms on its own both baselines and state of the art methods.
 
@@ -274,7 +300,7 @@ The most relevant observation is the superior performance of the proposed model.
         \begin{tabular}{c|c c : c }
             & Adversarial ($L_{\text{adv}}$) only  & Signer-transfer ($L_{\text{transfer}}$) only & Both \\ \hline
             Jochen-Triesch                              & 95.21            & 94.38                & \textbf{96.25}        \\
-            MKLM            & 94.00            & 94.10                & \textbf{94.80}        \\
+            MKLM            & 94.00            & 94.10                & \textbf{94.80}
         \end{tabular}
     \end{small}
     \caption{\centering The effect of each training procedure in the proposed model. The results in the last column are replicated from \Tableref{tab:joint_table} as they include both training procedures.}
@@ -361,7 +387,7 @@ For further results and details about the experiments, please see \citet{AdvInvA
 
 \begin{table}[t]
     \centering
-    \resizebox{0.8\columnwidth}{!}{
+    \begin{small}
         \begin{tabular}{c|c c c c c:c}
             & Attack i)
             & Attack ii)
@@ -375,13 +401,14 @@ For further results and details about the experiments, please see \citet{AdvInvA
             Baseline wLBP+MLP
             &78.00     &\bf 93.00  &94.50    &90.00   &95.50     &90.20 \\
             Proposed wLBP+$\text{MLP}_\text{adv}$
-            &\bf82.00  &\bf 93.00  &98.00   &94.50   &\bf 97.50  &\bf 93.00 \\
-    \end{tabular}}
+            &\bf82.00  &\bf 93.00  &98.00   &94.50   &\bf 97.50  &\bf 93.00
+        \end{tabular}
+    \end{small}
     \caption{Presentation attack detection accuracy (\%) in the VSIA dataset.}
     \label{tab:pad_accuracy}
 \end{table}
 
-\section{Conclusions}
+\subsection{Conclusion}
 \label{sec:adv_iris_attack_conclusion}
 This work proposed a method to improve the robustness and generalization capacity of an iris PAD method to new attacks. The goal of the proposed model is to learn latent representations invariant to the PAI species that preserve relevant information about the PAD properties while discarding the `PAI-species'-specific aspects that may hamper the PAD classification task. The proposed regularization strategies made the PAD method `PAI-species'-independent and robust to new test PAIS.
 The experiments were based in comparing a baseline MLP and an MLP trained with adversarial strategies using as input highly discriminative features (wLBP) extracted from the images. When comparing the baseline MLP to an SVM classifier the results are quite similar or even worse. This can be explained simply by the fact that the dataset has a very limited size and the MLP method will overfit.
@@ -393,54 +420,7 @@ However, applying the adversarial regularization strategy significantly improved
 \subsection{Introduction}
 In \Secref{sec:adv_signer_inv}, we introduced a method for domain generalization which uses adversarial neural networks to align the marginal distributions of multiple source domains. The method showed promising results for both visual (\Secref{sec:adv_signer_inv}) and non-visual data (\Secref{sec:adv_iris_attack}). Here, we again focus our attention on vision problems and, specifically, on solving the problem of signer-independent SLR.
 
-To specifically tackle the signer-independent SLR problem, we now present DeSIRe, a novel deep neural network that aims to learn \textbf{De}ep \textbf{S}igner-\textbf{I}nvariant \textbf{Re}presentations. The underlying idea is to explicitly enforce the model to automatically learn highly discriminative signer-invariant feature representations from the data by aligning and regularizing conditional distributions in a latent space. To accomplish this goal, the DeSIRe model consists of two main modules or components, namely a conditional variational autoencoder (CVAE) and a classifier. Specifically, the main task of the CVAE is to explicitly impose signer independence on the learned latent representations. This is achieved by encouraging the CVAE to learn latent representations whose conditional posterior distribution, given the image and its sign label, is independent of the signer identity. Accordingly, the learned latent representations will preserve as much information as possible about the class (sign), and discard the irrelevant parts that are signer-specific. In addition, the CVAE acts as a teacher model for the classifier, since the distribution over latent representations is used to regularize the hidden representations of the classifier. These hidden representations are then fed into a multilayer perceptron (MLP) for sign recognition. The result is a signer-independent model robust to new test signers.
-
-\begin{figure}[t]
-    \centering
-    \begin{minipage}[t]{0.3\columnwidth}
-        \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
-            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/1_psl.png}};
-            \spy on (0.05,0.23) in node [left] at (1.6,0.9);
-        \end{tikzpicture}
-    \end{minipage}
-    \hspace{0.00mm}
-    \begin{minipage}[t]{0.3\columnwidth}
-        \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
-            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/2_psl.png}};
-            \spy on (0.16,0.07) in node [left] at (1.6,0.9);
-        \end{tikzpicture}
-    \end{minipage}
-    \hspace{0.00mm}
-    \begin{minipage}[t]{0.3\columnwidth}
-        \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
-            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/3_psl.png}};
-            \spy on (0.02,0.08) in node [left] at (1.6,0.9);
-        \end{tikzpicture}
-    \end{minipage}
-    \\
-    \begin{minipage}[t]{0.3\columnwidth}
-        \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
-            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/4_psl.png}};
-            \spy on (0.04,0.05) in node [left] at (1.6,0.9);
-        \end{tikzpicture}
-    \end{minipage}
-    \hspace{0.00mm}
-    \begin{minipage}[t]{0.3\columnwidth}
-        \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
-            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/5_psl.png}};
-            \spy on (0.001,-0.05) in node [left] at (1.6,0.9);
-        \end{tikzpicture}
-    \end{minipage}
-    \hspace{0.00mm}
-    \begin{minipage}[t]{0.3\columnwidth}
-        \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
-            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/6_psl.png}};
-            \spy on (0.02,0.17) in node [left] at (1.6,0.9);
-        \end{tikzpicture}
-    \end{minipage}
-    \caption{Illustration of the inter-signer variability using some samples of the presented SI-PSL database. The six signers are performing the sign \textquotedblleft eight\textquotedblright~of the LGP.}
-    \label{fig:si_signer_variability}
-\end{figure}
+To specifically tackle the signer-independent SLR problem, we now present DeSIRe, a novel deep neural network that aims to learn \textbf{De}ep \textbf{S}igner-\textbf{I}nvariant \textbf{Re}presentations. The underlying idea is to explicitly enforce the model to automatically learn highly discriminative signer-invariant feature representations from the data by aligning and regularizing conditional distributions in a latent space. To accomplish this goal, the DeSIRe model consists of two main modules or components, namely a conditional variational autoencoder (CVAE) and a classifier. Specifically, the main task of the CVAE is to explicitly impose signer independence on the learned latent representations. This is achieved by encouraging the CVAE to learn latent representations whose conditional posterior distribution, given the image and its sign label, is independent of the signer identity. Accordingly, the learned latent representations will preserve as much information as possible about the class (sign), and discard the irrelevant parts that are signer-specific. In addition, the CVAE acts as a teacher model for the classifier since the distribution over latent representations is used to regularize the hidden representations of the classifier. These hidden representations are then fed into a multilayer perceptron (MLP) for sign recognition. The result is a signer-independent model robust to new test signers.
 
 The remainder of this section is organized as follows: The proposed signer-independent deep neural network along with the proposed loss function and regularization schemes are fully described in Section \ref{sec:proposed_method}. Section \ref{sec:experiments} reports the experimental evaluation of the proposed methodology, in which a comparison with state-of-the-art and baseline methods is performed. Finally, conclusions and some topics for future work are presented in Section \ref{sec:conclusion}.
 
@@ -453,7 +433,7 @@ Specifically, the CVAE consists of an encoder and a decoder network, parameteriz
     \label{eq:independence}
     q(\rvz \mid \rmX, \ry, \rs=s; \vtheta_e) \equiv q(\rvz \mid \rmX, \ry, \rs=s'; \vtheta_e),
 \end{equation}
-for any two distinct signers $s$ and $s'$. In order to promote this signer-independence property, the loss function includes a term that penalizes deviations from this equality. However, if no additional care is taken, this condition would compete with the reconstruction objective, since reconstructing an image implies preserving as much information about the image as possible, including signer-specific information. Therefore, the signer identity is sampled uniformly at random and fed as an additional input to the decoder network. By this mean, the decoder shall provide a disentangled representation of the signer identity which, combined with the signer-invariant latent code $\vz$, will be used to reconstruct the original sample.
+for any two distinct signers $s$ and $s'$. In order to promote this signer-independence property, the loss function includes a term that penalizes deviations from this equality. However, if no additional care is taken, this condition would compete with the reconstruction objective since reconstructing an image implies preserving as much information about the image as possible, including signer-specific information. Therefore, the signer identity is sampled uniformly at random and fed as an additional input to the decoder network. By this mean, the decoder shall provide a disentangled representation of the signer identity which, combined with the signer-invariant latent code $\vz$, will be used to reconstruct the original sample.
 
 Intuitively, as the latent vector $\vz$ is sampled from $q(\rvz \mid \rmX, \ry, \rs; \vtheta_e)$, the latent representations $\vz$ will preserve as much information as possible about the class (sign), and discard the irrelevant parts that are characteristic of each signer. The loss function is defined in such a manner that it encourages similarity between the latent codes $\vz$ and the hidden representations $\tilde{\vz}$ of the classifier module. The classifier is then trained on these signer-invariant representations for a robust signer-independent SLR. Formally, $h(\cdot; \vtheta_h): \gZ \mapsto \gY$ represents our task-specific function, parameterized by $\vtheta_h$, that maps from the hidden representation to the predicted sign class $\hat{y}$, and $g(\cdot; \vtheta_g): \gX \mapsto \gZ$ denotes an encoding function, parameterized by $\vtheta_g$, that maps the input images to the corresponding hidden representations.
 
@@ -518,15 +498,97 @@ Finally, the classification loss, $L_{\text{class}}$, trains the model to predic
 \end{equation}
 where $p(y \mid \mX; \vtheta_{g},\vtheta_{h})$ is the predicted probability that a given image $\mX$ belongs to its ground-truth class $y$, according to the current classifier parameters $\vtheta_{g}$ and $\vtheta_{h}$.
 
-A full schematic of the DeSIRe model is included in Appendix~\ref{sec:desire_arch}, where details about the model architecture are also provided. A few training heuristics which were employed to improve the training of the model are described in Appendix~\ref{sec:desire_training}.
+A full schematic of the DeSIRe model including all loss terms is presented in Appendix~\ref{sec:desire_arch}. A few training heuristics which were employed to improve the training of the model are described in Appendix~\ref{sec:desire_training}.
 
 \subsubsection{Inference}
 \label{sec:desire_inference}
-During the training stage, the CVAE module plays the role of a teacher model for the classifier. Accordingly, the CVAE can be discarded at inference time. Therefore, inference in the DeSIRe simply consists of a forward pass through the classifier network, such that $\hat{y} \triangleq \argmax h(\tilde{\vz}; \vtheta_h)$ and $\tilde{\vz} = g(\mX; \vtheta_g)$.
+During the training stage, the CVAE module plays the role of a teacher model for the classifier. Accordingly, the CVAE can be discarded at inference time. Therefore, inference in DeSIRe simply consists of a forward pass through the classifier network, such that $\hat{y} \triangleq \argmax h(\tilde{\vz}; \vtheta_h)$ and $\tilde{\vz} = g(\mX; \vtheta_g)$.
 
-\subsubsection{Training strategies}
-\label{sec:desire_training}
+\subsection{Experiments}
+\label{sec:desire_experiments}
 
-We have observed experimentally that the classification task is much easier than the reconstruction task of the CVAE. That is, the classifier tends to overfit the data with fewer training epochs than the CVAE, learning embeddings that are essentially not signer-invariant. In order to avoid this behavior, we have adopted an annealing strategy to define the classification weight $\lambda_2$. Specifically, at the start of training, this weight is set to zero, so that the CVAE learns to produce signer-invariant latent representations. At this stage, the CVAE behaves as a pure teacher model for the classifier network and, therefore, the $L_\text{emb}$ error is backpropagated only through the classifier. After a few epochs, the weight $\lambda_2$ starts increasing according to a sigmoid annealing schedule and the $L_\text{emb}$ loss starts to be backpropagated through the CVAE encoder as well. This procedure will endow the CVAE with a better sense of the classification task and hence promote class separability in the latent space. As a result, the model will be able to learn signer-invariant representations that are in fact highly discriminative for the sign recognition task.
+For reproducibility purposes, For reproducibility purposes, the source code as well as the weights of the trained models are publicly available online\footnote{https://github.com/pmmf/DeSIRe}. Further details about the training of the model and
 
-Following \citet{Bowman2015} and in order to stabilize the training of the CVAE, we have employed a similar annealing strategy to define the KL divergence weights of the prior and signer-invariant loss terms, $\alpha_1$ and $\alpha_2$, respectively.
+\subsubsection{Datasets}
+We use the same datasets and follow the same experimental protocol as for our previous model, as described in \Secref{sec:adv_signer_inv_experiments}. Additionally, we also evaluate our model in a subset of the CorSiL database.
+
+CorSiL is a dataset for Portuguese sign language and expressiveness recognition. Its SLR subset comprises 182 isolated signs and 40 continuous sequences, which we have further refined by selecting 31 isolated signs from 11 distinct signers, with each sign being repeated 3 times for each signer. All signs
+were performed in a free and natural signing environment. This variability, together with the large number of sign classes, makes this dataset achallenging one. A few samples are shown in \Figref{fig:corsil}. We use six signers for training, one signer for validation and the remaining four signers are used for testing.
+
+\begin{figure}[t]
+    \centering
+    \begin{minipage}[t]{0.3\columnwidth}
+        \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
+            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/1_psl.png}};
+            \spy on (0.05,0.23) in node [left] at (1.6,0.9);
+        \end{tikzpicture}
+    \end{minipage}
+    \hspace{0.00mm}
+    \begin{minipage}[t]{0.3\columnwidth}
+        \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
+            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/2_psl.png}};
+            \spy on (0.16,0.07) in node [left] at (1.6,0.9);
+        \end{tikzpicture}
+    \end{minipage}
+    \hspace{0.00mm}
+    \begin{minipage}[t]{0.3\columnwidth}
+        \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
+            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/3_psl.png}};
+            \spy on (0.02,0.08) in node [left] at (1.6,0.9);
+        \end{tikzpicture}
+    \end{minipage}
+    \\
+    \begin{minipage}[t]{0.3\columnwidth}
+        \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
+            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/4_psl.png}};
+            \spy on (0.04,0.05) in node [left] at (1.6,0.9);
+        \end{tikzpicture}
+    \end{minipage}
+    \hspace{0.00mm}
+    \begin{minipage}[t]{0.3\columnwidth}
+        \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
+            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/5_psl.png}};
+            \spy on (0.001,-0.05) in node [left] at (1.6,0.9);
+        \end{tikzpicture}
+    \end{minipage}
+    \hspace{0.00mm}
+    \begin{minipage}[t]{0.3\columnwidth}
+        \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
+            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/6_psl.png}};
+            \spy on (0.02,0.17) in node [left] at (1.6,0.9);
+        \end{tikzpicture}
+    \end{minipage}
+    \caption{Illustration of the inter-signer variability using some samples of the CorSiL database. The six signers are performing the sign ``eight" of the Portuguese sign language.}
+    \label{fig:corsil}
+\end{figure}
+
+\subsubsection{Baselines}
+In addition to the baselines used in \Secref{sec:adv_signer_inv_experiments} and to our previous model, we implemented two further models for comparison here:
+\begin{itemize}
+    \item DANN, by \citet{Ganin2015}, which we have already discussed extensively. The application of this method to our problem implied two main changes in the original method: i) the binary domain-classifier (source vs. target domain) was extended to $k$ classes (number of signers in the training data); ii) since our data is fully annotated (sign classes and signer identities are always available), training was performed in a fully supervised fashion.
+    \item DTML, by \citet{Hu2016}, a reconstruction-based domain adaption algorithm. The implementation of this methodology for our particular task also implied the generalization of the original model from one single domain to $k$ source domains.
+\end{itemize}
+
+\subsubsection{Results and discussion}
+
+\Tableref{table:desire_jt_mklm_results} shows the classification accuracy of the proposed DeSIRe model and the two aforementioned baselines on Jochen-Triesch and MKLM datasets. For easy comparison, we replicate the results from \Tableref{tab:} for our adversarial model (\Secref{sec:adv_inv_signer}) since this was the best performing model in all scenarios.
+
+\begin{table}[t]
+    \centering
+    \resizebox{\linewidth}{!}{
+        \begin{tabular}{c|c c c|c c c}
+            & \multicolumn{3}{c|}{Jochen Triesch} & \multicolumn{3}{c}{MKLM}\\
+            & Uniform  Bg.      & Complex Bg.        & Both  & Avg. $\pm$ std.  & min         & max        \\ \hline
+            DANN \cite{Ganin2015} & 98.13 & 83.75  & 93.33 & 94.30 \footnotesize{$\pm 2.49$} & 91.50 & 96.50 \\
+            DTML \cite{Hu2016} & 98.75 & 85.63  & 94.38 & 94.10 \footnotesize{$\pm 3.84$} & 87.00 & 97.50 \\
+            \hline
+            Proposed adv.\ model (\Secref{sec:adv_signer_inv})       &      98.75     & 91.25
+            &   96.25 &    94.80 \footnotesize{$\pm 3.53$}      &  89.50
+            &  \textbf{100.00}    \\
+            DeSIRe & \textbf{99.69} & \textbf{92.50} & \textbf{97.29} & \textbf{96.80} \footnotesize{$\pm 2.38$} & \textbf{93.00} & 99.00
+    \end{tabular}}
+    \caption{Classification accuracy (\%) of DeSIRe and baselines on Jochen-Triesch and MKLM datasets.}
+    \label{tab:desire_jt_mklm_results}
+\end{table}
+
+A first observation is the superior performance of the proposed DeSIRe model. It is also worth mentioning that our previous model for domain generalization outperformed DANN and DTML in most settings. Nevertheless, the proposed model achieved by far the best overall classification accuracy. Another interesting observation is the performance of the DeSIRe model against complex backgrounds, which even exceeds that of our previous model. These results demonstrate the robustness of the proposed model to inter-signer variability as well as its capability of dealing with the large intra-signer variability of this dataset. As previously explained in \Secref{sec:loss}, the robustness to intra-signer variability is mostly due to the proposed sampling scheme of the sign repetition introduced to the decoder network, which enforces the learned latent representations to discard this type of variability. Another important reason that may explain the superiority of DeSIRe is the fact that this model aligns class-conditional distributions, rather than marginal ones. Since all signers have labeled data, aligning marginal distributions is less problematic here than in the problem of domain adaptation. Anyway, the explicit alignment of conditional distributions is preferable since it promotes class clustering in the latent space.

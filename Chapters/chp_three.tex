@@ -721,8 +721,7 @@ We now conduct several experiments using standard benchmark datasets for multi-s
 
 \begin{table}
 	\centering
-	\footnotesize
-	%\hspace*{-1.0in}
+	\resizebox{\linewidth}{!}{
 	\begin{tabular}{l|ccc:c|ccc:c}
 		\multicolumn{1}{c|}{} & \multicolumn{4}{c|}{Digits} & \multicolumn{4}{c}{Office-31} \\
 		& MNIST                        & MNIST-M                       & SVHN  & Avg.                        & Amazon                        & DSLR                              & Webcam & Avg.                      \\ \hline
@@ -735,7 +734,7 @@ We now conduct several experiments using standard benchmark datasets for multi-s
 		FM           & $\boldsymbol{99.2}$ \tiny{$\pm 0.1$} & $ 91.1 $ \tiny{$ \pm 0.4 $}   & $\boldsymbol{90.0}$ \tiny{$\pm 0.8$} & $93.4$ & $ 70.3 $ \tiny{$ \pm 0.6 $}   & $ 99.7 $ \tiny{$ \pm 0.2 $}       & $\boldsymbol{99.2}$ \tiny{$\pm 0.4$} & $89.7$\\
 		MODA-FM                      & $ 98.8 $ \tiny{$ \pm 0.1 $}  & $\boldsymbol{95.4}$ \tiny{$\pm 0.4$}  & $ 89.4 $ \tiny{$ \pm 1.4 $} & $\boldsymbol{94.5}$ & $\boldsymbol{70.7}$ \tiny{$\pm 0.9$}  & $ \boldsymbol{100.0} $ \tiny{$ \pm 0.0 $} & $ 99.1 $ \tiny{$ \pm 0.1 $} & $\boldsymbol{89.9}$\\ \hline
 		Fully supervised            & $ 98.9 $ \tiny{$ \pm 0.1 $}  & $ 96.2 $ \tiny{$ \pm 0.1 $}   & $ 90.3 $ \tiny{$ \pm 0.5 $} & $95.1$ & $ 88.1 $ \tiny{$ \pm 1.6 $}   & $ 99.3 $ \tiny{$ \pm 1.1 $}       & $ 99.5 $ \tiny{$ \pm 0.7 $} & $95.6$
-	\end{tabular}
+	\end{tabular}}
 	\caption{Average accuracy $\pm$ standard deviation (\%) over 5 independent runs on digits and objects classification (Office-31). The domain on each column corresponds to the target.}
 	\label{tab:digits_office_acc}
 \end{table}
@@ -746,8 +745,6 @@ We now conduct several experiments using standard benchmark datasets for multi-s
 
 \begin{table}[]
 	\centering
-	\footnotesize
-	\hspace*{-0.10in}
 	\begin{tabular}{l|cccc:c}
 		& Books           & DVD             & Electronics     & Kitchen  & Avg. \\ \hline
 		DANN-SS \cite{Ganin2015} & $ 77.5 $ \tiny{$ \pm 1.0 $} & $ 78.9 $ \tiny{$ \pm 0.9 $} & $ 84.2 $ \tiny{$ \pm 0.2 $} & $ 85.8 $ \tiny{$ \pm 0.4 $} & $81.6$ \\
@@ -767,7 +764,6 @@ We now conduct several experiments using standard benchmark datasets for multi-s
 
 \begin{table}[]
 	\centering
-	\footnotesize
 	\begin{tabular}{l|cccccc:c}
 		& \textit{clp} & \textit{inf} & \textit{pnt} & \textit{qdr}  & \textit{rel} & \textit{skt} & Avg. \\ \hline
 		DANN-MS \cite{Ganin2015} & $\boldsymbol{62.6}$ & $21.7$  & $50.3$ & $14.3$ & $\boldsymbol{63.5}$ & $48.3$ & $43.5$ \\
