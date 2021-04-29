@@ -8,7 +8,7 @@
 
 \subsection{EM for MHMM (\Algref{alg:mhmm})}
 \label{sec:proof_em_noreg}
-\Algref{alg:mhmm} follows straightforwardly from applying EM to the model defined by \twoeqrefs{eq:spamhmm_density}{eq:spamhmm_hmm} with the objective \plaineqref{eq:spamhmm_log_likelihood}. As explained in \secref{sec:background_em}, for table CPDs, the E-step consists in finding expected sufficient statistics $M(x, u)$ and $M(u)$, as defined in \twoeqrefs{eq:?}{eq:?} for each $(x, u) \in \mathrm{Val}(\rx,  \parents_\gG(\rx))$, where $\gG$ is the Bayesian network in \Figref{fig:spamhmm_bayesian_net}. Thus, in our setting, those equations yield:
+\Algref{alg:mhmm} follows straightforwardly from applying EM to the model defined by \twoeqrefs{eq:spamhmm_density}{eq:spamhmm_hmm} with the objective \plaineqref{eq:spamhmm_log_likelihood}. As explained in \Secref{sec:background_em}, for table CPDs, the E-step consists in finding expected sufficient statistics $M(x, u)$ and $M(u)$, as defined in \twoeqrefs{eq:?}{eq:?} for each $(x, u) \in \mathrm{Val}(\rx,  \parents_\gG(\rx))$, where $\gG$ is the Bayesian network in \Figref{fig:spamhmm_bayesian_net}. Thus, in our setting, those equations yield:
 \begingroup
 \allowdisplaybreaks
 \begin{align}
@@ -33,7 +33,7 @@ For the state transition matrices update, the same idea applies after summing ov
 \end{equation}
 Now, defining $n_y$, $\eta^{(z)}_i$, $\gamma^{(z)}_{i,h}(t)$, and $\xi^{(z)}_{i,h,h'}(t)$ as in \Algref{alg:mhmm}, the update formulas for $\evalpha^{(y)}_z$, $\evpi^{(z)}_h$, and $\emA^{(z)}_{h,h'}$ become as defined in that algorithm.
 
-Deriving the update equations for the means and covariances of the Gaussian emission distributions is not so simple, since these are not table CPDs and therefore the procedure we have just used is no longer valid. Nonetheless, the desired equations can be obtained by explicitly maximizing the ELBO with respect to these parameters. As we have seen in \secref{sec:background_em},
+Deriving the update equations for the means and covariances of the Gaussian emission distributions is not so simple, since these are not table CPDs and therefore the procedure we have just used is no longer valid. Nonetheless, the desired equations can be obtained by explicitly maximizing the ELBO with respect to these parameters. As we have seen in \Secref{sec:background_em},
 \begin{equation}
 	\label{eq:mhmm_elbo}
 	\mathrm{ELBO} = \sum_{i=1}^{n} \E_{(\rvh_i,\rz_i) \sim q} \log p(\mX_i, \rvh_i, \rz_i \mid y_i; \Theta),
@@ -73,15 +73,15 @@ where the inequality is a direct result of Jensen's inequality and $R(\gG; \Thet
 \begin{equation}
 	J_r(\Theta) \geq \frac{1}{n} \mathrm{ELBO}(\Theta) + \lambda R(\gG; \Theta) + \text{const},
 \end{equation}
-where the ELBO takes the exact same form as in \eqref{eq:mhmm_elbo}. 
+where the ELBO takes the exact same form as in \eqref{eq:mhmm_elbo}.
 
 Now all that remains is the maximization of this lower bound with respect to $\Theta$. After noting that some parameters are constrained to sum up to 1, we could build the following Lagrangian and solve for the critical points:
 \begin{align}
 	L(\Theta, \Lambda) = & \frac{1}{n} \mathrm{ELBO}(\Theta) + \lambda R(\gG; \Theta) + \sum_{y=1}^k \mu_y\left(1 - ||\valpha^{(y)}||_{1}\right) \nonumber\\
-	&+ \sum_{z=1}^m \sum_{h=1}^s \nu^{(z)}_h \left(1 - \sum_{h'=1}^s \emA^{(z)}_{h,h'}\right) 
+	&+ \sum_{z=1}^m \sum_{h=1}^s \nu^{(z)}_h \left(1 - \sum_{h'=1}^s \emA^{(z)}_{h,h'}\right)
 	+ \sum_{z=1}^m \varrho_z \left(1 - ||\vpi_z||_{1}\right),
 \end{align}
-where $\Lambda \triangleq \bigcup_{h,y,z} \{\mu_y, \nu^{(z)}_h, \varrho_z\}$ is the set of all Lagrange multipliers. Since $R(\gG; \Theta)$ only depends on the mixture coefficients $\valpha^{(y)}$, the update equations for all parameters except those are exactly the same as in \Algref{alg:mhmm}. 
+where $\Lambda \triangleq \bigcup_{h,y,z} \{\mu_y, \nu^{(z)}_h, \varrho_z\}$ is the set of all Lagrange multipliers. Since $R(\gG; \Theta)$ only depends on the mixture coefficients $\valpha^{(y)}$, the update equations for all parameters except those are exactly the same as in \Algref{alg:mhmm}.
 
 Unfortunately, setting $\nabla L = 0$ yields a system of equations that is non-linear in $\valpha^{(y)}$ and no analytical solution can be found. However, we can resort to the reparametrization defined in \eqref{eq:spamhmm_normalization} and update the new parameters $\vbeta^{(y)}$ by performing gradient ascent over the unconstrained lower bound. Thus, computing the required gradient concludes the derivation of the algorithm.
 

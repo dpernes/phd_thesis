@@ -7,14 +7,14 @@
 
 \section{Architecture}
 \label{sec:desire_arch}
-As shown in \Figref{fig:desire_arch}, the architecture of the DeSIRe model comprises a CVAE and a classifier.
+As shown in \Figref{fig:desire_arch}, the architecture of DeSIRe comprises a CVAE and a classifier.
 
 \input{Figures/ChapterFour/fig_desire_arch.tex}
 
 \subsection{CVAE}
-The CVAE consists of an encoder and a decoder. The encoder network attempts to learn a stochastic mapping from an input image $\mX$, its class label $y$, and signer identity $s$ to a latent representation $\vz$. We condition the encoder on $y$ and $s$ by simply concatenating the class and signer identity as extra channels in the input image. In this case, both $y$ and $s$ are represented categorically using one-hot encoding. The encoder network then consists of a sequence of several $3\times 3$ convolutional layers with batch-normalization and leaky rectified linear units (LeakyReLUs) as non-linearities. For downsampling, the stride length of every convolution is set to 2. On top of that, there are two output fully connected (a.k.a.\ dense) layers, with linear activation functions, describing the mean $\vmu_e(\rmX,\ry,\rs; \vtheta_e)$ and the log-variance $\log \vsigma_e^2(\rmX,\ry,\rs; \vtheta_e)$ of the latent space distribution $q(\rvz \mid \rmX, \ry, \rs; \theta_e)$.
+The CVAE consists of an encoder and a decoder. The encoder network attempts to learn a stochastic mapping from an input image $\mX$, its class label $y$, and signer identity $s$ to a latent representation $\vz$. We condition the encoder on $y$ and $s$ by simply concatenating the class and signer identity as extra channels in the input image. In this case, both $y$ and $s$ are represented categorically using one-hot encoding. The encoder network then consists of a sequence of several $3\times 3$ convolutional layers with batch-normalization and leaky rectified linear units (LeakyReLUs) as non-linearities. For downsampling, the stride length of every convolution is set to 2. On top of that, there are two output fully connected (a.k.a.\ dense) layers, with linear activation functions, describing the mean $\vmu_e(\rmX,\ry,\rs; \vtheta_e)$ and the log-variance $\log \vsigma_e^2(\rmX,\ry,\rs; \vtheta_e)$ of the latent space distribution $q(\rvz \mid \rmX, \ry, \rs; \vtheta_e)$.
 
-The decoder module will then generate a latent code $\vz$ by sampling from $q(\rvz \mid \mX, y, s; \theta_e)$ and proceed to the reconstruction of the original input $\mX$. In practice, the latent code $\vz$ is concatenated with a one-hot representation of the signer identity $s$ to be fed to the decoder network. The decoder network comprises several 2-D transposed convolutions for up-sampling and densifying the incoming activations. Every transposed convolutional layer is followed by batch-normalization and a LeakyReLU. The output layer also consists of a transposed convolutional layer but with a hyperbolic tangent activation function in order to output the reconstruction $\vmu_d(\vz,s; \vtheta_d)$ of the normalized input $\mX$.
+The decoder module will then generate a latent code $\vz$ sampled from $q(\rvz \mid \mX, y, s; \vtheta_e)$ and proceed to the reconstruction of the original input $\mX$. In practice, the latent code $\vz$ is concatenated with a one-hot representation of the signer identity $s$ to be fed to the decoder network. The decoder network comprises several 2-D transposed convolutions for up-sampling and densifying the incoming activations. Every transposed convolutional layer is followed by batch-normalization and a LeakyReLU. The output layer also consists of a transposed convolutional layer but with a hyperbolic tangent activation function in order to output the reconstruction $\vmu_d(\vz,s; \vtheta_d)$ of the normalized input $\mX$.
 
 \subsection{Classifier}
 The implemented classifier module follows a typical CNN architecture for classification tasks. It starts with a block of convolutional layers for feature extraction purposes, producing representations $\tilde{\vz} \triangleq g(\mX;\vtheta_g)$. This is followed by a block of fully-connected layers for sign classification, which predicts the sign class $\hat{y} \triangleq h(\tilde{\vz};\vtheta_h)$. In particular, the convolutional block comprises a sequence of several pairs of consecutive $3 \times 3$ convolutional layers with ReLUs as non-linearities. For downsampling, the last convolutional layer of each pair has a stride of 2.
@@ -28,17 +28,17 @@ We have observed experimentally that the classification task is much easier than
 
 Following \citet{Bowman2015} and in order to stabilize the training of the CVAE, we have employed a similar annealing strategy to define the KL divergence weights of the prior and signer-invariant loss terms, $\alpha_1$ and $\alpha_2$, respectively.
 
-\section{Architecture and hyperparameter details}
+\section{Implementation details}
 All deep models were implemented in PyTorch and trained with the Adam optimization algorithm using a batch size of 32 samples. For reproducibility purposes, the source code as well as the weights of the trained models are publicly available online\footnote{URL will be made available after the decision.}.
 
-The hyperparameters that are common to all the implemented models (i.e., the learning rate and the $\normltwo$ regularization coefficient) as well as some hyperparameters that are specific to the DeSIRe model (i.e.\ $\lambda_{1}$, $\lambda_{2}$, $\alpha_{1}$ and $\alpha_{2}$) and to the implemented Baseline~2 (i.e., $\gamma$) were optimized by means of a grid search approach and cross-validation on the training set. The hyperparameter of the $|\sS|$-nomial distribution $w(\rs \mid s_{i})$, defined for the proposed sampling scheme of the signer identity, was set as $\rho=0.5$. The dropout rate was empirically set at 0.5 for all the experiments. The set of values of the adopted hyperparameters grid search is presented in \Tableref{tab:desire_hyperparam}.
+The hyperparameters that are common to all the implemented models (i.e., the learning rate and the $\normltwo$ regularization coefficient) as well as some hyperparameters that are specific to the DeSIRe model (i.e.\ $\lambda_{1}$, $\lambda_{2}$, $\alpha_{1}$ and $\alpha_{2}$) and to the implemented baseline 2 (i.e.\ $\gamma$) were optimized by means of a grid search approach and cross-validation on the training set. The hyperparameter $\rho$ in $w(\rs \mid s_{i})$, defined for the proposed sampling scheme of the signer identity, was set to $\rho=0.5$. The dropout rate was empirically set at 0.5 for all the experiments. The set of values of the adopted hyperparameters grid search is presented in \Tableref{tab:desire_hyperparam}.
 
 During the training stage of all the implemented models, besides $\normltwo$ regularization and dropout, a randomized data augmentation scheme was also employed. Following \citet{Ferreira2018}, the adopted data augmentation procedure is based on both geometric and colour transformations. The underlying idea is to further increase the robustness of the models to the wide range of hand gestures positions, poses, viewing angles as well as to different illumination conditions and contrasts.
 
 \begin{table}[t]
     \centering
         \begin{tabular}{c|c|c}
-            Hyperparameters                    & Acronym & Set                \\\hline
+            Hyperparameters                    & Symbol & Set                \\\hline
             Leaning rate                                & --       & \{$1\text{e}^{-03}$,$1\text{e}^{-04}$\}             \\
             $\ell^2$-norm coefficient                              & --      & \{$1\text{e}^{-04}$,$1\text{e}^{-05}$\}             \\
             $L_{\text{triplet}}$ weight                 & $\gamma$                & \{0.1,0.5,1,5,10\}                  \\
@@ -70,7 +70,7 @@ A detailed description of the architecture of the proposed model is presented in
             6                                                           &                                                                 & Conv2d-5                                                                         & LeakyReLU                                                         & (512,4,4)             & Conv2d-4                                                                                 \\
             7                                                           &                                                                 & Dense-1                                                                          & Linear                                                            & (128,)                & Conv2d-5                                                                                 \\
             8                                                           &                                                                 & Dense-2                                                                        & Linear                                                            & (128,)                & Conv2d-5                                                                                 \\
-            8                                                           &                                                                 & Dense-3                                                                         & LeakyReLU                                                         & (128,)                & \begin{tabular}[c]{@{}c@{}}{[}Dense-1; \\ Dense-2{]}\end{tabular}                        \\ \hline
+            9                                                           &                                                                 & Dense-3                                                                         & LeakyReLU                                                         & (128,)                & \begin{tabular}[c]{@{}c@{}}{[}Dense-1; \\ Dense-2{]}\end{tabular}                        \\ \hline
             10                                                          & \multirow{7}{*}{\rotatebox[origin=c]{90}{$p(\rmX \mid \rvz, \rs; \vtheta_d)$}}                                        & Concat1d-1                                                                        & -                                                                 & (138,)                & \begin{tabular}[c]{@{}c@{}}{[}Dense-3; \\ input\_s\_1d{]}\end{tabular}                   \\
             11                                                          &                                                                 & Reshape-1                                                                        & -                                                                 & (512,4,4)             & Concat1d-1                                                                               \\
             12                                                          &                                                                 & ConvTr2d-1                                                               & LeakyReLU                                                         & (512,7,7)             & Reshape-1                                                                                \\
@@ -94,17 +94,129 @@ A detailed description of the architecture of the proposed model is presented in
     \label{table:desire_arch}
 \end{table}
 
-\subsection{Visualization of the latent space}
+\section{Visualization of the latent space}
 \label{sec:desire_tsne}
 In this section, we present a 2-D visualization of the learned embedding via t-SNE, similarly to what we have done for our previous adversarial model (\Secref{sec:adv_signer_inv_tsne}).
 
-\Figref{fig:desire_tsne} depicts the t-SNE provided by the DeSIRe model and both implemented baselines in two test splits, of the MKLM dataset, with different degrees of inter-signer variability. \Figref{fig:desire_tsne_3} illustrates the t-SNE plots obtained by the domain adaptation methods for the same exact test splits. For easier comparison, the t-SNE plots of the proposed model are replicated from \Figref{fig:tsne} to this figure.
+\Figref{fig:desire_tsne_a} depicts the t-SNE provided by the DeSIRe model and both implemented baselines in two test splits, of the MKLM dataset, with different degrees of inter-signer variability. \Figref{fig:desire_tsne_b} illustrates the t-SNE plots obtained by the domain adaptation methods (DANN and DTML) for the same exact test splits. For easier comparison, we show the results for DeSIRe in both figures.
 
-As it is possible to observe in Figures~\ref{fig:desire_tsne} and \ref{fig:desire_tsne_3}, all the implemented models achieved high classification accuracies on the test split~1 (see the top row of Figures \ref{fig:desire_tsne} and \ref{fig:desire_tsne_3}). Nevertheless, the t-SNE plots clearly demonstrate the better capability of the DeSIRe model of imposing signer-independence in the latent representations. The DeSIRe model yields a latent representation space in which latent representations of the same signer and different classes are close to each other and well mixed, while it keeps latent representations of different classes far apart.
+\begin{figure}[ht!]
+    \begin{minipage}[t!]{0.015\textwidth}
+        \rotatebox[origin=c]{90}{\footnotesize{Test split 1}}
+    \end{minipage}
+    \begin{minipage}[t!]{0.985\textwidth}
+        \captionsetup[subfigure]{labelformat=empty}
+        \centering
+        \begin{subfigure}{0.325\textwidth}
+            \centering
+            \subcaption[short for lof]{CNN (baseline 1)}
+            \includegraphics[width=\linewidth]{ChapterFour/cnn_tsne_3.png}
+            \caption{accuracy: 95.50 \%}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.325\textwidth}
+            \centering
+            \subcaption[short for lof]{CNN with triplet loss (baseline 2)}
+            \includegraphics[width=\linewidth]{ChapterFour/triplet_tsne_3.png}
+            \caption{accuracy: 96.50 \%}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.325\textwidth}
+            \centering
+            \subcaption[short for lof]{DeSIRe}
+            \includegraphics[width=\linewidth]{ChapterFour/desire_tsne_3.png}
+            \caption{accuracy: 98.50 \%}
+        \end{subfigure}
+    \end{minipage}
+    \\ \vspace{0.5 cm}
+    \begin{minipage}[t!]{0.015\textwidth}
+        \rotatebox[origin=c]{90}{\footnotesize{Test split 2}}
+    \end{minipage}
+    \begin{minipage}[t!]{0.985\textwidth}
+        \captionsetup[subfigure]{labelformat=empty}
+        \begin{subfigure}{0.325\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{ChapterFour/cnn_tsne_2.png}
+            \caption{accuracy: 73.00 \%}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.325\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{ChapterFour/triplet_tsne_2.png}
+            \caption{accuracy: 86.50 \%}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.325\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{ChapterFour/desire_tsne_2.png}
+            \caption{accuracy: 98.50 \%}
+        \end{subfigure}
+    \end{minipage}
+    \caption{Two-dimensional projection of the latent representation space provided by DeSIRe and both baselines, using t-SNE \cite{Maaten2008}. Markers $\bullet$ and $\textbf{+}$ represent two different test signers from the MKLM dataset and the different colors correspond to the 10 sign classes. The accuracy of each model on each split is shown below each picture.}
+    \label{fig:desire_tsne_a}
+\end{figure}
 
-The test split~2, depicted in the bottom row of Figures~\ref{fig:desire_tsne} and \ref{fig:desire_tsne_3}, is characterized by a larger inter-signer variability. Consequently, for this particular test split, the gains of the DeSIRe model are much more noticeable. Specifically, the DeSIRe model achieved $98.50\%$ classification accuracy against $73.00\%$, $86.50\%$, $91.50\%$ and $87.00\%$ of Baseline~1, Baseline~2, and the domain adaptations methods of \citet{Ganin2015} and \citet{Hu2016}, respectively. The t-SNE plots support these classification results (see the bottom row of Figures~\ref{fig:desire_tsne} and \ref{fig:tsne_3}). There, it is possible to observe that Baseline~1 completely fails in the arrangement of the latent space. Specifically, the latent representations of different signers and the same class are too far apart. In addition, there is a clear overlap between clusters of different classes. Although the CNN with the triplet loss (i.e. Baseline~2) and both domain adaptation methods promoted slight improvements over the standard baseline CNN, the proposed DeSIRe model achieved by far the best inter-class separability.
+As it is possible to observe in Figures~\ref{fig:desire_tsne_a} and \ref{fig:desire_tsne_b}, all the implemented models achieved high classification accuracies on the test split~1. Nevertheless, the t-SNE plots clearly demonstrate the better capability of DeSIRe to impose signer-independence in the latent representations. The DeSIRe model yields a latent representation space in which latent representations of the same signer and different classes are close to each other and well mixed, while it keeps latent representations of different classes far apart.
 
-\subsection{Cluster analysis in the latent space}
+The test split~2, depicted in the bottom row of Figures~\ref{fig:desire_tsne_a} and \ref{fig:desire_tsne_b}, is characterized by a larger inter-signer variability. Consequently, for this particular test split, the gains of DeSIRe are much more noticeable. Specifically, the DeSIRe model achieved $98.50\%$ classification accuracy against $73.00\%$, $86.50\%$, $91.50\%$ and $87.00\%$ of baseline 1, baseline 2, DANN, and DTML, respectively. The t-SNE plots support these classification results (see the bottom row of Figures~\ref{fig:desire_tsne_a} and \ref{fig:desire_tsne_b}). There, it is possible to observe that baseline 1 completely fails in the arrangement of the latent space. Specifically, the latent representations of different signers and the same class are too far apart. In addition, there is a clear overlap between clusters of different classes. Although the CNN with the triplet loss (i.e.\ baseline 2) and both domain adaptation methods promoted slight improvements over the standard baseline CNN, the proposed DeSIRe model achieved by far the best inter-class separability.
+
+\begin{figure}[ht!]
+    \begin{minipage}[t!]{0.015\textwidth}
+        \rotatebox[origin=c]{90}{\footnotesize{Test split 1}}
+    \end{minipage}
+    \begin{minipage}[t!]{0.985\textwidth}
+        \captionsetup[subfigure]{labelformat=empty}
+        \centering
+        \begin{subfigure}{0.325\textwidth}
+            \centering
+            \subcaption[short for lof]{DANN \cite{Ganin2015}}
+            \includegraphics[width=\linewidth]{ChapterFour/ganin_tsne_3.png}
+            \caption{accuracy: 95.50 \%}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.325\textwidth}
+            \centering
+            \subcaption[short for lof]{DTML \cite{Hu2016}}
+            \includegraphics[width=\linewidth]{ChapterFour/hu_tsne_3.png}
+            \caption{accuracy: 97.50 \%}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.325\textwidth}
+            \centering
+            \subcaption[short for lof]{DeSIRe}
+            \includegraphics[width=\linewidth]{ChapterFour/desire_tsne_3.png}
+            \caption{accuracy: 98.50 \%}
+        \end{subfigure}
+    \end{minipage}
+    \\ \vspace{0.5 cm}
+    \begin{minipage}[t!]{0.015\textwidth}
+        \rotatebox[origin=c]{90}{\footnotesize{Test split 2}}
+    \end{minipage}
+    \begin{minipage}[t!]{0.985\textwidth}
+        \captionsetup[subfigure]{labelformat=empty}
+        \begin{subfigure}{0.325\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{ChapterFour/ganin_tsne_2.png}
+            \caption{accuracy: 91.50 \%}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.325\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{ChapterFour/hu_tsne_2.png}
+            \caption{accuracy: 87.00 \%}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.325\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{ChapterFour/desire_tsne_2.png}
+            \caption{accuracy: 98.50 \%}
+        \end{subfigure}
+    \end{minipage}
+    \caption{Two-dimensional projection of the latent representation space provided by DeSIRe, DANN, and DTML, using t-SNE \cite{Maaten2008}. Markers $\bullet$ and $\textbf{+}$ represent two different test signers from the MKLM dataset and the different colors correspond to the 10 sign classes. The accuracy of each model on each split is shown below each picture.}
+    \label{fig:desire_tsne_b}
+\end{figure}
+
+\section{Cluster analysis in the latent space}
 \label{sec:desire_clusters}
 In order to obtain an objective quality assessment of the produced latent representations, we have evaluated how well the model is able to cluster the different sign classes (and thus ignore the signer identity) in the latent space. For this purpose, we use two cluster validation metrics: the average Silhouette coefficient (\citet{Rousseeuw1987}) per cluster and the Dunn's index (\citet{Dunn1973}) per cluster.
 
@@ -121,19 +233,90 @@ Clearly, $-1 \leq S_i \leq 1$. Intuitively, clusters are desirably compact (smal
 
 Dunn's index follows a similar idea of measuring cluster compactness versus separation, but uses minimum and maximum distances instead of average distances, and is more sensitive to extreme and occasional errors. Specifically, Dunn's index $D_C$ for a cluster $C$ is defined as the ratio between the minimum inter-cluster distance $\delta_C$ from $C$ to all other clusters (which measures cluster separation) and the maximum intra-cluster distance $\Delta_C$ for the cluster $C$ (which measures cluster compactness):
 \begin{equation}
-    \delta_C = \min_{i \in C, j \not\in C} d(i,j), \,\, \Delta_C = \max_{i,j \in C} d(i,j), \quad  D_C = \frac{\delta_C}{\Delta_C}.
+    \delta_C = \min_{i \in C, j \not\in C} d(i,j), \quad \Delta_C = \max_{i,j \in C} d(i,j), \quad  D_C = \frac{\delta_C}{\Delta_C}.
 \end{equation}
 Again, according to this metric, larger values indicate better clustering.
-Results are shown in \Tableref{tab:signer_inv_metric}. As anticipated by the analysis of the two-dimensional t-SNE projection in \Figref{fig:tsne}, the results confirm that the DeSIRe model produces the most compact and separated sign clusters, when compared with the remaining models. This observation supports the signer-invariance property of the representations produced by the DeSIRe model: when exposed to images obtained from new signers, our model does a better job of grouping them according to the respective sign class only, ignoring the signer identity. The Baseline 2 and the domain adaptation model by \citet{Hu2016} are also capable of producing fairly good sign clusters. This is not a surprising fact since both approaches include explicit penalties in the respective training objectives that favor compactness in the latent space among samples of the same sign class. The absence of such a compactness constraint in the adversarial approach by \citet{Ganin2015} allows its latent representations to be more widely spread over the latent space. As such, according to the adopted metrics, the obtained sign clusters are comparable to those obtained using a simple CNN (Baseline 1), although the resulting sign classification accuracy is undoubtedly superior.
+Results are shown in \Tableref{tab:signer_inv_metric}. As anticipated by the analysis of the two-dimensional t-SNE projection in Figures~\ref{fig:desire_tsne_a} and \ref{fig:desire_tsne_b}, the results confirm that the DeSIRe model produces the most compact and separated sign clusters, when compared with the remaining models. This observation supports the signer-invariance property of the representations produced by the DeSIRe model: when exposed to images obtained from new signers, our model does a better job of grouping them according to the respective sign class only, ignoring the signer identity. Baseline 2 and DTML are also capable of producing fairly good sign clusters. This is not a surprising fact since both approaches include explicit penalties in the respective training objectives that favor compactness in the latent space among samples of the same sign class. The absence of such a compactness constraint in DANN allows its latent representations to be more widely spread over the latent space. As such, according to the adopted metrics, the obtained sign clusters are comparable to those obtained using a simple CNN (baseline 1), although the resulting sign classification accuracy is undoubtedly superior.
 
-\subsection{Unveiling the training behavior of the DeSIRe model}
+\begin{table}[t]
+    \centering
+    \resizebox{1\textwidth}{!}{
+        \begin{tabular}{c |c c c c|c c c c|c c c c}
+            & \multicolumn{4}{c |}{Jochen-Triesch}                                               & \multicolumn{4}{c|}{MKLM}                                                  & \multicolumn{4}{c}{CorSiL}                                                \\
+            & \multicolumn{2}{c}{Dunn's} & \multicolumn{2}{c|}{Silhouette} & \multicolumn{2}{c}{Dunn's} & \multicolumn{2}{c|}{Silhouette} & \multicolumn{2}{c}{Dunn's} & \multicolumn{2}{c}{Silhouette} \\
+            & Average     & min    & Average     & min    & Average     & min    & Average     & min    & Average     & min    & Average     & min    \\ \hline
+            DANN \cite{Ganin2015}                  &   0.165              &    0.105          &       0.457          &       0.342       &    0.380             &      0.102       &       0.531         &      0.253        &          0.310      &       0.205      &       0.281          &       0.109       \\
+            DTML \cite{Hu2016}                   &      0.218           &    0.170          &          0.557       &       0.493       &       0.693          &      0.236        &      \textbf{0.653}           &         0.342     &        0.298         &      0.200        &       0.312          &    0.107          \\
+            \hline
+            CNN (baseline 1)                   & 0.171                & 0.132             & 0.405                & 0.326             & 0.378                & 0.159             & 0.537                & 0.295             & 0.346                & 0.184             & 0.316                & 0.112             \\
+            CNN with triplet loss (baseline 2) & 0.249                & 0.179             & 0.509                & 0.453             & 0.559                & 0.208             & 0.623                & 0.171             & 0.359                & \textbf{0.210}    & 0.313                & 0.186             \\
+            DeSIRe              & \textbf{0.316}       & \textbf{0.184}    & \textbf{0.582}       & \textbf{0.541}    & \textbf{0.695}       & \textbf{0.240}    & 0.646       & \textbf{0.377}    & \textbf{0.374}       & 0.186             & \textbf{0.320}       & \textbf{0.197}    \\
+        \end{tabular}}
+        \caption{Dunn's index and Silhouette coefficient for the sign class clusters in the latent space for the test data. These metrics were computed per cluster and the average and minimum results are reported for each model and dataset.}
+        \label{tab:signer_inv_metric}
+\end{table}
+
+
+\section{Unveiling the training behavior of DeSIRe}
 \label{sec:desire_training_behav}
-In this subsection, we further analyze the training process of the proposed DeSIRe model. \Figref{fig:loss_curves} shows the behavior of different loss terms, during 150 epochs of training on the MKLM dataset, with the sigmoid annealing schedules in place. Specifically, we have plotted the curves of the key loss terms, $L_{\text{signer\_inv}}$ and $L_{\text{emb}}$, responsible for promoting signer-invariant latent representations (see Figures~\ref{fig:signer_inv_curve} and \ref{fig:emb_loss_curve}, respectively). In addition, we have also plotted the curve of the classification loss term $L_{\text{class}}$, which trains the model to predict the output sign labels.
+In this subsection, we further analyze the training process of the proposed DeSIRe model. \Figref{fig:desire_loss_curves} shows the behavior of different loss terms, over 150 epochs of training on the MKLM dataset, with the sigmoid annealing schedules in place. Specifically, we have plotted the curves of the key loss terms, $L_{\text{signer\_inv}}$ and $L_{\text{emb}}$, responsible for promoting signer-invariant latent representations (see Figures~\ref{fig:signer_inv_curve} and \ref{fig:emb_loss_curve}, respectively). In addition, we have also plotted the curve of the classification loss term $L_{\text{class}}$, which trains the model to predict the output sign labels.
 
-\Figref{fig:class_loss_curve} depicts the observed behavior for the classification loss term $L_{\text{class}}$. As previously explained in \Secref{sec:desire_training_strat}, at the start of training, the classification weight $\lambda_{2}$ is set to zero and the $L_{\text{emb}}$ error is backpropagated only through the convolutional block of the classifier module. Therefore, during the first training epochs, $L_{\text{class}}$ remains at a high value, as the classifier predicts random guesses (see \Figref{fig:class_loss_curve}). Then, $L_{\text{class}}$ drops quickly once the classification weight $\lambda_{2}$ starts increasing. This shows that the feature representations learned in the previous phase are highly discriminative for the classification task. On the other hand, the CVAE module starts to be trained on the reconstruction task as soon as the training process begins. At this stage, the sampling scheme associated with the reconstruction loss $L_{\text{rec}}$ is the only mechanism promoting signer-invariance. After a few epochs, the KL weights $\alpha_1$ and $\alpha_2$ start increasing and the CVAE is further enforced to produce signer-invariant latent representations. In particular, \Figref{fig:signer_inv_curve} shows the evolution of the signer-invariance loss $L_{\text{signer\_inv}}$ together with the respective weight $\alpha_2$ and attests that, at the end of training, the encoder produces signer-independent embeddings in the training data. Finally, \Figref{fig:emb_loss_curve} depicts a consistent decrease of the embedding loss $L_{\text{emb}}$ throughout the entire training routine.
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}{0.325\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{ChapterFour/desire_signer_inv_loss.png}
+        \caption{}
+        \label{fig:signer_inv_curve}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.325\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{ChapterFour/desire_emb_loss.png}
+        \caption{}
+        \label{fig:emb_loss_curve}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.325\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{ChapterFour/desire_class_loss.png}
+        \caption{}
+        \label{fig:class_loss_curve}
+    \end{subfigure}
+    \caption{Training behavior of the proposed DeSIRe model: (A) evolution of the $L_{\text{signer\_inv}}$ loss term alongside the corresponding weight $\alpha_{2}$ according to a sigmoid annealing schedule; (B) evolution of the $L_{\text{emb}}$ term value; and (C) evolution of training and validation $L_{\text{class}}$ curves alongside the corresponding weight $\lambda_{2}$ according to a sigmoid annealing schedule.}
+    \label{fig:desire_loss_curves}
+\end{figure}
 
-\subsection{Hyperparameter sensitivity analysis}
-\label{sec:desire_hyperparam}
-This subsection presents a sensitivity analysis of three key hyperparameters of the proposed DeSIRe model, namely the $L_{emb}$ weight $\lambda_{1}$, the signer-invariance weight $\alpha_{2}$ and the probability of changing the signer identity fed to the decoder network $\rho$. For this purpose, we plotted the curves of the average test accuracy of the proposed model with varying values of $\lambda_{1}\in[0,10]$,  $\alpha_{2}\in[0,10]$, and $\rho\in[0,1]$ (see Figures~\ref{fig:hyper_L_emb}, \ref{fig:hyper_L_sign_inv}, and \ref{fig:hyper_rho}, respectively). Some interesting conclusions can be drawn from these plots. Particularly, when $\alpha_{1}=0$, $L_{class}$ is the only loss term still active during training. Accordingly, the proposed DeSIRe model has exactly the same behavior as Baseline~1, which results in a significant drop in the test accuracy. When $\lambda_{1}\neq 0$ and $\alpha_{2}=0$, the loss terms $L_{\text{emb}}$, $L_{\text{rec}}$ and $L_{\text{prior}}$ become active and only $L_{\text{signer\_inv}}$ is inactive. Under this setting, the test accuracy increases to $93.75\%$ (see Figure~\ref{fig:hyper_L_sign_inv}). Here, the classifier is trained to follow the latent representations produced by the CVAE. Although the term $L_{\text{signer\_inv}}$ is not present, signer-invariance is still promoted by (i) the $L_{\text{prior}}$ loss term; and (ii) by conditioning the decoder on the signer identity, which is drawn from a random distribution. Finally, when $\lambda_1$ and $\alpha_2$ are both set to their optimal values, all loss terms are active and a maximum test accuracy is achieved. The observed accuracy gain clearly supports the beneficial regularizing effect of the $L_{\text{signer\_inv}}$ loss term, which explicitly promotes signer-invariant representations.
+\Figref{fig:class_loss_curve} depicts the observed behavior for the classification loss term $L_{\text{class}}$. As previously explained in \Secref{sec:desire_training_strat}, at the start of training, the classification weight $\lambda_{2}$ is set to zero and the $L_{\text{emb}}$ error is backpropagated only through the convolutional block of the classifier module. Therefore, in the first training epochs, $L_{\text{class}}$ remains at a high value, as the classifier predicts random guesses (see \Figref{fig:class_loss_curve}). Then, $L_{\text{class}}$ drops quickly once the classification weight $\lambda_{2}$ starts increasing. This shows that the feature representations learned in the previous phase are highly discriminative for the classification task. On the other hand, the CVAE module starts to be trained on the reconstruction task as soon as the training process begins. At this stage, the sampling scheme associated with the reconstruction loss $L_{\text{rec}}$ is the only mechanism promoting signer-invariance. After a few epochs, the KL weights $\alpha_1$ and $\alpha_2$ start increasing and the CVAE is further enforced to produce signer-invariant latent representations. In particular, \Figref{fig:signer_inv_curve} shows the evolution of the signer-invariance loss $L_{\text{signer\_inv}}$ together with the respective weight $\alpha_2$ and attests that, at the end of training, the encoder produces signer-independent embeddings in the training data. Finally, \Figref{fig:emb_loss_curve} depicts a consistent decrease of the embedding loss $L_{\text{emb}}$ throughout the entire training routine.
 
-In addition, it is worth mentioning that the proposed DeSIRe model is quite robust to these hyperparameters as the accuracy curves remain quite stable over a large range of values (i.e.\ $\lambda_{1},\alpha_{2}\in [0.01, 1]$). The impact of $\rho$, which controls the proposed sampling scheme of the signer identity in the learning process, is depicted in \Figref{fig:hyper_rho}. From this figure, it is possible to observe that $\rho$ should be set around $0.5$. The test accuracy progressively decreases when $\rho$ falls into the interval $[0.75, 1]$. In these cases, the decoder will be trained most of the time to reconstruct an image of a different signer than the one that was used to produce the encoding. This naturally makes the reconstruction task and the overall CVAE training process too difficult, explaining the noticeable significant performance drop.
+\section{Hyperparameter sensitivity analysis}
+\label{sec:desire_hyperparams}
+This subsection presents a sensitivity analysis of three key hyperparameters of the proposed DeSIRe model, namely the $L_{\text{emb}}$ weight $\lambda_{1}$, the signer-invariance weight $\alpha_{2}$ and the probability of changing the signer identity fed to the decoder network $\rho$. For this purpose, we plotted the curves of the average test accuracy of the proposed model with varying values of $\lambda_{1}\in[0,10]$,  $\alpha_{2}\in[0,10]$, and $\rho\in[0,1]$ (\Figref{fig:desire_hyperparams}). Some interesting conclusions can be drawn from these plots. Particularly, when $\alpha_{1}=0$, $L_{class}$ is the only loss term still active. Accordingly, the proposed DeSIRe model has exactly the same behavior as baseline 1, which results in a significant drop in the test accuracy. When $\lambda_{1}\neq 0$ and $\alpha_{2}=0$, the loss terms $L_{\text{emb}}$, $L_{\text{rec}}$ and $L_{\text{prior}}$ become active and only $L_{\text{signer\_inv}}$ is inactive. Under this setting, the test accuracy increases to $93.75\%$ (see Figure~\ref{fig:desire_hyper_alpha2}). Here, the classifier is trained to follow the latent representations produced by the CVAE. Although the term $L_{\text{signer\_inv}}$ is not present, signer-invariance is still promoted by (i) the $L_{\text{prior}}$ loss term; and (ii) by conditioning the decoder on the signer identity, which is drawn from a random distribution. Finally, when $\lambda_1$ and $\alpha_2$ are both set to their optimal values, all loss terms are active and a maximum test accuracy is achieved. The observed accuracy gain clearly supports the beneficial regularizing effect of the $L_{\text{signer\_inv}}$ loss term, which explicitly promotes signer-invariant representations.
+
+In addition, it is worth mentioning that the proposed DeSIRe model is quite robust to these hyperparameters as the accuracy curves remain quite stable over a large range of values (i.e.\ $\lambda_{1},\alpha_{2}\in [0.01, 1]$). The impact of $\rho$, which controls the proposed sampling scheme of the signer identity in the learning process, is depicted in \Figref{fig:desire_hyper_rho}. From this figure, it is possible to observe that $\rho$ should be set around $0.5$. The test accuracy progressively decreases when $\rho$ falls into the interval $[0.75, 1]$. In these cases, the decoder will be trained most of the time to reconstruct an image of a different signer than the one that was used to produce the encoding. This naturally makes the reconstruction task and the overall CVAE training process too difficult, explaining the noticeable significant performance drop.
+
+\begin{figure*}[t]
+    \centering
+    \begin{subfigure}{0.325\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{ChapterFour/desire_hyper_lambda1.png}
+        \caption{}
+        \label{fig:desire_hyper_lambda1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.325\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{ChapterFour/desire_hyper_alpha2.png}
+        \caption{}
+        \label{fig:desire_hyper_alpha2}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.325\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{ChapterFour/desire_hyper_rho.png}
+        \caption{}
+        \label{fig:desire_hyper_rho}
+    \end{subfigure}
+    \caption{Hyperparameter sensitivity analysis: (A) The average accuracy of the DeSIRe model with varying values of $\lambda_{1}\in[0,10]$ and $\alpha_{2}=0.4$ and $\rho=0.5$ on the Triesch dataset; (B) The average accuracy of the DeSIRe model with varying values of $\alpha_{2}\in[0,10]$ and $\lambda_{1}=0.5$ and $\rho=0.5$ on the Triesch dataset; and (C) The average accuracy of the DeSIRe model with varying values of $\rho\in[0,1]$ and $\lambda_{1}=0.5$ and $\alpha_{2}=0.4$ on the Triesch dataset.}
+    \label{fig:desire_hyperparams}
+\end{figure*}
