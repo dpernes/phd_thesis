@@ -280,8 +280,8 @@ Experiments on the Jochen-Triesch and MKLM databases are summarized in \Tableref
                 \citet{Marin2014}  & -- & --  & -- & 89.71 & -- & --\\
                 \citet{Ferreira2018} & -- & --  & -- & 93.17 & -- & -- \\
                 \hline
-                CNN (Baseline 1)                            & 97.50           & 74.38           & 89.79   & 89.90 \footnotesize{$\pm 8.81$}            & 73.00                & 98.00\\
-                CNN with Triplet loss (Baseline 2)          & 98.13           & 75.63           & 90.63 & 91.40 \footnotesize{$\pm 3.93$}             & 86.50                & 96.50\\
+                CNN (baseline 1)                            & 97.50           & 74.38           & 89.79   & 89.90 \footnotesize{$\pm 8.81$}            & 73.00                & 98.00\\
+                CNN with triplet loss (baseline 2)          & 98.13           & 75.63           & 90.63 & 91.40 \footnotesize{$\pm 3.93$}             & 86.50                & 96.50\\
                 Proposed method       &      \textbf{98.75}     & \textbf{ 91.25}
                 &   \textbf{96.25} &    \textbf{94.80} \footnotesize{$\pm 3.53$}      &   \textbf{89.50}
                 &  \textbf{100.00}
@@ -438,7 +438,7 @@ for any two distinct signers $s$ and $s'$. In order to promote this signer-indep
 Intuitively, as the latent vector $\vz$ is sampled from $q(\rvz \mid \rmX, \ry, \rs; \vtheta_e)$, the latent representations $\vz$ will preserve as much information as possible about the class (sign), and discard the irrelevant parts that are characteristic of each signer. The loss function is defined in such a manner that it encourages similarity between the latent codes $\vz$ and the hidden representations $\tilde{\vz}$ of the classifier module. The classifier is then trained on these signer-invariant representations for a robust signer-independent SLR. Formally, $h(\cdot; \vtheta_h): \gZ \mapsto \gY$ represents our task-specific function, parameterized by $\vtheta_h$, that maps from the hidden representation to the predicted sign class $\hat{y}$, and $g(\cdot; \vtheta_g): \gX \mapsto \gZ$ denotes an encoding function, parameterized by $\vtheta_g$, that maps the input images to the corresponding hidden representations.
 
 \subsubsection{Loss function}
-\label{sec:loss}
+\label{sec:desire_loss}
 Training the proposed DeSIRe model is achieved by minimizing the following loss function with respect to parameters $\Theta=\{\vtheta_{e},\vtheta_{d},\vtheta_{g},\vtheta_{h}\}$:
 \begin{equation}
     L(\Theta) \triangleq L_{\text{CVAE}}(\vtheta_{d},\vtheta_{e}) + \lambda_{1} L_{\text{emb}}(\vtheta_{e},\vtheta_{f}) + \lambda_{2} L_{\text{class}}(\vtheta_{f},\vtheta_{g}),
@@ -513,7 +513,8 @@ For reproducibility purposes, For reproducibility purposes, the source code as w
 We use the same datasets and follow the same experimental protocol as for our previous model, as described in \Secref{sec:adv_signer_inv_experiments}. Additionally, we also evaluate our model in a subset of the CorSiL database.
 
 CorSiL is a dataset for Portuguese sign language and expressiveness recognition. Its SLR subset comprises 182 isolated signs and 40 continuous sequences, which we have further refined by selecting 31 isolated signs from 11 distinct signers, with each sign being repeated 3 times for each signer. All signs
-were performed in a free and natural signing environment. This variability, together with the large number of sign classes, makes this dataset achallenging one. A few samples are shown in \Figref{fig:corsil}. We use six signers for training, one signer for validation and the remaining four signers are used for testing.
+were performed in a free and natural signing environment. This variability, together with the large number of sign classes, makes this dataset a
+challenging one. A few samples are shown in \Figref{fig:corsil}. We use six signers for training, one signer for validation and the remaining four signers are used for testing.
 
 \begin{figure}[t]
     \centering
@@ -571,7 +572,8 @@ In addition to the baselines used in \Secref{sec:adv_signer_inv_experiments} and
 
 \subsubsection{Results and discussion}
 
-\Tableref{table:desire_jt_mklm_results} shows the classification accuracy of the proposed DeSIRe model and the two aforementioned baselines on Jochen-Triesch and MKLM datasets. For easy comparison, we replicate the results from \Tableref{tab:} for our adversarial model (\Secref{sec:adv_inv_signer}) since this was the best performing model in all scenarios.
+
+\Tableref{tab:desire_jt_mklm_results} shows the classification accuracy of the proposed DeSIRe model and the two aforementioned baselines on Jochen-Triesch and MKLM datasets. For easy comparison, we replicate the results from \Tableref{tab:adv_signer_inv_results} for our adversarial model (\Secref{sec:adv_signer_inv}). The results for the remaining baselines are omitted since they are the same as before and inferior to those of our adversarial model.
 
 \begin{table}[t]
     \centering
@@ -591,4 +593,23 @@ In addition to the baselines used in \Secref{sec:adv_signer_inv_experiments} and
     \label{tab:desire_jt_mklm_results}
 \end{table}
 
-A first observation is the superior performance of the proposed DeSIRe model. It is also worth mentioning that our previous model for domain generalization outperformed DANN and DTML in most settings. Nevertheless, the proposed model achieved by far the best overall classification accuracy. Another interesting observation is the performance of the DeSIRe model against complex backgrounds, which even exceeds that of our previous model. These results demonstrate the robustness of the proposed model to inter-signer variability as well as its capability of dealing with the large intra-signer variability of this dataset. As previously explained in \Secref{sec:loss}, the robustness to intra-signer variability is mostly due to the proposed sampling scheme of the sign repetition introduced to the decoder network, which enforces the learned latent representations to discard this type of variability. Another important reason that may explain the superiority of DeSIRe is the fact that this model aligns class-conditional distributions, rather than marginal ones. Since all signers have labeled data, aligning marginal distributions is less problematic here than in the problem of domain adaptation. Anyway, the explicit alignment of conditional distributions is preferable since it promotes class clustering in the latent space.
+A first observation is the superior performance of DeSIRe. It is also worth mentioning that our previous model for domain generalization outperformed DANN and DTML in most settings. Nevertheless, the proposed model achieved by far the best overall classification accuracy. Another interesting observation is the performance of DeSIRe against complex backgrounds, which even exceeds that of our previous model. These results demonstrate the robustness of the proposed model to inter-signer variability as well as its capability of dealing with the large intra-signer variability of this dataset. As previously explained in \Secref{sec:desire_loss}, the robustness to intra-signer variability is mostly due to the proposed sampling scheme of the sign repetition introduced to the decoder network, which enforces the learned latent representations to discard this type of variability. Another important reason that may explain the superiority of DeSIRe is the fact that this model aligns class-conditional distributions, rather than marginal ones. Since all signers have labeled data and, for these datasets, the marginal class distributions are balanced across signers, aligning marginal feature distributions is less problematic here than in the problem of domain adaptation. Anyway, the explicit alignment of conditional distributions is preferable since it promotes class clustering in the latent space.
+
+The classification accuracy for sign classification in the CorSiL database is presented in \Tableref{tab:desire_corsil_results}.
+
+\begin{table}[t]
+    \centering
+    \begin{tabular}{c|c c c}
+            & Top-1  & Top-3 & Top-5 \\\hline
+            DANN \cite{Ganin_2015} & 48.66             & 75.54                    & 83.33           \\
+            DTML \cite{Hu_2016} & 39.25            & 68.01                    & 79.84            \\
+            \hline
+            CNN (baseline 1)                              & 45.97           & 74.73          & 85.75        \\
+            CNN with triplet loss (baseline 2)            &  42.74          & 72.31          & 81.99       \\
+            Proposed adv.\ model (\Secref{sec:adv_signer_inv}) & & & \\
+            DeSIRe         & \textbf{51.88}  & \textbf{76.61} & \textbf{87.90}        \\
+    \end{tabular}
+    \caption{Classification accuracy (\%) of DeSIRe and baselines on the CorSiL dataset.}
+    \label{table:desire_corsil_results}
+\end{table}
+
