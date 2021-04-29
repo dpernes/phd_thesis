@@ -308,6 +308,7 @@ The most relevant observation is the superior performance of the proposed model.
 \end{table}
 
 \subsubsection{Latent space visualization}
+\label{sec:adv_signer_inv_tsne}
 To further demonstrate the effectiveness of the proposed model in promoting signer-invariant latent representation spaces, we show in \Figref{fig:adv_signer_inv_tsne} a visual inspection of the latent representations through the t-distributed stochastic neighbor embedding (t-SNE, \citet{Maaten2008}). These plots clearly demonstrate the better capability of the proposed model of imposing signer-independence in the latent representations. The proposed model yields a latent representation space in which representations of different signers and same class are close to each other and well mixed, while it keeps latent representations of different classes far apart. By analyzing the t-SNE plot of baseline 1, it is possible to observe that the latent representations of different signers and the same class tend to be far apart in the latent space. In addition, there is some overlapping between clusters of different classes. Although baseline 2 (CNN with the triplet loss) promoted slightly improvements over the standard baseline CNN, the proposed model achieved by far the best signer-invariance and class separability.
 
 \begin{figure}
@@ -498,7 +499,7 @@ Finally, the classification loss, $L_{\text{class}}$, trains the model to predic
 \end{equation}
 where $p(y \mid \mX; \vtheta_{g},\vtheta_{h})$ is the predicted probability that a given image $\mX$ belongs to its ground-truth class $y$, according to the current classifier parameters $\vtheta_{g}$ and $\vtheta_{h}$.
 
-A full schematic of the DeSIRe model including all loss terms is presented in Appendix~\ref{sec:desire_arch}. A few training heuristics which were employed to improve the training of the model are described in Appendix~\ref{sec:desire_training}.
+A full schematic of the DeSIRe model including all loss terms is presented in Appendix~\ref{sec:desire_arch}. A few training heuristics which were employed to improve the training of the model are described in Appendix~\ref{sec:desire_training_strat}.
 
 \subsubsection{Inference}
 \label{sec:desire_inference}
@@ -510,7 +511,7 @@ During the training stage, the CVAE module plays the role of a teacher model for
 For reproducibility purposes, For reproducibility purposes, the source code as well as the weights of the trained models are publicly available online\footnote{https://github.com/pmmf/DeSIRe}. Further details about the training of the model and
 
 \subsubsection{Datasets}
-We use the same datasets and follow the same experimental protocol as for our previous model, as described in \Secref{sec:adv_signer_inv_experiments}. Additionally, we also evaluate our model in a subset of the CorSiL database.
+We use the same datasets and follow the same experimental protocol as in our previous model, described in \Secref{sec:adv_signer_inv_experiments}. Additionally, we also evaluate our model in a subset of the CorSiL database.
 
 CorSiL is a dataset for Portuguese sign language and expressiveness recognition. Its SLR subset comprises 182 isolated signs and 40 continuous sequences, which we have further refined by selecting 31 isolated signs from 11 distinct signers, with each sign being repeated 3 times for each signer. All signs
 were performed in a free and natural signing environment. This variability, together with the large number of sign classes, makes this dataset a
@@ -572,7 +573,6 @@ In addition to the baselines used in \Secref{sec:adv_signer_inv_experiments} and
 
 \subsubsection{Results and discussion}
 
-
 \Tableref{tab:desire_jt_mklm_results} shows the classification accuracy of the proposed DeSIRe model and the two aforementioned baselines on Jochen-Triesch and MKLM datasets. For easy comparison, we replicate the results from \Tableref{tab:adv_signer_inv_results} for our adversarial model (\Secref{sec:adv_signer_inv}). The results for the remaining baselines are omitted since they are the same as before and inferior to those of our adversarial model.
 
 \begin{table}[t]
@@ -595,21 +595,26 @@ In addition to the baselines used in \Secref{sec:adv_signer_inv_experiments} and
 
 A first observation is the superior performance of DeSIRe. It is also worth mentioning that our previous model for domain generalization outperformed DANN and DTML in most settings. Nevertheless, the proposed model achieved by far the best overall classification accuracy. Another interesting observation is the performance of DeSIRe against complex backgrounds, which even exceeds that of our previous model. These results demonstrate the robustness of the proposed model to inter-signer variability as well as its capability of dealing with the large intra-signer variability of this dataset. As previously explained in \Secref{sec:desire_loss}, the robustness to intra-signer variability is mostly due to the proposed sampling scheme of the sign repetition introduced to the decoder network, which enforces the learned latent representations to discard this type of variability. Another important reason that may explain the superiority of DeSIRe is the fact that this model aligns class-conditional distributions, rather than marginal ones. Since all signers have labeled data and, for these datasets, the marginal class distributions are balanced across signers, aligning marginal feature distributions is less problematic here than in the problem of domain adaptation. Anyway, the explicit alignment of conditional distributions is preferable since it promotes class clustering in the latent space.
 
-The classification accuracy for sign classification in the CorSiL database is presented in \Tableref{tab:desire_corsil_results}.
+The classification accuracy for sign classification in the CorSiL database is presented in \Tableref{tab:desire_corsil_results}. As the SI-PSL database contains a large number of sign classes (31), the results are presented in terms of top-1, top-3 and top-5 classification accuracy. As shown in the table, the proposed DeSIRe model outperformed both the implemented baselines and the state of the art domain adaption methods in all the three classification metrics. However, it should be noticed that, regardless of the employed methodology, the overall performance in this database is significantly below that obtained in the other two databases. These results attest to the difficulty of the classification task on the presented database and should encourage further research on signer-independent SLR.
 
 \begin{table}[t]
     \centering
     \begin{tabular}{c|c c c}
             & Top-1  & Top-3 & Top-5 \\\hline
-            DANN \cite{Ganin_2015} & 48.66             & 75.54                    & 83.33           \\
-            DTML \cite{Hu_2016} & 39.25            & 68.01                    & 79.84            \\
+            DANN \cite{Ganin2015} & 48.66             & 75.54                    & 83.33           \\
+            DTML \cite{Hu2016} & 39.25            & 68.01                    & 79.84            \\
             \hline
             CNN (baseline 1)                              & 45.97           & 74.73          & 85.75        \\
             CNN with triplet loss (baseline 2)            &  42.74          & 72.31          & 81.99       \\
-            Proposed adv.\ model (\Secref{sec:adv_signer_inv}) & & & \\
+            Proposed adv.\ model (\Secref{sec:adv_signer_inv}) & 49.13 & 76.01 & 85.19 \\
             DeSIRe         & \textbf{51.88}  & \textbf{76.61} & \textbf{87.90}        \\
     \end{tabular}
     \caption{Classification accuracy (\%) of DeSIRe and baselines on the CorSiL dataset.}
-    \label{table:desire_corsil_results}
+    \label{tab:desire_corsil_results}
 \end{table}
 
+Since DeSIRe is a rather complex model, with multiple loss terms and techniques to enhance its performance, we believe it is highly instructive to provide a more thorough analysis of its training behavior and further experimental results. Both are presented in Appendix~\ref{appendix:desire}. Specifically, we present a qualitative and quantitative analysis of the learned latent representations in Appendices \ref{sec:desire_tsne} and \ref{sec:desire_clusters}, respectively. We illustrate the interaction of the multiple loss terms in Appendix~\ref{sec:desire_training_behav}. A hyperparameter sensitivity analysis is conducted in Appendix~\ref{sec:desire_hyperparam}.
+
+\section{Conclusion}
+\label{sec:desire_conclusion}
+This paper addresses the topic of signer-independent sign language recognition. To tackle this problem, we propose a novel end-to-end deep neural network along with a well-designed loss function that explicitly models signer-invariant latent representations from the data. Specifically, the proposed model is composed by two main modules: (i) a conditional variational autoencoder (CVAE), and (ii) a classifier. The purpose of the CVAE module is to learn latent representations of the input data, whose conditional posterior distribution, given the image and its sign label, is independent of the signer identity. During the training stage, the CVAE plays the role of a teacher model for the classifier, since the conditional posterior distribution over latent representations is used to regularize the hidden representations of the classifier. These signer-invariant hidden representations are then used for a robust signer-independent SLR recognition. Experimental results demonstrate the robustness of the proposed model to new test signers. The proposed model provides quite promising results, outperforming the implemented baseline methods and current state-of-the-art SLR and domain adaptation methods in different SLR databases. Extending the proposed DeSIRe model to dynamic signs (i.e.\ video) is an interesting direction for future work.
