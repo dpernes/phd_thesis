@@ -14,6 +14,34 @@
 % Write text in here
 % Use \subsection and \subsubsection to organize text
 
-In this chapter, we provide a brief overview of the main methods we are going to use.
+\section{Introduction}
+\label{sec:background_intro}
+We will use deep neural networks and probabilistic models extensively throughout this thesis. Although the basic concepts of the former should be fairly familiar to most readers, the latter might be less widely known. Moreover, some of the tools and algorithms that we are going to use are not so trivial and therefore they should better be introduced first, for the sake of completeness and readability.
 
+This chapter will then focus on providing a brief yet rigorous background on the aforementioned subject. We shall start by clarifying some notation and conventions we shall adopt (\Secref{sec:definitions}). Then we proceed with a short introduction to Bayesian networks, motivated by the factorization properties of joint probability functions (\Secref{}). Expectation-Maximization (EM) is presented as an efficient algorithm to learn probabilistic models with unobserved variables (\Secref{}). We then review the hidden Markov model (HMM), which will play a central role in Chapter \ref{chp:networked_data_streams}, and present the instantiation of the EM algorithm for this particular model (\Secref{}). The chapter is concluded with a brief introduction to variational inference (\Secref{}). Under this setting, the variational autoencoder will deserve special attention (\Secref{}), as it will be one of the models employed in Chapter \ref{chp:domain_generalization}.
 
+\section{Useful definitions and conventions}
+\label{sec:definitions}
+In this section, we introduce some further notations and definitions that will be used throughout this document.
+
+It is important to remark that the same notation is used to denote discrete and continuous random variables as well as to denote probability mass functions and probability density functions. Specifically, given a random variable $\rx$ defined in $\gX$, $p(\rx)$ denotes the probability mass of $\rx$, if $\gX$ is discrete, or the probability density of $\rx$, otherwise. In either case, the \emph{support} of $p(\rx)$ is defined as $\mathrm{supp}(p(\rx)) \triangleq \lbrace x \in \gX: p(\rx=x) > 0 \rbrace$. Moreover, when we want to denote the probability (density) of some arbitrary but fixed value $x \in \gX$, we often use $p(x)$ as a short for $p(\rx=x)$.
+
+The joint probability function of $\rx$ and $\ry$ is denoted by $p(\rx,\ry)$ and the corresponding conditionals of $\ry$ given $\rx$ and $\rx$ given $\ry$ are denoted by the usual $p(\ry \mid \rx)$ and $p(\rx \mid \ry)$, respectively. Again, $\rx$ and $\ry$ can be both discrete, both continuous, or one continuous and the other discrete. For three or more random variables the notation generalizes naturally.
+
+The marginalization of $p(\rx,\ry)$ with respect to a discrete $\ry$ is written as:
+\begin{equation}
+  \sum_{\ry} p(\rx,\ry) = p(\rx),
+\end{equation}
+and the marginalization of $p(\rx,\ry)$ with respect to a continuous $\rx$ is written as:
+\begin{equation}
+    \int p(\rx,\ry) \d \rx = p(\ry).
+\end{equation}
+Note that for brevity we omit the domain of the summation or integration, as this is implied by the support of the random variable. The integral notation is also used for the marginalization with respect to random variables whose type is unspecified. Similarly, if $f(\rx)$ is a function of a random variable $\rx$,
+\begin{equation}
+    \sum_\rx f(\rx) \triangleq \sum_{x \in \mathrm{supp(x)}} f(x) \quad \text{or} \quad \int f(\rx) \d \rx \triangleq \int_\mathrm{supp(x)} f(x) \d x,
+\end{equation}
+depending on whether $\rx$ is discrete or continuous, respectively. Hence, we can write the \emph{expectation} of $f(\rx)$ with respect to $p(\rx)$ as:
+\begin{equation}
+    \E_{\rx \sim p(\rx)} \left[f(\rx)\right] \triangleq \sum_\rx f(\rx) p(\rx) \quad \text{or} \quad \E_{\rx \sim p(\rx)} \left[f(\rx)\right] \triangleq \int f(\rx) p(\rx) \d \rx,
+\end{equation}
+for a discrete or continuous $\rx$, respectively.
