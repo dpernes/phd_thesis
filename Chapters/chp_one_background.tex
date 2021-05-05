@@ -24,24 +24,68 @@ This chapter will then focus on providing a brief yet rigorous background on the
 \label{sec:definitions}
 In this section, we introduce some further notations and definitions that will be used throughout this document.
 
-It is important to remark that the same notation is used to denote discrete and continuous random variables as well as to denote probability mass functions and probability density functions. Specifically, given a random variable $\rx$ defined in $\gX$, $p(\rx)$ denotes the probability mass of $\rx$, if $\gX$ is discrete, or the probability density of $\rx$, otherwise. In either case, the \emph{support} of $p(\rx)$ is defined as $\mathrm{supp}(p(\rx)) \triangleq \lbrace x \in \gX: p(\rx=x) > 0 \rbrace$. Moreover, when we want to denote the probability (density) of some arbitrary but fixed value $x \in \gX$, we often use $p(x)$ as a short for $p(\rx=x)$.
+It is important to remark that the same notation is used to denote discrete and continuous random variables as well as to denote probability mass functions and probability density functions. Specifically, given a random variable $\rx$ defined in $\gX$, $p(\rx)$ denotes the probability mass of $\rx$, if $\gX$ is discrete, or the probability density of $\rx$, otherwise. In either case, the \emph{support} of $p(\rx)$ is defined as $\mathrm{Supp}(p(\rx)) \triangleq \lbrace x \in \gX: p(\rx=x) > 0 \rbrace$. Moreover, when we want to denote the probability (density) of some arbitrary but fixed value $x \in \gX$, we often use $p(x)$ as a short for $p(\rx=x)$.
 
 The joint probability function of $\rx$ and $\ry$ is denoted by $p(\rx,\ry)$ and the corresponding conditionals of $\ry$ given $\rx$ and $\rx$ given $\ry$ are denoted by the usual $p(\ry \mid \rx)$ and $p(\rx \mid \ry)$, respectively. Again, $\rx$ and $\ry$ can be both discrete, both continuous, or one continuous and the other discrete. For three or more random variables the notation generalizes naturally.
 
 The marginalization of $p(\rx,\ry)$ with respect to a discrete $\ry$ is written as:
 \begin{equation}
-  \sum_{\ry} p(\rx,\ry) = p(\rx),
+  \sum_{\ry} p(\rx,\ry) \triangleq \sum_{y \in \gY} p(\rx,y) = p(\rx),
 \end{equation}
 and the marginalization of $p(\rx,\ry)$ with respect to a continuous $\rx$ is written as:
 \begin{equation}
-    \int p(\rx,\ry) \d \rx = p(\ry).
+    \int p(\rx,\ry) \d \rx \triangleq \int_{\gX} p(x,\ry) \d x = p(\ry).
 \end{equation}
-Note that for brevity we omit the domain of the summation or integration, as this is implied by the support of the random variable. The integral notation is also used for the marginalization with respect to random variables whose type is unspecified. Similarly, if $f(\rx)$ is a function of a random variable $\rx$,
+Note that for brevity we omit the domain of the summation or integration, as this is defined implicitly by the set where the random variable is defined. The integral notation is also used for the marginalization with respect to random variables whose type is unspecified. Similarly, if $f(\rx)$ is a function of a random variable $\rx$,
 \begin{equation}
-    \sum_\rx f(\rx) \triangleq \sum_{x \in \mathrm{supp(x)}} f(x) \quad \text{or} \quad \int f(\rx) \d \rx \triangleq \int_\mathrm{supp(x)} f(x) \d x,
+    \sum_\rx f(\rx) \triangleq \sum_{x \in \gX} f(x) \quad \text{or} \quad \int f(\rx) \d \rx \triangleq \int_\gX f(x) \d x,
 \end{equation}
 depending on whether $\rx$ is discrete or continuous, respectively. Hence, we can write the \emph{expectation} of $f(\rx)$ with respect to $p(\rx)$ as:
 \begin{equation}
     \E_{\rx \sim p(\rx)} \left[f(\rx)\right] \triangleq \sum_\rx f(\rx) p(\rx) \quad \text{or} \quad \E_{\rx \sim p(\rx)} \left[f(\rx)\right] \triangleq \int f(\rx) p(\rx) \d \rx,
 \end{equation}
 for a discrete or continuous $\rx$, respectively.
+
+\section{Bayesian networks}
+\label{sec:bayesian_networks}
+
+Given $n$ random variables $\rx_1, \rx_2, \dots, \rx_n$, the \emph{chain rule of probability} allows the factorization of their joint distribution as:\footnote{The expression on the right-hand side of \eqref{eq:chain_rule} is not well defined outside the support of $p(\rx_1), p(\rx_1, \rx_2), \dots, p(\rx_1, \rx_2, \dots, \rx_{n-1})$. For those values, one has $p(\rx_1, \rx_2, \dots, \rx_n)=0$.}
+\begin{equation}
+    \label{eq:chain_rule}
+    p(\rx_1,\rx_2,\dots,\rx_n) = p(\rx_1) \prod_{i=1}^n p(\rx_i \mid \rx_{i-1}, \rx_{i-2}, \dots, \rx_1).
+\end{equation}
+Starting from this product, we may build a directed graph with $n$ vertices, one for each random variable, where there exists an edge $i \rightarrow j$ if and only there is a factor where $\rx_i$ is conditioned on $\rx_j$. Such a graph is known as a \emph{Bayesian network}. From its definition, it is clear that the factorization in \eqref{eq:chain_rule} corresponds to the graph in \Figref{fig:complete_bayesian_net}. Clearly, a Bayesian network defines a bijection between random variables and graph nodes, so with a slight abuse of terminology we represent and refer to nodes by the random variable they are associated with, rather than by their index.
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[auto, node distance=3cm, every loop/.style={},thick,
+            main node/.style={circle,draw,font=\sffamily\Large\bfseries},
+            hidden node/.style={circle,draw,fill=lightgray,font=\sffamily\Large\bfseries},
+            box node/.style={rectangle,dashed,draw,anchor=center},
+            empty node/.style={rectangle,fill=white,anchor=center},]
+
+
+            \node[main node,minimum size=1.5cm] (x1) {$\rx_1$};
+            \node[main node,minimum size=1.5cm] (x2) [right of=x1] {$\rx_2$};
+            \node[main node,minimum size=1.5cm] (x3) [right of=x2] {$\rx_3$};
+            \node[empty node] (dots) [right of=x3] {$\dots$};
+            \node[main node,minimum size=1.5cm] (xn) [right of=dots] {$\rx_n$};
+
+
+            \draw[->]
+            (x1) edge (x2)
+            (x2) edge (x3)
+            (x3) edge (dots)
+            (dots) edge (xn)
+            (x1) edge[bend right] (x3)
+            (x1) edge[bend right] (dots)
+            (x1) edge[bend right] (xn)
+            (x2) edge[bend right] (dots)
+            (x2) edge[bend right] (xn)
+            (x3) edge[bend right] (xn);
+
+    \end{tikzpicture}
+    \caption{Bayesian network corresponding to \eqref{eq:chain_rule}.}
+    \label{fig:complete_bayesian_net}
+\end{figure}
+Since the factorization in \eqref{eq:chain_rule} is general (i.e.\ it does not assume any conditional independence between random variables), the Bayesian network in \Figref{fig:complete_bayesian_net} is said to be \emph{complete}.
