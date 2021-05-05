@@ -15,15 +15,15 @@
 % Use \subsection and \subsubsection to organize text
 
 \begin{tcolorbox}
-	\small{
-		Some parts of this chapter were originally published in or adapted from:
-		\begin{itemize}
-			\item[] \cite{ThesisFrancisco} \bibentry{ThesisFrancisco} (presented in \Secref{sec:da_sensors})
-			\item[] \cite{MODAFM} \bibentry{MODAFM} (presented in \Secref{sec:modafm})
-		\end{itemize}
+    \small{
+    Some parts of this chapter were originally published in or adapted from:
+    \begin{itemize}
+        \item[] \cite{ThesisFrancisco} \bibentry{ThesisFrancisco} (presented in \Secref{sec:da_sensors})
+        \item[] \cite{MODAFM} \bibentry{MODAFM} (presented in \Secref{sec:modafm})
+    \end{itemize}
 
-		The Master's thesis \cite{ThesisFrancisco} was supervised by Jaime S. Cardoso and co-supervised by Diogo Pernes.
-	}
+    The Master's thesis \cite{ThesisFrancisco} was supervised by Jaime S. Cardoso and co-supervised by Diogo Pernes.
+    }
 \end{tcolorbox}
 
 \section{Introduction}
@@ -47,39 +47,39 @@ We start by analyzing the problem of DA from a theoretical perspective and then 
 
 Before we present and discuss the most important results, let us introduce a few preliminary definitions. A \newterm{domain} $\gD$ is defined by a joint distribution $p_\gD(\rvx, \rvy)$ over input features $\rvx \in \gX$ and target variables $\rvy \in \gY$, where $\gX$ and $\gY$ denote the input and target spaces, respectively. For the domain adaptation task to be well defined, at least two domains must be considered: a \newterm{source} domain $\gS$, with joint distribution denoted by $p_\gS(\rvx, \rvy)$, from which abundant annotated data is usually available, and a \newterm{target} domain $\gT$, with joint distribution $p_\gT(\rvx, \rvy)$, from which scarce or even zero annotated data is available at training time. Following most classical results from statistical learning theory, \citet{BenDavid2010} focused on binary classification, thus $\gY = \{0, 1\}$. Under this setting, it is possible to define a \newterm{labeling function} $f_\gD: \gX \mapsto [0, 1]$ for each domain, given by $f_\gD(\vx) = p_\gD(\ry=1 \mid \vx)$. A \newterm{hypothesis} is any function $h: \gX \mapsto \{0,1\}$ and a set $\gH$ of these functions is called a \newterm{hypothesis class}. The expected absolute difference between $h$ and $f_\gD$ is called the \newterm{risk} (or \newterm{error}) of hypothesis $h$ (with respect to the labeling function $f_\gD$):
 \begin{equation}
-	\label{eq:risk}
-	\epsilon(h,f_\gD) \triangleq \E_{\rvx \sim p_\gD} |h(\rvx) - f_\gD(\rvx)|.
+    \label{eq:risk}
+    \epsilon(h,f_\gD) \triangleq \E_{\rvx \sim p_\gD} |h(\rvx) - f_\gD(\rvx)|.
 \end{equation}
 We use $\epsilon_\gS(h)$ and $\epsilon_\gT(h)$ as shorthands for $\epsilon(h,f_\gS)$ and $\epsilon(h,f_\gT)$ and refer to them as the source and target risks (or errors), respectively. The empirical estimates of these are denoted as $\widehat{\epsilon}_\gS(h)$ and $\widehat{\epsilon}_\gT(h)$, respectively.
 
 Given two domains $\gD$ and $\gD'$ and a hypothesis class $\gH$, the $\gH$-divergence provides a distance measure between the marginal distributions of features in $\gD$ and $\gD'$ (according to $\gH$):
 \begin{equation*}
-	\label{eq:h_div}
-	d_{\gH}(\gD,\gD') \triangleq \sup_{h \in \gH} 2 |\mathrm{Pr}_{\gD}(\1_h) - \mathrm{Pr}_{\gD'}(\1_h)|,
+    \label{eq:h_div}
+    d_{\gH}(\gD,\gD') \triangleq \sup_{h \in \gH} 2 |\mathrm{Pr}_{\gD}(\1_h) - \mathrm{Pr}_{\gD'}(\1_h)|,
 \end{equation*}
 where $\1_h \triangleq \{\vx \in \gX: h(\vx)=1\}$ and $\mathrm{Pr}_{\gD}(\1_h)$ is the probability assigned by the density $p_\gD(\rvx)$ to the subset $\1_h \subseteq \gX$. As is often the case, when the true underlying marginal distributions are unknown or intractable but finite sets of (unlabeled) samples from both domains are available, an empirical $\gH$-divergence can be constructed by replacing the true probabilities $\mathrm{Pr}_{\gD}(\1_h)$ and $\mathrm{Pr}_{\gD'}(\1_h)$ by the respective empirical estimates. Remarkably, under weak conditions on the hypothesis class, computing this empirical $\gH$-divergence is equivalent to finding the hypothesis in $\gH$ that maximally discriminates between samples of the two domains. This result is enunciated formally in Lemma \ref{lemma:emp_h_div} and, as we shall see later, is exploited by adversarial-based approaches for domain adaptation.
 \begin{lemma}
-	\label{lemma:emp_h_div}
-	(Lemma 2 from \citet{BenDavid2010}) Let $\gH$ be a hypothesis class such that if $h \in \gH$ then $1-h \in \gH$. Given two sets $\widehat{\gD}$ and $\widehat{\gD}'$ of $n$ samples each drawn from two domains $D$ and $D'$, the empirical $\gH$-divergence between $\gD$ and $\gD'$ is given by:
-	\begin{equation}
-		\widehat{d}_{\gH}(\gD,\gD') = 2 \left(1 - \min_{h \in \gH} \left[\frac{1}{n} \sum_{\vx:~h(\vx)=1} \1_{\vx \in \widehat{\gD}} + \frac{1}{n} \sum_{\vx:~h(\vx)=0} \1_{\vx \in \widehat{\gD}'}\right]\right).
-	\end{equation}
+    \label{lemma:emp_h_div}
+    (Lemma 2 from \citet{BenDavid2010}) Let $\gH$ be a hypothesis class such that if $h \in \gH$ then $1-h \in \gH$. Given two sets $\widehat{\gD}$ and $\widehat{\gD}'$ of $n$ samples each drawn from two domains $D$ and $D'$, the empirical $\gH$-divergence between $\gD$ and $\gD'$ is given by:
+    \begin{equation}
+        \widehat{d}_{\gH}(\gD,\gD') = 2 \left(1 - \min_{h \in \gH} \left[\frac{1}{n} \sum_{\vx:~h(\vx)=1} \1_{\vx \in \widehat{\gD}} + \frac{1}{n} \sum_{\vx:~h(\vx)=0} \1_{\vx \in \widehat{\gD}'}\right]\right).
+    \end{equation}
 \end{lemma}
 Note that if the two sets $\widehat{\gD}$ and $\widehat{\gD}'$ can be discriminated perfectly by a hypothesis $h \in \gH$ (i.e.\ if there is an $h \in \gH$ such that $h(\vx) = 0$ if $x \in \widehat{\gD}$ and $h(\vx) = 1$ if $x \in \widehat{\gD}'$), then $\widehat{d}_{\gH}(\gD,\gD')$ is maximum and equal to 2.
 
 For any hypothesis class $\gH$, we may define the \newterm{symmetric difference hypothesis class} $\gH \Delta \gH$ as:
 \begin{equation}
-\label{eq:h_delta_h}
-\gH \Delta \gH \triangleq \{l: l(\vx) = h(\vx) \oplus h'(\vx), \; h, h' \in \gH\},
+    \label{eq:h_delta_h}
+    \gH \Delta \gH \triangleq \{l: l(\vx) = h(\vx) \oplus h'(\vx), \; h, h' \in \gH\},
 \end{equation}
 where $\oplus$ denotes the ``exclusive or" (xor) operation. Combining this definition with \eqref{eq:h_div}, the definition of $\gH \Delta \gH$-divergence, which happens to play a major role in Theorem \ref{thm:da_bound_single_source}, follows immediately. This theorem is the main result in this section as it provides an upper bound for the target risk given the source risk and the $\gH \Delta \gH$-divergence between the source and target domains.
 \begin{theorem}
-	\label{thm:da_bound_single_source} (Theorem 2 from \citet{BenDavid2010}) Let $\gH$ be a hypothesis class with VC-dimension $d$. Consider $n$ unlabeled samples drawn from each of the two domains $\gS$ (source) and $\gT$ (target). Then, for every $h \in \gH$ and any $\delta \in (0,1)$, with probability at least $1-\delta$ over the choice of samples,
-	\begin{equation}
-		\label{eq:da_bound_single_source}
-		\epsilon_\gT(h) \leq \epsilon_\gS(h) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS, \gT) + \lambda + 2\sqrt{\frac{2d\log(2n) + \log(\frac{2}{\delta})}{n}},
-	\end{equation}
-	where $\lambda \triangleq \min_{h \in \gH} \epsilon_\gS(h) + \epsilon_\gT(h)$.
+    \label{thm:da_bound_single_source} (Theorem 2 from \citet{BenDavid2010}) Let $\gH$ be a hypothesis class with VC-dimension $d$. Consider $n$ unlabeled samples drawn from each of the two domains $\gS$ (source) and $\gT$ (target). Then, for every $h \in \gH$ and any $\delta \in (0,1)$, with probability at least $1-\delta$ over the choice of samples,
+    \begin{equation}
+        \label{eq:da_bound_single_source}
+        \epsilon_\gT(h) \leq \epsilon_\gS(h) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS, \gT) + \lambda + 2\sqrt{\frac{2d\log(2n) + \log(\frac{2}{\delta})}{n}},
+    \end{equation}
+    where $\lambda \triangleq \min_{h \in \gH} \epsilon_\gS(h) + \epsilon_\gT(h)$.
 \end{theorem}
 This bound immediately confirms the intuition that a low target error can be achieved by training a classifier to minimize the error in the source domain, provided that the marginal distributions of features are similar (i.e.\ $\widehat{d}_{\gH \Delta \gH}(\gS, \gT)$ is small) and a low error on the combination of the two domains can be achieved (i.e.\ $\lambda$ is also small). A deeper and more complete interpretation of this bound shall be provided later on, when we take into account the fact that, by applying deep neural networks, we can not only construct rich hypothesis classes but also manipulate and learn feature representations. The latter observation suggests that this kind of classifiers may also have an impact on the $\widehat{d}_{\gH \Delta \gH}(\gS, \gT)$ and $\lambda$ terms in \eqref{eq:da_bound_single_source}, which will indeed be the case.
 
@@ -87,13 +87,13 @@ This bound immediately confirms the intuition that a low target error can be ach
 \label{sec:da_theory_ms}
 So far we have only considered the setting where a single source domain was available. However, in many practical cases, the annotated training dataset consists of a collection of subdatasets, each one belonging to its own domain. Therefore, it makes sense to consider $k$ distinct source domains $\gS_1, \gS_2, \dots, \gS_k$ and, in particular, to see how Theorem \ref{thm:da_bound_single_source} can be generalized to this setting.
 \begin{theorem}
-	\label{thm:da_bound_multi_source}
-	(Theorem 2 from \citet{Zhao2018}) Let $\gH$ be a hypothesis class with VC-dimension $d$. Consider $n$ unlabeled samples drawn from the target domain $\gT$ and $n/k$ annotated samples drawn from each of the $k$ source domains $\gS_1, \gS_2, \dots, \gS_k$. Then, for every $h \in \gH$, any $\valpha \in [0,1]^k: \sum_{j=1}^k \evalpha_i = 1$, and any $\delta \in (0,1)$, with probability at least $1-\delta$ over the choice of samples,
-	\begin{equation}
-		\label{eq:da_bound_multi_source}
-		\epsilon_\gT(h) \leq \sum_{j=1}^k \evalpha_j \left(\widehat{\epsilon}_{\gS_j}(h) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS_j, \gT)\right) + \lambda_\valpha + O \left(\sqrt{\frac{1}{n} \left(\log \frac{1}{\delta} +d \log \frac{n}{d} \right)} \right),
-	\end{equation}
-	where $\lambda_\valpha \triangleq \min_{h \in \gH} \epsilon_\gT(h) + \sum_{j=1}^k \evalpha_j \epsilon_{\gS_j}(h)$.
+    \label{thm:da_bound_multi_source}
+    (Theorem 2 from \citet{Zhao2018}) Let $\gH$ be a hypothesis class with VC-dimension $d$. Consider $n$ unlabeled samples drawn from the target domain $\gT$ and $n/k$ annotated samples drawn from each of the $k$ source domains $\gS_1, \gS_2, \dots, \gS_k$. Then, for every $h \in \gH$, any $\valpha \in [0,1]^k: \sum_{j=1}^k \evalpha_i = 1$, and any $\delta \in (0,1)$, with probability at least $1-\delta$ over the choice of samples,
+    \begin{equation}
+        \label{eq:da_bound_multi_source}
+        \epsilon_\gT(h) \leq \sum_{j=1}^k \evalpha_j \left(\widehat{\epsilon}_{\gS_j}(h) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS_j, \gT)\right) + \lambda_\valpha + O \left(\sqrt{\frac{1}{n} \left(\log \frac{1}{\delta} +d \log \frac{n}{d} \right)} \right),
+    \end{equation}
+    where $\lambda_\valpha \triangleq \min_{h \in \gH} \epsilon_\gT(h) + \sum_{j=1}^k \evalpha_j \epsilon_{\gS_j}(h)$.
 \end{theorem}
 Unsurprisingly, the bound in Theorem \ref{thm:da_bound_multi_source} is essentially a convex combination of the bounds provided by Theorem \ref{thm:da_bound_single_source} for each individual source domain. Thus, the same interpretation applies here. Nonetheless, the source weights $\valpha$ provide an extra degree of freedom that should be taken into account. Depending on how much each source domain differs from the target, it may be beneficial to weight each source domain differently. Adjusting these weights is therefore an extra non-trivial task, exclusive to the multi-source setting, that may have a significant impact in the performance of the domain adaptation algorithm.
 
@@ -106,37 +106,37 @@ As we have just seen from a theoretical point of view, the success of the DA tas
 \subsubsection{Target shift}
 \label{sec:target_shift_sota}
 \begin{figure}
-	\centering
-	\begin{tikzpicture}[every loop/.style={},thick,
-		main node/.style={circle,draw},font=\sffamily\Large\bfseries]
+    \centering
+    \begin{tikzpicture}[every loop/.style={},thick,
+        main node/.style={circle,draw},font=\sffamily\Large\bfseries]
 
-		\node[main node,minimum size=1.5cm] (D) {$\gD$};
-		\node[main node,minimum size=1.5cm] (y) [right=1.5cm of D] {$\ry$};
-		\node[main node,minimum size=1.5cm] (x) [right=1.5cm of y] {$\rvx$};
+        \node[main node,minimum size=1.5cm] (D) {$\gD$};
+        \node[main node,minimum size=1.5cm] (y) [right=1.5cm of D] {$\ry$};
+        \node[main node,minimum size=1.5cm] (x) [right=1.5cm of y] {$\rvx$};
 
-		\draw[->]
-		(D) edge (y)
-		(y) edge (x);
+        \draw[->]
+        (D) edge (y)
+        (y) edge (x);
 
-	\end{tikzpicture}
-	\caption{Graphical representation of the target shift setting as a Bayesian network.}
-	\label{fig:target_shift}
+    \end{tikzpicture}
+    \caption{Graphical representation of the target shift setting as a Bayesian network.}
+    \label{fig:target_shift}
 \end{figure}
 In the \newterm{target shift} setting, only the marginal distribution of labels is allowed to vary across domains. A practical example where this assumption may be realistic is when the label $\ry$ represents having or not a certain disease and the input features $\rvx$ are symptoms. It is plausible to assume that the prevalence of the disease may vary over time or across different populations, but the probability of some symptom being present or absent given that one has or not the disease should remain constant. Thus, as implied by \Figref{fig:target_shift}, the joint distribution of any domain $\gD$ is assumed to factorize as $p_\gD(\rvx, \ry) = p(\rvx \mid \ry) p_\gD(\ry)$, where $p(\rvx \mid \ry)$ is domain-invariant. By further assuming that $\mathrm{Supp}(p_\gT(\ry)) \subseteq \mathrm{Supp}(p_\gS(\ry))$, we have:
 \begin{align}
-	p_\gT(\ry \mid \rvx) &\propto p(\rvx \mid \ry) p_\gT(\ry) \nonumber\\
-	&= p(\rvx \mid \ry) p_\gS(\ry) \frac{p_\gT(\ry)}{p_\gS(\ry)} \nonumber\\
-	&\propto p_\gS(\ry \mid \rvx) \frac{p_\gT(\ry)}{p_\gS(\ry)}.
+    p_\gT(\ry \mid \rvx) &\propto p(\rvx \mid \ry) p_\gT(\ry) \nonumber\\
+    &= p(\rvx \mid \ry) p_\gS(\ry) \frac{p_\gT(\ry)}{p_\gS(\ry)} \nonumber\\
+    &\propto p_\gS(\ry \mid \rvx) \frac{p_\gT(\ry)}{p_\gS(\ry)}.
 \end{align}
 Thus, if the class ratios $p_\gT(\ry)/p_\gS(\ry)$ are known, the problem of DA under target shift is solved by learning a probabilistic classifier on the source domain, reweighting it with the class ratios, and then normalizing the class scores. Therefore, the literature for DA under target shift focuses on estimating class ratios when these are unknown and cannot be estimated directly from the training data, due to the absence of labels for the target samples.
 
 An elegant and simple solution to this problem was proposed by \citet{Lipton2018}. Specifically, for any classifier $h: \gX \mapsto \gY$ trained with labeled data from the source domain, the target shift assumption implies that $p_{\gT}(h(\rvx) \mid \ry) = p_{\gS}(h(\rvx) \mid \ry)$ and hence:
 \begin{align}
-p_{\gT}(h(\rvx)) &= \sum_{\ry} p_{\gT}(h(\rvx) \mid \ry) p_{\gT}(\ry) \nonumber\\
-\allowdisplaybreaks
-&= \sum_{\ry} p_{\gS}(h(\rvx) \mid \ry) p_{\gT}(\ry) \label{eq:estim_class_dist}\\
-\allowdisplaybreaks
-&= \sum_{\ry} p_{\gS}(h(\rvx), \ry) \frac{p_{\gT}(\ry)}{p_{\gS}(\ry)}. \label{eq:estim_class_ratio}
+    p_{\gT}(h(\rvx)) &= \sum_{\ry} p_{\gT}(h(\rvx) \mid \ry) p_{\gT}(\ry) \nonumber\\
+    \allowdisplaybreaks
+    &= \sum_{\ry} p_{\gS}(h(\rvx) \mid \ry) p_{\gT}(\ry) \label{eq:estim_class_dist}\\
+    \allowdisplaybreaks
+    &= \sum_{\ry} p_{\gS}(h(\rvx), \ry) \frac{p_{\gT}(\ry)}{p_{\gS}(\ry)}. \label{eq:estim_class_ratio}
 \end{align}
 Note that $p_{\gS}(h(\rvx) \mid \ry)$, $p_{\gS}(h(\rvx), \ry)$, and $p_{\gS}(\ry)$ can all be estimated from labeled source samples and $p_{\gT}(h(\rvx))$ can be estimated from unlabeled target samples. Thus, one can either use \eqref{eq:estim_class_dist} to estimate $p_{\gT}(\ry)$ or \eqref{eq:estim_class_ratio} to estimate class ratios directly.
 
@@ -145,73 +145,73 @@ Other approaches involve learning class-dependent weights to match the mean cond
 \subsubsection{Conditional shift}
 \label{sec:cond_shift_sota}
 \begin{figure}
-	\centering
-	\begin{tikzpicture}[every loop/.style={},thick,
-	main node/.style={circle,draw},font=\sffamily\Large\bfseries]
+    \centering
+    \begin{tikzpicture}[every loop/.style={},thick,
+        main node/.style={circle,draw},font=\sffamily\Large\bfseries]
 
-	\node[main node,minimum size=1.5cm] (y) {$\ry$};
-	\node[main node,minimum size=1.5cm] (x) [right=1.5cm of y] {$\rvx$};
-	\node[main node,minimum size=1.5cm] (D) [right=1.5cm of x] {$\gD$};
+        \node[main node,minimum size=1.5cm] (y) {$\ry$};
+        \node[main node,minimum size=1.5cm] (x) [right=1.5cm of y] {$\rvx$};
+        \node[main node,minimum size=1.5cm] (D) [right=1.5cm of x] {$\gD$};
 
-	\draw[->]
-	(y) edge (x)
-	(D) edge (x);
+        \draw[->]
+        (y) edge (x)
+        (D) edge (x);
 
-	\end{tikzpicture}
-	\caption{Graphical representation of the conditional shift setting as a Bayesian network.}
-	\label{fig:cond_shift}
+    \end{tikzpicture}
+    \caption{Graphical representation of the conditional shift setting as a Bayesian network.}
+    \label{fig:cond_shift}
 \end{figure}
 In the \newterm{conditional shift} setting, the marginal distribution of labels is constant and the conditional of features given labels may change across domains. This scenario is represented in \Figref{fig:cond_shift}, from which it becomes clear that the joint distribution takes the form $p_{\gD}(\rvx, \ry) = p(\ry) p_{\gD}(\rvx \mid \ry)$, where $p(\ry)$ is domain-invariant. Besides being less realistic than other assumptions, DA under conditional shift is in general an ill-posed problem. Nonetheless, \citet{Zhang2013} show that identifiability of $p_{\gT}(\rvx \mid \ry)$ holds when it is assumed that, for any given $y$, $p_{\gT}(\rvx \mid y)$ only differs from $p_{\gS}(\rvx \mid y)$ in location and scale and derive a kernel-based approach to estimate these parameters.
 
 \subsubsection{Concept shift}
 \label{sec:concept_shift_sota}
 \begin{figure}
-	\centering
-	\begin{tikzpicture}[every loop/.style={},thick,
-	main node/.style={circle,draw},font=\sffamily\Large\bfseries]
+    \centering
+    \begin{tikzpicture}[every loop/.style={},thick,
+        main node/.style={circle,draw},font=\sffamily\Large\bfseries]
 
-	\node[main node,minimum size=1.5cm] (x) {$\rvx$};
-	\node[main node,minimum size=1.5cm] (y) [right=1.5cm of x] {$\ry$};
-	\node[main node,minimum size=1.5cm] (D) [right=1.5cm of y] {$\gD$};
+        \node[main node,minimum size=1.5cm] (x) {$\rvx$};
+        \node[main node,minimum size=1.5cm] (y) [right=1.5cm of x] {$\ry$};
+        \node[main node,minimum size=1.5cm] (D) [right=1.5cm of y] {$\gD$};
 
-	\draw[->]
-	(x) edge (y)
-	(D) edge (y);
+        \draw[->]
+        (x) edge (y)
+        (D) edge (y);
 
-	\end{tikzpicture}
-	\caption{Graphical representation of the concept shift setting as a Bayesian network.}
-	\label{fig:concept_shift}
+    \end{tikzpicture}
+    \caption{Graphical representation of the concept shift setting as a Bayesian network.}
+    \label{fig:concept_shift}
 \end{figure}
 \newterm{Concept shift} refers to the situation where the marginal feature distributions $p(\rvx)$ are constant but the conditional distribution of the target variable $p_{\gD}(\ry \mid \rvx)$ is domain-dependent, thus $p_{\gD}(\rvx, \ry) = p(\rvx)p_{\gD}(\ry \mid \rvx)$, as implied by \Figref{fig:concept_shift}. When the change happens over time, this setting is also known as \newterm{concept drift} (\citet{Webb2018}). The literature on concept drift is vast and focuses mostly on the detection of its occurrence so that the model can be updated using new data. \citet{Gama2014} overview the most popular techniques to address this problem.
 
 \subsubsection{Covariate shift}
 \label{sec:cov_shift_sota}
 \begin{figure}
-	\centering
-	\begin{tikzpicture}[every loop/.style={},thick,
-	main node/.style={circle,draw},font=\sffamily\Large\bfseries]
+    \centering
+    \begin{tikzpicture}[every loop/.style={},thick,
+        main node/.style={circle,draw},font=\sffamily\Large\bfseries]
 
-	\node[main node,minimum size=1.5cm] (D) {$\gD$};
-	\node[main node,minimum size=1.5cm] (x) [right=1.5cm of D] {$\rvx$};
-	\node[main node,minimum size=1.5cm] (y) [right=1.5cm of x] {$\ry$};
+        \node[main node,minimum size=1.5cm] (D) {$\gD$};
+        \node[main node,minimum size=1.5cm] (x) [right=1.5cm of D] {$\rvx$};
+        \node[main node,minimum size=1.5cm] (y) [right=1.5cm of x] {$\ry$};
 
-	\draw[->]
-	(D) edge (x)
-	(x) edge (y);
+        \draw[->]
+        (D) edge (x)
+        (x) edge (y);
 
-	\end{tikzpicture}
-	\caption{Graphical representation of the covariate shift setting as a Bayesian network.}
-	\label{fig:cov_shift}
+    \end{tikzpicture}
+    \caption{Graphical representation of the covariate shift setting as a Bayesian network.}
+    \label{fig:cov_shift}
 \end{figure}
 \newterm{Covariate shift} is by far the most common assumption and therefore the most widely addressed setting in the DA literature. As implied by the graphical representation in \Figref{fig:cov_shift}, here the conditional distribution of labels given features is constant and the marginal distribution of features is domain-dependent. Thus, $p_\gD(\rvx, \ry) = p(\ry \mid \rvx) p_\gD(\rvx)$, where $p(\ry \mid \rvx)$ is constant across domains. This assumption might hold for instance in image classification problems where the domain shift is caused by different sensors or lighting conditions.
 
 Since $p_\gT(\ry \mid \rvx) = p_\gS(\ry \mid \rvx)$, infinite labeled data from the source domain and a consistent estimator of this conditional distribution would solve this DA task. However, the former is obviously unrealistic and therefore the problem should be analyzed taking into account that the available data is finite. Let $\ell(\cdot, \cdot)$ be any loss function for the supervised learning problem. The goal is then to find an unbiased estimator of the target loss $\E_{\rvx, \ry \sim p_\gT} \ell(h(\rvx),\ry)$ when no labeled samples from the target domain are available. Following \citet{Sugiyama2007}, if the marginal densities $p_\gS(\rvx)$ and $p_\gT(\rvx)$ are known and assuming $\mathrm{Supp}(p_\gT(\rvx)) \subseteq \mathrm{Supp}(p_\gS(\rvx))$, this estimator can be obtained using \newterm{importance weights} $w(\rvx) \triangleq p_\gT(\rvx)/p_\gS(\rvx)$:
 \begin{align}
-	\E_{\rvx, \ry \sim p_\gT} \ell(h(\rvx),\ry) &= \sum_{\ry} \int l(h(\rvx),\ry) p_\gT(\rvx, \ry) \d\rvx \nonumber\\
-	&= \sum_{\ry} \int \ell(h(\rvx),\ry) p(\ry \mid \rvx) p_\gT(\rvx) \d\rvx \nonumber\\
-	&= \sum_{\ry} \int \frac{p_\gT(\rvx)}{p_\gS(\rvx)} \ell(h(\rvx),\ry)  p(\ry \mid \rvx) p_\gS(\rvx) \d\rvx \nonumber\\
-	&= \sum_{\ry} \int w(\rvx) \ell(h(\rvx),\ry)  p_\gS(\rvx, \ry) \d\rvx \nonumber\\
-	&= \E_{\rvx, \ry \sim p_\gS} w(\rvx) \ell(h(\rvx),\ry).
+    \E_{\rvx, \ry \sim p_\gT} \ell(h(\rvx),\ry) &= \sum_{\ry} \int l(h(\rvx),\ry) p_\gT(\rvx, \ry) \d\rvx \nonumber\\
+    &= \sum_{\ry} \int \ell(h(\rvx),\ry) p(\ry \mid \rvx) p_\gT(\rvx) \d\rvx \nonumber\\
+    &= \sum_{\ry} \int \frac{p_\gT(\rvx)}{p_\gS(\rvx)} \ell(h(\rvx),\ry)  p(\ry \mid \rvx) p_\gS(\rvx) \d\rvx \nonumber\\
+    &= \sum_{\ry} \int w(\rvx) \ell(h(\rvx),\ry)  p_\gS(\rvx, \ry) \d\rvx \nonumber\\
+    &= \E_{\rvx, \ry \sim p_\gS} w(\rvx) \ell(h(\rvx),\ry).
 \end{align}
 Hence, $(1/n) \sum_{i=1}^{n} w(\vx_i) \ell(h(\vx_i),y_i)$ is an unbiased estimator of the target loss, constructed using only source data, which can therefore be used as the loss for the supervised learning problem. When the marginal distributions are unknown and the feature space is low-dimensional, kernel density estimation techniques can be employed to estimate them (e.g.\ \citet{Shimodaira2000,Sugiyama2007,Cortes2010}). An alternative that removes the constraint on the support of the marginal target distribution is learning a transformation $T: \gX \mapsto \gX$ such that $p_{\gS}(T(\rvx)) = p_{\gT}(\rvx)$, which can be accomplished using optimal transport theory (\citet{Courty2015}). Later approaches aim to relax the covariate shift assumption by trying to align the joint source and target distributions (\citet{Courty2017}) and extend the same principles to the multi-source setting (\citet{Turrisi2020}).
 
@@ -220,8 +220,8 @@ For high-dimensional data (e.g.\ images), where the marginal distributions are t
 Adversarial-based DA was originally introduced by \citet{Ganin2015} and results from the observation that
 computing $\widehat{d}_{\gH \Delta \gH}(\gS, \gT)$ is equivalent to finding a classifier that maximally discriminates between samples of the source and target domains (Lemma \ref{lemma:emp_h_div}). Intuitively, if no classifier exists that can distinguish between source and target features, then the distributions of these two must coincide. Thus, if we have access to sets $\widehat{\gS}$ and $\widehat{\gT}$ of labeled samples from the source domain and unlabeled samples from the target, respectively, we can train a feature extractor network $g:\gX \mapsto \gZ$, a classifier $h:\gZ \mapsto \gY$, and a domain discriminator $d:\gZ \mapsto \{0,1\}$ to solve the following minimax problem\footnote{This objective is merely formal since the 0-1 loss is non-smooth and intractable. In practice, the usual classification losses are used instead.}:
 \begin{equation}
-	\label{eq:dann_obj}
-	\min_{g,h} \max_d \quad \widehat{\epsilon}_\gS(h \circ g) + 1 - \left(\frac{1}{n} \sum_{\vx: d(g(\vx))=1} \1_{\vx \in \widehat{\gS}} + \frac{1}{n} \sum_{\vx: d(g(\vx))=0} \1_{\vx \in \widehat{\gT}}\right),
+    \label{eq:dann_obj}
+    \min_{g,h} \max_d \quad \widehat{\epsilon}_\gS(h \circ g) + 1 - \left(\frac{1}{n} \sum_{\vx: d(g(\vx))=1} \1_{\vx \in \widehat{\gS}} + \frac{1}{n} \sum_{\vx: d(g(\vx))=0} \1_{\vx \in \widehat{\gT}}\right),
 \end{equation}
 where $\circ$ denotes function composition. Several variations to this idea have been proposed so far, aiming to extend it to the multi-source setting (\citet{Zhao2018}), or beyond the covariate shift assumption (\citet{Pei2018}), or both (\citet{Sebag2019}).
 
@@ -249,11 +249,11 @@ Here, we shall explore how to adapt the MDAN model so that both of its adversari
 \label{sec:da_sensors_mdan}
 We now review the MDAN model introduced by \citet{Zhao2018}. This model is motivated by the target risk bound provided in Theorem \ref{thm:da_bound_multi_source} and is an extension to the multi-source setting of the single source model by \citet{Ganin2015}. Specifically, the following formal objective is considered:
 \begin{equation}
-	\min_{g,h} \max_{j \in \{1,\cdots,k\}} \quad \widehat{\epsilon}_{\gS_j}(h \circ g) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS^g_j, \gT^g),
+    \min_{g,h} \max_{j \in \{1,\cdots,k\}} \quad \widehat{\epsilon}_{\gS_j}(h \circ g) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS^g_j, \gT^g),
 \end{equation}
 where $g: \gX \mapsto \gZ$ and $h: \gZ \mapsto \gY$ are, as before, the feature extractor and the classifier networks and $\gS^g_j$ and $\gT^g$ are, respectively, the $j$-th source domain and the target domain representations in the new feature space $\gZ$ (i.e.\ $p_{\gD^g}(\rvx) \triangleq p_\gD(g(\rvx))$ for any domain $\gD$). Here, the empirical $\gH \Delta \gH$-divergence between $\gS^g_j$ and $\gT^g$ is also implemented with an adversarial domain discriminator $d_j:\gZ \mapsto \{0,1\}$ aiming to discriminate between samples of the two domains. Thus, the model comprises $k$ domain discriminator networks, i.e.\ one for each source domain. This objective is therefore identical to \eqref{eq:dann_obj} with the only difference that, since here there are multiple source domains, the model is optimized for the hardest source domain at each training iteration. In this formulation, $\valpha$ in \eqref{eq:da_bound_multi_source} is a one-hot vector whose active component corresponds to the hardest source domain. Because the bound holds for any convex combination of source domains, the authors also explore a soft-max version of this problem, where smaller positive weights are assigned to the easier source domains:
 \begin{equation}
-\min_{g,h} \quad \frac{1}{\gamma} \log \sum_{j=1}^{k} \exp \left( \gamma( \widehat{\epsilon}_{\gS_j}(h \circ g) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS^g_j, \gT^g)) \right).
+    \min_{g,h} \quad \frac{1}{\gamma} \log \sum_{j=1}^{k} \exp \left( \gamma( \widehat{\epsilon}_{\gS_j}(h \circ g) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS^g_j, \gT^g)) \right).
 \end{equation}
 Here, $\gamma > 0$ is a hyperparameter controlling the softness of the max operation ($\gamma \to \infty$ corresponds to the hard-max). In our experiments, we will also evaluate the scenario where the weights $\valpha$ are equal for all domains, i.e.\ where the multi-domain loss consists of the simple average of the losses across source domains.
 
@@ -261,25 +261,25 @@ Here, $\gamma > 0$ is a hyperparameter controlling the softness of the max opera
 \label{sec:da_sensors_grad_rev}
 Adversarial DA algorithms, of which MDAN is a particular case, all aim to solve some variant of the following minimax problem:
 \begin{equation}
-	\min_{\vtheta_g, \vtheta_h} \max_{\vtheta_d} \quad \left \lbrace L(\vtheta_g, \vtheta_h, \vtheta_d) =  L_{\text{task}}(\vtheta_g, \vtheta_h) - \mu_d L_{\text{disc}}(\vtheta_g, \vtheta_d) \right \rbrace,
+    \min_{\vtheta_g, \vtheta_h} \max_{\vtheta_d} \quad \left \lbrace L(\vtheta_g, \vtheta_h, \vtheta_d) =  L_{\text{task}}(\vtheta_g, \vtheta_h) - \mu_d L_{\text{disc}}(\vtheta_g, \vtheta_d) \right \rbrace,
 \end{equation}
 where $L_{\text{task}}$ is the supervised loss for the desired task, $L_{\text{disc}}$ is the classification loss for the domain discrimination task, $\vtheta_g$, $\vtheta_h$, and $\vtheta_d$ are the parameters of the feature extractor, task classifier, and domain discriminator networks, respectively, and $\mu_d > 0$ is a hyperparameter. Larger values of $\mu_d$ imply a stronger enforcement of domain-invariant representations. This is a treatable surrogate of objective \plaineqref{eq:dann_obj}.
 
 Solving this problem then consists in finding a saddle point of this loss function. Using automatic differentiation libraries (e.g.\ PyTorch or TensorFlow), the naive solution would involve declaring two optimizers, one for parameters $\vtheta_g$ and $\vtheta_h$ and another for $\vtheta_d$, and then performing gradient descent with the former and gradient ascent with the latter:
 \begin{align}
-	&\vtheta_g \leftarrow \vtheta_g - \rho \left(\nabla_{\vtheta_g}L_{\text{task}} - \mu_d \nabla_{\vtheta_g} L_{\text{disc}}\right), \label{eq:grad_feature_extractor}\\
-	&\vtheta_h \leftarrow \vtheta_h - \rho \nabla_{\vtheta_h}L_{\text{task}}, \label{eq:grad_task_class}\\
-	&\vtheta_d \leftarrow \vtheta_d + \rho \left(-\mu_d \nabla_{\vtheta_d}L_{\text{disc}}\right), \label{eq:grad_discriminator}
+    &\vtheta_g \leftarrow \vtheta_g - \rho \left(\nabla_{\vtheta_g}L_{\text{task}} - \mu_d \nabla_{\vtheta_g} L_{\text{disc}}\right), \label{eq:grad_feature_extractor}\\
+    &\vtheta_h \leftarrow \vtheta_h - \rho \nabla_{\vtheta_h}L_{\text{task}}, \label{eq:grad_task_class}\\
+    &\vtheta_d \leftarrow \vtheta_d + \rho \left(-\mu_d \nabla_{\vtheta_d}L_{\text{disc}}\right), \label{eq:grad_discriminator}
 \end{align}
 where $\rho>0$ is the learning rate. This implies an extra computational burden because gradients need to be backpropagated through the discriminator network twice, one for computing $\nabla_{\vtheta_d} L_{\text{disc}}$ and another for computing $\nabla_{\vtheta_g} L_{\text{disc}}$.
 
 The gradient reversal layer (\citet{Ganin2015}) is an ingenious solution to this problem. This layer is a pseudo-function $r$ that behaves as the identify in the forward pass but inverts the sign of the gradient in the backward, i.e.:
 \begin{equation}
-	r(\vx) \triangleq \vx, \quad \frac{\partial r}{\partial \vx} \triangleq -I.
+    r(\vx) \triangleq \vx, \quad \frac{\partial r}{\partial \vx} \triangleq -I.
 \end{equation}
 By placing it in between the feature extractor $g$ and the domain discriminator $d$, the gradient $\nabla_{\vtheta_g} L_{\text{disc}}$ will come with its sign inverted. Thus, performing gradient descent over all parameters of
 \begin{equation}
-	L_{\text{task}}(\vtheta_g, \vtheta_h) + \mu_d L_{\text{disc}}(\vtheta_g, \vtheta_d),
+    L_{\text{task}}(\vtheta_g, \vtheta_h) + \mu_d L_{\text{disc}}(\vtheta_g, \vtheta_d),
 \end{equation}
 yields exactly update equations \plaineqref{eq:grad_feature_extractor}, \plaineqref{eq:grad_task_class}, and \plaineqref{eq:grad_discriminator}.
 
@@ -291,17 +291,17 @@ yields exactly update equations \plaineqref{eq:grad_feature_extractor}, \plaineq
 Although each video frame should contain all the information required to identify the number of vehicles in it, issues with the quality of the collected data can make vehicle counting a difficult problem, namely low resolution, vehicle occlusion, and different vehicle scales, particularly noticeable when the camera is too close to the road. Thus, assuming that the frame rate is sufficiently large when compared to the vehicles speed, leveraging information from the previous frames should help improving the accuracy of the prediction for the current frame. For this reason, FCN-rLSTM combines a fully convolutional network with a recurrent module, which preserves memory from the previous frames in LSTM cells. This is a density-based estimation method, being able to deal well with low frame rates, low resolutions, and vehicle occlusions, but having difficulty in accounting for different vehicle scales.
 
 \begin{figure}
-	\centering
-	\includegraphics[width=0.9\linewidth]{ChapterThree/fcn_rlstm.png}
-	\caption{Architecture of the FCN-rLSTM model (reprinted from \citet{Zhang2017}).}
-	\label{fig:fcn_rlstm}
+    \centering
+    \includegraphics[width=0.9\linewidth]{ChapterThree/fcn_rlstm.png}
+    \caption{Architecture of the FCN-rLSTM model (reprinted from \citet{Zhang2017}).}
+    \label{fig:fcn_rlstm}
 \end{figure}
 
 \Figref{fig:fcn_rlstm} shows the full architecture of this model, from which it can be observed that the convolutional part outputs a density map $\widehat{\mD}$. The density maps are normalized so that the sum of the pixels corresponding to each vehicle sum up to 1 and, therefore, the sum of all pixels in the density map sup to the total number of vehicles in the frame. Thus, the final predicted count $\widehat{y}^{(t)}$ is the result of this sum plus a residual provided by a recurrent neural network, which aims to correct the predicted count by leveraging information from the previous frames.
 
 Training this model implies that each input frame $\mX^{(t)}$ is annotated with the corresponding ground-truth density map $\mD^{(t)}$ and vehicle count $y^{(t)}$. The loss function is defined as:
 \begin{equation}
-	L(\vtheta) = \frac{1}{n} \sum_{i=1}^{n} ||\widehat{\mD}^{(t)}_i - \mD^{(t)}_i||^2 + \frac{\lambda_c}{n} \sum_{i=1}^{n} ||\widehat{y}^{(t)}_i - y^{(t)}_i||^2,
+    L(\vtheta) = \frac{1}{n} \sum_{i=1}^{n} ||\widehat{\mD}^{(t)}_i - \mD^{(t)}_i||^2 + \frac{\lambda_c}{n} \sum_{i=1}^{n} ||\widehat{y}^{(t)}_i - y^{(t)}_i||^2,
 \end{equation}
 where $\lambda_c > 0$ is a hyperparameter controlling the relative weight of the vehicle counting loss, and the dependency of $\widehat{\mD}^{(t)}_i$ and $\hat{y}^{(t)}_i$ on the network parameters $\vtheta$ is omitted to ease the notation.
 
@@ -313,10 +313,10 @@ We now explore several possibilities to combine MDAN and FCN-rLSTM into a single
 The non-temporal model uses a sub-network in the FCN-rLSTM model as its backbone. It consists in a simplification of this, by not using LSTMs or making any other consideration on the temporal or sequential nature of the data. Figure \ref{fig:non_temporal_model} shows the architecture of the non-temporal model.
 
 \begin{figure}[!ht]
-	\centering
-	\includegraphics[width=1.0\textwidth]{ChapterThree/non_temporal.png}
-	\caption{Non-Temporal model. Reprinted from \citet{ThesisFrancisco}.}
-	\label{fig:non_temporal_model}
+    \centering
+    \includegraphics[width=1.0\textwidth]{ChapterThree/non_temporal.png}
+    \caption{Non-Temporal model. Reprinted from \citet{ThesisFrancisco}.}
+    \label{fig:non_temporal_model}
 \end{figure}
 
 The component F-HAC in that figure corresponds to all layers of the FCN-rLSTM up to the hyper-atrous combination. It is used as a feature extractor, whereas the rest of the convolutional layers are used for the object counting task. The $k$ domain discriminators consist of two fully connected layers which are preceded by a gradient reversal layer.
@@ -327,30 +327,30 @@ This model will be our baseline as we are primarily interested in merging the be
 The SingleLSTM model uses the whole FCN-rLSTM model for the desired regression task, but the domain discriminators are still non-sequential, as shown in \Figref{fig:temporal_regress_model}. Thus, in this model, the domain discrimination task only takes into account the domain-specific information provided by each frame individually and does not account for the domain-specific temporal dynamics that may exist.
 
 \begin{figure}[h!]
-	\centering
-	\includegraphics[width=1.0\textwidth]{ChapterThree/temporal_regress.png}
-	\caption{Temporal regression model. Reprinted from \citet{ThesisFrancisco}.}
-	\label{fig:temporal_regress_model}
+    \centering
+    \includegraphics[width=1.0\textwidth]{ChapterThree/temporal_regress.png}
+    \caption{Temporal regression model. Reprinted from \citet{ThesisFrancisco}.}
+    \label{fig:temporal_regress_model}
 \end{figure}
 
 \subsubsection{DoubleLSTM model}
 The DoubleLSTM model overcomes the limitations of the SingleLSTM model by incorporating three LSTM layers in each domain discriminator. These aim to learn the domain-specific temporal dynamics that might be helpful for the discrimination task. The schematic is in \Figref{fig:double_temporal_model}.
 
 \begin{figure}[!ht]
-	\centering
-	\includegraphics[width=1.0\textwidth]{ChapterThree/double_temporal.png}
-	\caption{Double-Temporal model. Reprinted from \citet{ThesisFrancisco}.}
-	\label{fig:double_temporal_model}
+    \centering
+    \includegraphics[width=1.0\textwidth]{ChapterThree/double_temporal.png}
+    \caption{Double-Temporal model. Reprinted from \citet{ThesisFrancisco}.}
+    \label{fig:double_temporal_model}
 \end{figure}
 
 \subsubsection{CommonLSTM model}
 An alternative to the DoubleLSTM model is to extract temporal features that are common to the desired object counting task and to the domain discrimination task. This is accomplished by the CommonLSTM model, which pushes the domain discriminators after the LSTMs and just before the final fully connected layer, as shown in \Figref{fig:common_temporal_model}.
 
 \begin{figure}[!ht]
-	\centering
-	\includegraphics[width=1.0\textwidth]{ChapterThree/common_temporal.png}
-	\caption{Common-Temporal model. Reprinted from \citet{ThesisFrancisco}.}
-	\label{fig:common_temporal_model}
+    \centering
+    \includegraphics[width=1.0\textwidth]{ChapterThree/common_temporal.png}
+    \caption{Common-Temporal model. Reprinted from \citet{ThesisFrancisco}.}
+    \label{fig:common_temporal_model}
 \end{figure}
 
 This model is fundamentally different from all previous ones since here the feature space where domain-invariance is promoted happens much later in the network. Specifically, the density maps $\widehat{D}$ are a few layers earlier, so they should not be very much affected by the domain-invariance constraint. This might have a beneficial effect on the performance since density maps are defined by the positions in the image where vehicles appear. Since these positions depend on the shape of the street that each camera is capturing, domain-invariant density maps will certainly be inaccurate.
@@ -374,8 +374,8 @@ We will run experiments with the domain adaptation models presented in \Secref{s
 In every experiment, assume we have $k+1$ domains $\gD_1, \gD_2,...,\gD_{k+1}$. In a domain adaptation scenario, we do $k+1$ runs, so that in run number $t$, domain $\gD_t$ will be chosen as the target domain and all the others will be source domains. For each experiment, we have computed results in both unsupervised and semi-supervised settings, described below:
 
 \begin{itemize}
-	\item Unsupervised: In this case, we do not have a validation dataset, and, for each run $t$, we calculate the testing results with the model we obtained at the end of the training epochs, for all the samples extracted from domain $\gD_t$.
-	\item Semi-supervised: For semi-supervised results, we have a validation dataset that corresponds to $30\%$ of the samples extracted from target $\gD_t$. We use those samples to select the best model obtained throughout the training epochs. This model is then tested with the remaining $70\%$ of the samples from $\gD_t$.
+    \item Unsupervised: In this case, we do not have a validation dataset, and, for each run $t$, we calculate the testing results with the model we obtained at the end of the training epochs, for all the samples extracted from domain $\gD_t$.
+    \item Semi-supervised: For semi-supervised results, we have a validation dataset that corresponds to $30\%$ of the samples extracted from target $\gD_t$. We use those samples to select the best model obtained throughout the training epochs. This model is then tested with the remaining $70\%$ of the samples from $\gD_t$.
 \end{itemize}
 
 For each dataset, we ran a total of $5$ experiments for the DA models, where we varied the value of hyperparameter $\mu_d$ in the range $[10^{-5}, 10^{-1}]$. Recall that $\mu_d$ controls the weight to give to the domain discrimination loss, relative to the task execution loss.
@@ -390,41 +390,41 @@ UCSDPeds (\citet{Chan2008}) is a crowd counting dataset that contains videos of 
 Each camera point of view corresponds to a domain in our experiments, named \textit{vidd} and \textit{vidf}. Figures \ref{fig:ucsdpeds_vidd} and ´\ref{fig:ucsdpeds_vidf} show examples of frames in each one of the two domains.
 
 \begin{figure}[!ht]
-	\centering
-	\begin{minipage}[b]{0.4\textwidth}
-		\includegraphics[width=\textwidth]{ChapterThree/vidd_example.png}
-		\caption{Domain \textit{vidd} from the UCSDPeds dataset.}
-		\label{fig:ucsdpeds_vidd}
-	\end{minipage}
-	\hfill
-	\begin{minipage}[b]{0.4\textwidth}
-		\includegraphics[width=\textwidth]{ChapterThree/vidf_example.png}
-		\caption{Domain \textit{vidf} from the UCSDPeds dataset.}
-		\label{fig:ucsdpeds_vidf}
-	\end{minipage}
+    \centering
+    \begin{minipage}[b]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{ChapterThree/vidd_example.png}
+        \caption{Domain \textit{vidd} from the UCSDPeds dataset.}
+        \label{fig:ucsdpeds_vidd}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{ChapterThree/vidf_example.png}
+        \caption{Domain \textit{vidf} from the UCSDPeds dataset.}
+        \label{fig:ucsdpeds_vidf}
+    \end{minipage}
 \end{figure}
 
 Table \ref{tab:ucsdpeds_domains} shows the mean and standard deviation for the number of people in a frame, for each domain. There is a strong target shift between domains as the mean number of people in domain \textit{vidf} is more than $4$ times higher than the mean number of people in domain \textit{vidd} and, therefore, the DA task is challenging for this dataset.
 
 \begin{table}[!ht]
-	\centering
-	\begin{tabular}{c| c c}
-		 & mean & std.\ dev.\  \\
-		\hline
-		\textit{vidd} & 6.448 & 3.089\\
-		\textit{vidf} & 27.570 & 7.393 \\
-	\end{tabular}
-	\caption{Mean number of people and respective standard deviation for each domain in the UCSDPeds dataset.}
-	\label{tab:ucsdpeds_domains}
+    \centering
+    \begin{tabular}{c| c c}
+        & mean & std.\ dev.\  \\
+        \hline
+        \textit{vidd} & 6.448 & 3.089\\
+        \textit{vidf} & 27.570 & 7.393 \\
+    \end{tabular}
+    \caption{Mean number of people and respective standard deviation for each domain in the UCSDPeds dataset.}
+    \label{tab:ucsdpeds_domains}
 \end{table}
 
 For each frame, we computed its density map, by placing a $15 \times 8$ Gaussian kernel with sum $1$ on the center of each person. Figure \ref{fig:ucsdpeds_density_map} shows an example of a density map, where the Gaussian kernel around each person is shown in red. The region of interest is also indicated in the figure. As we had only $800$ frames in each domain, we performed data augmentation by adding the mirrored image of each frame to the dataset.
 
 \begin{figure}[!ht]
-	\centering
-	\includegraphics[width=0.75\textwidth]{ChapterThree/ucsdpeds_density_map.png}
-	\caption{Sample density map for the UCSDPeds dataset.}
-	\label{fig:ucsdpeds_density_map}
+    \centering
+    \includegraphics[width=0.75\textwidth]{ChapterThree/ucsdpeds_density_map.png}
+    \caption{Sample density map for the UCSDPeds dataset.}
+    \label{fig:ucsdpeds_density_map}
 \end{figure}
 
 \subsubsection{WebCamT dataset}
@@ -437,53 +437,53 @@ There are $14$ cameras that cover multiple scenes, camera perspectives, congesti
 Figures \ref{fig:webcamt_511}-\ref{fig:webcamt_846} show examples of frames in each of the four domains. Table \ref{tab:webcamt_domains} shows the mean and standard deviation for the number of vehicles in a frame, for each domain. As it is possible to observe, the mean number of vehicles in each frame differs significantly across domains, being more than three times larger in domain \textit{691} than in domain \textit{846}. Hence, there is significant target shift in this dataset and, consequently, the covariate shift assumption does not hold.
 
 \begin{figure}[!ht]
-	\centering
-	\begin{minipage}[b]{0.4\textwidth}
-		\includegraphics[width=\textwidth]{ChapterThree/511_example.png}
-		\caption{Domain \textit{511} from WebCamT dataset.}
-		\label{fig:webcamt_511}
-	\end{minipage}
-	\hfill
-	\begin{minipage}[b]{0.4\textwidth}
-		\includegraphics[width=\textwidth]{ChapterThree/551_example.png}
-		\caption{Domain \textit{551} from the WebCamT dataset.}
-		\label{fig:webcamt_551}
-	\end{minipage} \\
-	\vspace{1cm}
-	\begin{minipage}[b]{0.4\textwidth}
-		\includegraphics[width=\textwidth]{ChapterThree/691_example.png}
-		\caption{Domain \textit{691} from the WebCamT dataset.}
-		\label{fig:webcamt_691}
-	\end{minipage}
-	\hfill
-	\begin{minipage}[b]{0.4\textwidth}
-		\includegraphics[width=\textwidth]{ChapterThree/846_example.png}
-		\caption{Domain \textit{846} from the WebCamT dataset.}
-		\label{fig:webcamt_846}
-	\end{minipage}
+    \centering
+    \begin{minipage}[b]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{ChapterThree/511_example.png}
+        \caption{Domain \textit{511} from WebCamT dataset.}
+        \label{fig:webcamt_511}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{ChapterThree/551_example.png}
+        \caption{Domain \textit{551} from the WebCamT dataset.}
+        \label{fig:webcamt_551}
+    \end{minipage} \\
+    \vspace{1cm}
+    \begin{minipage}[b]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{ChapterThree/691_example.png}
+        \caption{Domain \textit{691} from the WebCamT dataset.}
+        \label{fig:webcamt_691}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{ChapterThree/846_example.png}
+        \caption{Domain \textit{846} from the WebCamT dataset.}
+        \label{fig:webcamt_846}
+    \end{minipage}
 \end{figure}
 
 \begin{table}[!ht]
-	\centering
-	\begin{tabular}{c| c c}
-		 & mean & std.\ dev.\  \\
-		\hline
-		\textit{511} & 12.039 & 6.32 \\
-		\textit{551} & 18.362 & 4.21 \\
-		\textit{691} & 25.470 & 10.738 \\
-		\textit{846} & 6.873 & 2.477 \\
-	\end{tabular}
-	\caption{Mean number of vehicles and respective standard deviation for each domain in the WebCamT dataset.}
-	\label{tab:webcamt_domains}
+    \centering
+    \begin{tabular}{c| c c}
+        & mean & std.\ dev.\  \\
+        \hline
+        \textit{511} & 12.039 & 6.32 \\
+        \textit{551} & 18.362 & 4.21 \\
+        \textit{691} & 25.470 & 10.738 \\
+        \textit{846} & 6.873 & 2.477 \\
+    \end{tabular}
+    \caption{Mean number of vehicles and respective standard deviation for each domain in the WebCamT dataset.}
+    \label{tab:webcamt_domains}
 \end{table}
 
 After extracting each frame from the videos, we computed its density map by placing a $4\times4$ Gaussian kernel with sum $1$ on the center of each car. We then had to resize the frames and density to maps to size $120\times 176$ so that we could deal with speed and memory constraints. Figure \ref{fig:webcamt_density_map} shows an example of a density map in a resized frame, where the Gaussian kernel around each car is shown in red.
 
 \begin{figure}[!ht]
-	\centering
-	\includegraphics[width=0.75\textwidth]{ChapterThree/webcamt_density_map.png}
-	\caption{Sample density map for the WebCamT dataset.}
-	\label{fig:webcamt_density_map}
+    \centering
+    \includegraphics[width=0.75\textwidth]{ChapterThree/webcamt_density_map.png}
+    \caption{Sample density map for the WebCamT dataset.}
+    \label{fig:webcamt_density_map}
 \end{figure}
 
 \subsection{Choice of optimization problem}
@@ -493,44 +493,44 @@ The DA task for the UCSDPeds dataset is single source, so there is no choice to 
 In the WebCamT dataset, we have three different source domains, so this is a multi-source scenario. As discussed in \Secref{sec:da_sensors_mdan}, we consider three possible optimization problems for our DA models to solve, namely hard-max, soft-max, and average. \Tableref{table:optimization_experiments} shows results for each of our models on these formulations, evaluated in an unsupervised setting. These suggest that averaging tends to perform better than the other two approaches in this dataset. This is somewhat intuitive: given the wide range of values for the mean number of vehicles in each frame across domains, it would be likely for one source domain to show a significantly higher loss than the others. If we use any of the other two optimization problems, our models would dedicate an outweighed importance to the hardest source domain, disregarding the remaining. For this reason, we shall adopt the averaging formulation in all subsequent experiments.
 
 \begin{table}[!ht]
-	\centering
-	\begin{tabular}{ c | c  c  c }
-		 & Hard-max & Soft-max & Average\\
-		\hline
-		Non-Temporal & 18.15 & 11.16 & \textbf{9.91}  \\
-		SingleLSTM & 10.54 & \textbf{9.33} & 11.10  \\
-		DoubleLSTM & 9.59 & 7.73 & \textbf{6.14} \\
-		CommonLSTM & \textbf{9.85} & 12.07 & 10.22 \\
-	\end{tabular}
-	\caption{Comparison of different optimization problems. The values indicate the average MAE count across domains in the WebCamT dataset. The experiments were run with $\mu_d=10^{-3}$. }
-	\label{table:optimization_experiments}
+    \centering
+    \begin{tabular}{ c | c  c  c }
+        & Hard-max & Soft-max & Average\\
+        \hline
+        Non-Temporal & 18.15 & 11.16 & \textbf{9.91}  \\
+        SingleLSTM & 10.54 & \textbf{9.33} & 11.10  \\
+        DoubleLSTM & 9.59 & 7.73 & \textbf{6.14} \\
+        CommonLSTM & \textbf{9.85} & 12.07 & 10.22 \\
+    \end{tabular}
+    \caption{Comparison of different optimization problems. The values indicate the average MAE count across domains in the WebCamT dataset. The experiments were run with $\mu_d=10^{-3}$. }
+    \label{table:optimization_experiments}
 \end{table}
 
 \subsection{Unsupervised setting}
 
 \Tableref{table:results_unsup} shows the results in the unsupervised setting for both datasets. For each domain, the best MAE obtained with different values of $\mu_d$ is shown.
 \begin{table}[!ht]
-	\centering
-	\begin{tabular}{ c | c  c : c | c  c  c  c : c}
-		\multicolumn{1}{c|}{} & \multicolumn{3}{c|}{UCSDPeds} & \multicolumn{5}{c}{WebCamT} \\
+    \centering
+    \begin{tabular}{ c | c  c : c | c  c  c  c : c}
+        \multicolumn{1}{c|}{} & \multicolumn{3}{c|}{UCSDPeds} & \multicolumn{5}{c}{WebCamT} \\
 
-		 & \textit{vidd} & \textit{vidf} & Avg & \textit{511} & \textit{551} & \textit{691} & \textit{846} & Avg\\
-		\hline
-		FCN-HA & 15.23 & 7.14 & 11.19 & \textbf{5.01} & \textbf{2.58} & 17.22 & 4.67 & 7.37\\
+        & \textit{vidd} & \textit{vidf} & Avg & \textit{511} & \textit{551} & \textit{691} & \textit{846} & Avg\\
+        \hline
+        FCN-HA & 15.23 & 7.14 & 11.19 & \textbf{5.01} & \textbf{2.58} & 17.22 & 4.67 & 7.37\\
 
-		FCN-rLSTM & 11.04  & 5.98 &  8.51 & 6.26 & 8.79 & 13.63 & 6.31 & 8.75\\
+        FCN-rLSTM & 11.04  & 5.98 &  8.51 & 6.26 & 8.79 & 13.63 & 6.31 & 8.75\\
 
-		Non-Temporal & \textbf{6.24} & 22.52 & 14.38 & 9.63 & 3.50 & 18.27 & 5.58 & 9.85 \\
+        Non-Temporal & \textbf{6.24} & 22.52 & 14.38 & 9.63 & 3.50 & 18.27 & 5.58 & 9.85 \\
 
-		SingleLSTM & 7.75 & 9.07 & 9.32 & 6.58 & 5.10 & 15.26  & 9.55 & 10.53 \\
+        SingleLSTM & 7.75 & 9.07 & 9.32 & 6.58 & 5.10 & 15.26  & 9.55 & 10.53 \\
 
-		DoubleLSTM & 8.04 & \textbf{3.89} & 6.49 & 5.01 & 4.58 & 10.97 & \textbf{3.03} & \textbf{6.15}\\
+        DoubleLSTM & 8.04 & \textbf{3.89} & 6.49 & 5.01 & 4.58 & 10.97 & \textbf{3.03} & \textbf{6.15}\\
 
-		CommonLSTM & 6.83 & 4.80 & \textbf{6.18} & 6.11 & 5.55 & \textbf{10.51} & 3.56 & 8.15 \\
+        CommonLSTM & 6.83 & 4.80 & \textbf{6.18} & 6.11 & 5.55 & \textbf{10.51} & 3.56 & 8.15 \\
 
-	\end{tabular}
-	\caption{MAE count per domain in UCSDPeds and WebCamT datasets (unsupervised setting). Column Avg indicates the average MAE count across domains.}
-	\label{table:results_unsup}
+    \end{tabular}
+    \caption{MAE count per domain in UCSDPeds and WebCamT datasets (unsupervised setting). Column Avg indicates the average MAE count across domains.}
+    \label{table:results_unsup}
 \end{table}
 
 In UCSDPeds, CommonLSTM showed the best results, followed by DoubleLSTM. In fact, any LSTM-based model showed a better average performance than any model where LSTMs are absent. This validates our initial hypothesis that making temporal considerations would significantly improve the accuracy. When it comes to the comparison between DA models and non-DA models, we can verify that DA models performed better, as models DoubleLSTM and CommonLSTM showed the best results for average MAE count. Still, in this case, the advantage of promoting domain-invariant representations is not as clear as the advantage of leveraging temporal information. For example, the Non-Temporal model, that includes a domain discriminator, showed worse results than FCN-rLSTM.
@@ -542,18 +542,18 @@ We find that the model with the most balanced performance across domains and dat
 Results regarding the sensitivity to the hyperparameter $\mu_d$ are shown in \Figref{fig:lambda_d_unsup}.
 
 \begin{figure}[!ht]
-	\begin{subfigure}{.5\textwidth}
-		\centering
-		\includegraphics[width=0.95\textwidth]{ChapterThree/ucsdpeds_unsupervised.png}
-		\caption{UCSDPeds}
-	\end{subfigure}
-	\begin{subfigure}{.5\textwidth}
-		\centering
-		\includegraphics[width=0.95\textwidth]{ChapterThree/webcamt_unsupervised.png}
-		\caption{WebCamT}
-	\end{subfigure}
-	\caption{Average MAE count across domains for each $\mu_d$ in the unsupervised setting in UCSDPeds and WebCamT datasets.}
-	\label{fig:lambda_d_unsup}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth]{ChapterThree/ucsdpeds_unsupervised.png}
+        \caption{UCSDPeds}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth]{ChapterThree/webcamt_unsupervised.png}
+        \caption{WebCamT}
+    \end{subfigure}
+    \caption{Average MAE count across domains for each $\mu_d$ in the unsupervised setting in UCSDPeds and WebCamT datasets.}
+    \label{fig:lambda_d_unsup}
 \end{figure}
 
 This plot confirms that the DoubleLSTM model was the best-performing in the WebCamT dataset and is at least comparable to CommonLSTM in UCSDPeds. Setting $\mu_d = 10^{-3}$ achieves close to optimal performance for all models in both datasets, except for Non-Temporal in UCSDPeds and CommonLSTM in WebCamT, whose performance improves significantly for larger values of $\mu_d$.
@@ -563,21 +563,21 @@ This plot confirms that the DoubleLSTM model was the best-performing in the WebC
 \Tableref{table:results_semisup} shows the results in the semi-supervised setting for both datasets. Like before, the best MAE obtained with different values of $\mu_d$ is shown.
 
 \begin{table}[!ht]
-	\centering
-	\begin{tabular}{ c | c  c : c | c  c  c  c : c}
-		\multicolumn{1}{c|}{} & \multicolumn{3}{c|}{UCSDPeds} & \multicolumn{5}{c}{WebCamT} \\
-		 & \textit{vidd} & \textit{vidf} & Avg & \textit{511} & \textit{551} & \textit{691} & \textit{846} & Avg\\
-		\hline
-		FCN-HA & 1.43 & 4.48  & 2.96 & \textbf{2.05} & \textbf{2.59} & 6.56 & 2.394 & \textbf{3.40} \\
-		FCN-rLSTM & 2.01 & \textbf{2.07} & 2.04 & 5.40 & 3.49 & 9.15 & 3.54 &  5.39 \\
-		\hline
-		Non-Temporal & 0.84 & 3.49 & 2.21 & 3.11 & 3.57 & 10.96 & 2.05 & 5.04 \\
-		SingleLSTM & 0.94 & 5.07 & 3.00 & 4.24 & 4.39 & 7.03 & \textbf{1.52} & 4.34 \\
-		DoubleLSTM & 0.95 & 2.84 & \textbf{1.89} & 4.22 & 4.55 & \textbf{6.46} & 1.58 & 4.27 \\
-		CommonLSTM & \textbf{0.88} & 2.61 & 1.94 & 4.23 & 4.54 & 8.67 & 1.63 & 4.98 \\
-	\end{tabular}
-	\caption{MAE count per domain in UCSDPeds and WebCamT datasets (semi-supervised setting). Column Avg indicates the average MAE count across domains.}
-	\label{table:results_semisup}
+    \centering
+    \begin{tabular}{ c | c  c : c | c  c  c  c : c}
+        \multicolumn{1}{c|}{} & \multicolumn{3}{c|}{UCSDPeds} & \multicolumn{5}{c}{WebCamT} \\
+        & \textit{vidd} & \textit{vidf} & Avg & \textit{511} & \textit{551} & \textit{691} & \textit{846} & Avg\\
+        \hline
+        FCN-HA & 1.43 & 4.48  & 2.96 & \textbf{2.05} & \textbf{2.59} & 6.56 & 2.394 & \textbf{3.40} \\
+        FCN-rLSTM & 2.01 & \textbf{2.07} & 2.04 & 5.40 & 3.49 & 9.15 & 3.54 &  5.39 \\
+        \hline
+        Non-Temporal & 0.84 & 3.49 & 2.21 & 3.11 & 3.57 & 10.96 & 2.05 & 5.04 \\
+        SingleLSTM & 0.94 & 5.07 & 3.00 & 4.24 & 4.39 & 7.03 & \textbf{1.52} & 4.34 \\
+        DoubleLSTM & 0.95 & 2.84 & \textbf{1.89} & 4.22 & 4.55 & \textbf{6.46} & 1.58 & 4.27 \\
+        CommonLSTM & \textbf{0.88} & 2.61 & 1.94 & 4.23 & 4.54 & 8.67 & 1.63 & 4.98 \\
+    \end{tabular}
+    \caption{MAE count per domain in UCSDPeds and WebCamT datasets (semi-supervised setting). Column Avg indicates the average MAE count across domains.}
+    \label{table:results_semisup}
 \end{table}
 
 There is a noticeable difference between these results and those for the unsupervised setting (\Tableref{table:results_unsup}), with the former being significantly better that the latter. As the experiments we ran with the WebCamT had more data and more domains, the resulting models have smaller variance, which caused the difference in accuracy between the two settings not to be as wide as in UCSDPeds.
@@ -614,18 +614,18 @@ Our contributions in this section are summarized as follows: i) we present a cor
 Intuitively, if the source and target domains are similar and the amount of labeled source data is sufficiently large, a classifier trained to reach low empirical error on the source domain will likely achieve a low error on the target domain too. When multiple source domains are available, a combination of their respective data yields the optimal strategy. The following bound, which is a corollary of the results from \citet{BenDavid2010}, formalizes these ideas and enlightens some properties that will be exploited by our approach. For completeness, the proof is provided in Appendix \ref{sec:thm_proof}. In the following, $\Delta$ denotes the $k$-simplex and $\gS_{\valpha}$ is the $\valpha$-weighted mixture of source domains (i.e.\ $\Delta \triangleq \lbrace \valpha \in [0,1]^k: \sum_{j=1}^{k} \alpha_j = 1$ and  $p_{\gS_{\valpha}}(\rvx) \triangleq \sum_{j=1}^{k} \evalpha_j p_{\gS_j}(\rvx)$).
 
 \begin{theorem}
-	\label{thm:target_risk_bound}
-	Let $\gH$ be a hypothesis class with VC-dimension $d$. Consider an unlabeled set of $n$ samples drawn from the target domain $\gT$ and, for each $j \in \{1,2,...,k\}$, a labeled set of $n/k$ samples drawn from the source domain $\gS_j$. Then, for any $h \in \gH$ and any $\alpha \in \Delta$, with probability at least $1-\delta$ over the choice of samples,
-	\begin{equation}
-	\label{eq:bound}
-	\epsilon_\gT(h) \leq \sum_{j=1}^k \alpha_j \widehat{\epsilon}_{\gS_j}(h) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS_\valpha, \gT) + \lambda_\valpha + B_\valpha(\delta) + V(\delta),
-	\end{equation}
-	where
-	\begin{align}
-	&B_\valpha(\delta) \triangleq 2\sqrt{\frac{k}{n}\left(2d \log(2(n+1)) + \log\frac{8}{\delta}\right)\sum_{j=1}^k \evalpha_j^2}, \\
-	&\lambda_\valpha \triangleq \min_{h \in \gH}\, \sum_{j=1}^k \evalpha_j \epsilon_{\gS_j}(h) + \epsilon_{\gT}(h), \\
-	&V(\delta) \triangleq 2 \sqrt{\frac{1}{n} \left( 2d\log(2n) + \log\frac{4}{\delta} \right)}.
-	\end{align}
+    \label{thm:target_risk_bound}
+    Let $\gH$ be a hypothesis class with VC-dimension $d$. Consider an unlabeled set of $n$ samples drawn from the target domain $\gT$ and, for each $j \in \{1,2,...,k\}$, a labeled set of $n/k$ samples drawn from the source domain $\gS_j$. Then, for any $h \in \gH$ and any $\alpha \in \Delta$, with probability at least $1-\delta$ over the choice of samples,
+    \begin{equation}
+        \label{eq:bound}
+        \epsilon_\gT(h) \leq \sum_{j=1}^k \alpha_j \widehat{\epsilon}_{\gS_j}(h) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS_\valpha, \gT) + \lambda_\valpha + B_\valpha(\delta) + V(\delta),
+    \end{equation}
+    where
+    \begin{align}
+        &B_\valpha(\delta) \triangleq 2\sqrt{\frac{k}{n}\left(2d \log(2(n+1)) + \log\frac{8}{\delta}\right)\sum_{j=1}^k \evalpha_j^2}, \\
+        &\lambda_\valpha \triangleq \min_{h \in \gH}\, \sum_{j=1}^k \evalpha_j \epsilon_{\gS_j}(h) + \epsilon_{\gT}(h), \\
+        &V(\delta) \triangleq 2 \sqrt{\frac{1}{n} \left( 2d\log(2n) + \log\frac{4}{\delta} \right)}.
+    \end{align}
 \end{theorem}
 This bound is structurally very similar to the one presented in Theorem \ref{thm:da_bound_multi_source} (\citet{Zhao2018}), with two slight differences: i) we work with the (empirical) $\gH \Delta \gH$-divergence between the target and the mixture of source domains directly, instead of upper-bounding it with the convex combination of (empirical) $\gH \Delta \gH$-divergences between the target and each source domain; and ii) we show the dependency of the bound on the quantity $B_\valpha(\delta)$, whose interpretation is given in the following discussion.
 
@@ -637,8 +637,8 @@ If the optimal $\valpha$ was known, a learning algorithm for DA could, in princi
 \label{sec:modafm_choose_alpha}
 Looking at the first two terms of the learning bound in Theorem~\ref{thm:target_risk_bound} suggests that $\valpha$ could be chosen in an optimistic way, by selecting the source domain in which the sum of the risk of the classifier and the $\gH \Delta \gH$-divergence with respect to the target reaches the lowest value. However, the term $B_\valpha(\delta)$ is proportional to the $\normltwo$-norm of $\valpha$, which is maximum when $\valpha$ is one-hot and minimum when $\evalpha_j = 1/k$, $\forall\, j$. This has an intuitive explanation: choosing a sparse $\valpha$ implies discarding data from the source domains whose component is zero, so the classifier is trained with intrinsically less data and its error tends to increase. This discussion naturally leads to the following formal objective:
 \begin{equation}
-\label{eq:formal_obj}
-\min_{\valpha \in \Delta, \, h\in \gH, \, g \in \gF}\; \sum_{j=1}^k \alpha_j\widehat{\epsilon}_{\gS_j}(h \circ g) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS_\valpha^g, \gT^g) + \mu ||\valpha||,
+    \label{eq:formal_obj}
+    \min_{\valpha \in \Delta, \, h\in \gH, \, g \in \gF}\; \sum_{j=1}^k \alpha_j\widehat{\epsilon}_{\gS_j}(h \circ g) + \frac{1}{2} \widehat{d}_{\gH \Delta \gH}(\gS_\valpha^g, \gT^g) + \mu ||\valpha||,
 \end{equation}~
 where $\mu = \mu(\delta) > 0$. This objective contrasts with the idea from \citet{Zhao2018}, where the authors essentially choose to minimize the loss for the hardest source domain at each iteration of the learning algorithm, which is a much more pessimistic approach than ours. In either case, though, the minimum combined risk $\lambda_\valpha$ is uncontrolled and, as discussed in \Secref{sec:modafm_domain_invariance}, this is an issue that must be addressed.
 
@@ -652,31 +652,31 @@ Given the discussion in the previous section, we now explain our method in detai
 
 We first address the problem of casting the objective~\plaineqref{eq:formal_obj} into a computationally treatable surrogate. As in many recent works in DA, we resort to neural networks to implement $g$ and $h$ and the empirical $\gH \Delta \gH$-divergence is implemented with a domain discriminator network, which aims to distinguish between samples of $\gS_\alpha^g$ and $\gT^g$.\footnote[1]{Theoretically, some care should be taken while designing the architecture of the discriminator to make sure that it parametrizes hypotheses in $\gH \Delta \gH$, but in practice this constraint is dropped. There are similar bounds using the $\gH$-divergence instead \citep{Sebag2019}.} Taking the previous considerations and replacing the intractable empirical risks by the usual classification losses, objective~\plaineqref{eq:formal_obj} is cast as:
 \begin{equation}
-\min_{\valpha \in \Delta, \vtheta_g, \vtheta_h} \max_{\theta_d} \; \Big\{ \gL(\valpha, \vtheta_g, \vtheta_h, \vtheta_d) = \gL_\text{class}(\valpha, \vtheta_g, \vtheta_h) - \mu_d \gL_\text{disc}(\valpha, \vtheta_g, \vtheta_d) + \mu_s ||\valpha||^2 \Big\},
+    \min_{\valpha \in \Delta, \vtheta_g, \vtheta_h} \max_{\theta_d} \; \Big\{ \gL(\valpha, \vtheta_g, \vtheta_h, \vtheta_d) = \gL_\text{class}(\valpha, \vtheta_g, \vtheta_h) - \mu_d \gL_\text{disc}(\valpha, \vtheta_g, \vtheta_d) + \mu_s ||\valpha||^2 \Big\},
 \end{equation}
 where
 \begin{align}
-&\gL_\text{class}(\alpha, \vtheta_g, \vtheta_h) = -\sum_{j=1}^M \alpha_j\E_{\rvz \sim \gS_j^g}\log p(\ry=f_{\gS_j^g}(\rvz) \mid \rvz, \vtheta_h), \\
-%
-&\gL_\text{disc}(\alpha, \vtheta_g, \vtheta_d) = -\E_{\rvz \sim \gS_{\valpha}^g} \log p(\rd=0 \mid \rvz, \theta_d) - \E_{\rvz \sim \gT^g} \log p(\rd=1 \mid \rvz, \vtheta_d).
+    &\gL_\text{class}(\alpha, \vtheta_g, \vtheta_h) = -\sum_{j=1}^M \alpha_j\E_{\rvz \sim \gS_j^g}\log p(\ry=f_{\gS_j^g}(\rvz) \mid \rvz, \vtheta_h), \\
+    %
+    &\gL_\text{disc}(\alpha, \vtheta_g, \vtheta_d) = -\E_{\rvz \sim \gS_{\valpha}^g} \log p(\rd=0 \mid \rvz, \theta_d) - \E_{\rvz \sim \gT^g} \log p(\rd=1 \mid \rvz, \vtheta_d).
 \end{align}
 Here, $\vtheta_h$ and $\vtheta_d$ are the parameters of the classifier and domain discriminator networks, respectively, $\mu_d, \mu_s > 0$ are hyperparameters, $\ry \in \gY$ is the categorical r.v. associated with the class label, $f_{\gS_j^g}: \gZ \mapsto \gY$ is the true (multiclass) labeling function for the $j$-th source domain, $\rd$ is a Bernoulli random variable that discriminates source and target domains and the function $g = g(\cdot, \vtheta_g): \gX \mapsto \gZ$ is a neural network, parametrized by $\vtheta_g$, mapping input samples to features. By linearity of expectations and using the fact that $\rvz = g(\rvx, \vtheta_g)$, for input samples $\rvx \in \gX$, we have:
 \begin{align}
-\label{eq:loss_class}
-\gL_\text{class}(\valpha, \vtheta_g, \vtheta_h) &\triangleq -\sum_{j=1}^k \alpha_j\E_{\rvx \sim \gS_j} \log p(\ry=f_{\gS_j}(\rvx) \mid \rvx; \vtheta_g, \vtheta_h), \\
-\allowdisplaybreaks
-\label{eq:loss_disc}
-\gL_\text{disc}(\valpha, \vtheta_g, \vtheta_d) &\triangleq -\sum_{j=1}^k \alpha_j\E_{\rvx \sim \gS_j} \log p(\rd=0 \mid \rvx; \vtheta_g, \vtheta_d)  - \E_{\rvx \sim \gT} \log p(\rd=1 \mid \rvx; \vtheta_g, \vtheta_d) .
+    \label{eq:loss_class}
+    \gL_\text{class}(\valpha, \vtheta_g, \vtheta_h) &\triangleq -\sum_{j=1}^k \alpha_j\E_{\rvx \sim \gS_j} \log p(\ry=f_{\gS_j}(\rvx) \mid \rvx; \vtheta_g, \vtheta_h), \\
+    \allowdisplaybreaks
+    \label{eq:loss_disc}
+    \gL_\text{disc}(\valpha, \vtheta_g, \vtheta_d) &\triangleq -\sum_{j=1}^k \alpha_j\E_{\rvx \sim \gS_j} \log p(\rd=0 \mid \rvx; \vtheta_g, \vtheta_d)  - \E_{\rvx \sim \gT} \log p(\rd=1 \mid \rvx; \vtheta_g, \vtheta_d) .
 \end{align}
 In order to satisfy the constraint $\valpha \in \Delta$, we reparametrize the model using $\alpha = \softmax(\vbeta)$, for an unconstrained parameter $\vbeta \in \sR^k$. Finally, since we assume to have access to labeled datasets $\widehat{\gS}_1,\widehat{\gS}_2,\dots,\widehat{\gS}_k$ from each source domain and to a unlabeled dataset $\widehat{\gT}$ from the target, we may compute empirical estimates of losses \plaineqref{eq:loss_class} and \plaineqref{eq:loss_disc}:
 \begin{equation}
-\label{eq:emp_loss_class}
-L_\text{class}(\vbeta, \vtheta_g, \vtheta_h) \approx -\frac{1}{m}\sum_{j=1}^k \frac{\exp(\evbeta_j)}{\sum_{j'} \exp(\evbeta_{j'})} \sum_{(\vx,y) \in \widehat{\gS}_j^{(m)}} \log p(y \mid \vx; \vtheta_g, \vtheta_h),
+    \label{eq:emp_loss_class}
+    L_\text{class}(\vbeta, \vtheta_g, \vtheta_h) \approx -\frac{1}{m}\sum_{j=1}^k \frac{\exp(\evbeta_j)}{\sum_{j'} \exp(\evbeta_{j'})} \sum_{(\vx,y) \in \widehat{\gS}_j^{(m)}} \log p(y \mid \vx; \vtheta_g, \vtheta_h),
 \end{equation}
 \begin{align}
-\label{eq:emp_loss_disc}
-L_\text{disc}(\vbeta, \vtheta_g, \vtheta_d) \approx& -\frac{1}{m}\sum_{j=1}^k \frac{\exp(\evbeta_j)}{\sum_{j'} \exp(\evbeta_{j'})} \sum_{(\vx,y) \in \widehat{\gS}_j^{(m)}} \log p(\rd=0 \mid \vx; \vtheta_g, \vtheta_d) \\
-&-\frac{1}{m}\sum_{\vx \in \widehat{\gT}^{(m)}} \log p(\rd=1 \mid \vx; \vtheta_g, \vtheta_d), \nonumber
+    \label{eq:emp_loss_disc}
+    L_\text{disc}(\vbeta, \vtheta_g, \vtheta_d) \approx& -\frac{1}{m}\sum_{j=1}^k \frac{\exp(\evbeta_j)}{\sum_{j'} \exp(\evbeta_{j'})} \sum_{(\vx,y) \in \widehat{\gS}_j^{(m)}} \log p(\rd=0 \mid \vx; \vtheta_g, \vtheta_d) \\
+    &-\frac{1}{m}\sum_{\vx \in \widehat{\gT}^{(m)}} \log p(\rd=1 \mid \vx; \vtheta_g, \vtheta_d), \nonumber
 \end{align}
 where $\widehat{\gS}_j^{(m)}$ and $\widehat{\gT}^{(m)}$ are mini-batches of $m$ examples each from $\widehat{\gS}_j$ and $\widehat{\gT}$, respectively.
 
@@ -690,19 +690,19 @@ Consistency regularization is a key component of many state of the art algorithm
 Specifically, consider a target sample $\vx \in \widehat{\gT}$ and a parametric transformation $\omega: \gX \times \Xi \mapsto \gX$, where $\Xi$ is the space of parameters for the transformation. Further assume that $\omega$ is label-preserving, i.e.\ $f_\gT(\omega(\vx, \xi)) = f_\gT(\vx)$, $\forall\, \vx \in \gX, \, \xi \in \Xi$. If $\omega$ is rich and strong enough, it should spread the transformed target samples over multiple regions of low density under the target distribution, i.e.\ it will produce new domains. Then, by enforcing agreement on the predictions of original and transformed target samples, we are encouraging the model to learn to extract features that generalize well across domains. Moreover, some of the augmented samples may fall within regions of higher density under the distribution of the source domains. If this hypothesis holds, by enforcing agreement on the predictions of original and transformed target samples and low classification error on the source domains, we are indirectly promoting low error on the target domain too. \Figref{fig:consistency} illustrates this idea.
 
 \begin{figure}[h]
-	\centering
-	\fbox{\includegraphics[width=0.75\linewidth]{ChapterThree/consistency.pdf}}
-	\caption{Toy illustration of the desired effect of the consistency regularization, where images are represented as lying on a 2-D space. Green and orange circles represent (labeled) samples from two distinct source domains; blue and purple x-markers represent original and augmented (unlabeled) target samples, respectively. Colored ellipses enclose pairs of augmented and source samples that are close to each other and therefore are likely to share the same label.}
-	\label{fig:consistency}
+    \centering
+    \fbox{\includegraphics[width=0.75\linewidth]{ChapterThree/consistency.pdf}}
+    \caption{Toy illustration of the desired effect of the consistency regularization, where images are represented as lying on a 2-D space. Green and orange circles represent (labeled) samples from two distinct source domains; blue and purple x-markers represent original and augmented (unlabeled) target samples, respectively. Colored ellipses enclose pairs of augmented and source samples that are close to each other and therefore are likely to share the same label.}
+    \label{fig:consistency}
 \end{figure}
 
 The particular type of consistency regularization we adopt here is FixMatch (\citet{Sohn2020}), due to its simplicity and good performance. This approach involves using the predicted class of original (or weakly-transformed) samples as pseudo-labels for the (strongly-)transformed samples and, in our setting, is translated into the following loss function:
 \begin{equation}
-L_{\text{cons}}(\vtheta_g, \vtheta_h) \triangleq -\frac{1}{m}\sum_{\vx \in \widehat{\gT}^{(m)}} \1_{\left(\max_{\ry \in \gY}\, p(\ry \mid \vx; \vtheta_g, \vtheta_h) > \tau \right)} \log p(\tilde{y} \mid \omega(\vx, \xi); \vtheta_g, \vtheta_h),
+    L_{\text{cons}}(\vtheta_g, \vtheta_h) \triangleq -\frac{1}{m}\sum_{\vx \in \widehat{\gT}^{(m)}} \1_{\left(\max_{\ry \in \gY}\, p(\ry \mid \vx; \vtheta_g, \vtheta_h) > \tau \right)} \log p(\tilde{y} \mid \omega(\vx, \xi); \vtheta_g, \vtheta_h),
 \end{equation}
 where $\tilde{y} \triangleq \argmax_{\ry \in \gY} p(\ry \mid \vx; \vtheta_g, \vtheta_h)$ is the pseudo-label, $\xi$ is chosen randomly for each $\vx$, and $\tau \geq 0$ is a hyperparameter defining the minimum confidence threshold for the loss to be active. This threshold prevents the loss to be applied too early in the training process and, in our setting, may discard augmented samples that fall too far from the source distributions. The overall objective is then written as follows:
 \begin{equation}
-\min_{\valpha \in \Delta, \vtheta_g, \vtheta_h}\max_{\vtheta_d} \Big\{ L \triangleq L_\text{class}(\valpha, \vtheta_g, \vtheta_h) + \mu_c \gL_\text{cons}(\vtheta_g, \vtheta_h) - \mu_d \gL_\text{disc}(\valpha, \vtheta_g, \vtheta_d) + \mu_s ||\valpha||_2^2 \Big\},
+    \min_{\valpha \in \Delta, \vtheta_g, \vtheta_h}\max_{\vtheta_d} \Big\{ L \triangleq L_\text{class}(\valpha, \vtheta_g, \vtheta_h) + \mu_c \gL_\text{cons}(\vtheta_g, \vtheta_h) - \mu_d \gL_\text{disc}(\valpha, \vtheta_g, \vtheta_d) + \mu_s ||\valpha||_2^2 \Big\},
 \end{equation}
 where $\mu_c > 0$ controls the relative weight of the consistency loss. A full schematic of our model is provided in Appendix \ref{sec:model_overview}.\todo{Maybe add something about the causal interpretation of this heuristic}
 
@@ -721,23 +721,23 @@ We now conduct several experiments using standard benchmark datasets for multi-s
 \paragraph{Digits classification} In this experiment, the task is digit classification using 4 datasets: MNIST (\citet{LeCun1998}), MNIST-M (\citet{Ganin2015}), SVHN (\citet{Netzer2011}), and SynthDigits (\citet{Ganin2015}). We take each of the first three datasets as the target in turn, and use the remaining as source domains. The number of training images chosen randomly from each domain, including the target, is 20k. The evaluation is performed in the non-transductive setting, i.e. no target data used during training are used for evaluation. The results are in \Tableref{tab:digits_office_acc}.
 
 \begin{table}
-	\centering
-	\resizebox{\linewidth}{!}{
-	\begin{tabular}{l|ccc:c|ccc:c}
-		\multicolumn{1}{c|}{} & \multicolumn{4}{c|}{Digits} & \multicolumn{4}{c}{Office-31} \\
-		& MNIST                        & MNIST-M                       & SVHN  & Avg.                        & Amazon                        & DSLR                              & Webcam & Avg.                      \\ \hline
-		DANN-SS \cite{Ganin2015}  & $ 97.9 $ \tiny{$ \pm 0.4 $}  & $ 73.2 $\tiny{$ \pm 1.6 $}   & $ 72.8 $ \tiny{$ \pm 3.3 $} & $81.3$ & $ 60.5 $ \tiny{$ \pm 1.4 $}   & $\boldsymbol{100.0}$ \tiny{$\pm 0.0$}     & $ 98.0$ 	\tiny{$ \pm 0.3 $} & $86.2$\\
-		DANN-MS \cite{Ganin2015}  & $ 97.9 $ \tiny{$ \pm 1.6 $}  & $ 67.5 $ \tiny{$ \pm 1.4 $}   & $ 71.5 $ \tiny{$ \pm 1.6 $} & $79.0$ & $ 61.2 $ \tiny{$ \pm 1.3 $}   & $ 99.9 $ \tiny{$ \pm 0.2 $}       & $ 98.8 $ \tiny{$ \pm 0.3 $} & $86.6$\\
-		MADA \cite{Pei2018}       & --                        & --                             & --                         & --  & $ 70.3 $ \tiny{$ \pm 0.3 $}   & $ 99.6 $ \tiny{$ \pm 0.1 $}       & $ 97.4 $ \tiny{$ \pm 0.1 $} &  $89.1$\\
-		MDAN \cite{Zhao2018}      & $ 98.3 $ \tiny{$ \pm 0.2 $}  & $ 69.1 $ \tiny{$ \pm 1.2 $}   & $ 69.5 $ \tiny{$ \pm 2.8 $} & $79.0$ & $ 65.2 $ \tiny{$ \pm 0.4 $}   & $ 99.3 $ \tiny{$ \pm 0.2 $}       & $ 97.8 $ \tiny{$ \pm 0.5 $} & $87.4$\\
-		MoE \cite{Guo2018}       & $ 98.6 $ \tiny{$ \pm 0.2 $}                     & $ 69.9 $ \tiny{$ \pm 1.1 $}                      & $ 81.8 $ \tiny{$ \pm 0.8 $}  & $83.4$ & --                            & --                                & --                          & --\\ \hline
-		MODA         & $ 98.4 $ \tiny{$ \pm 0.2 $}  & $ 77.4 $ \tiny{$ \pm 1.6 $}   & $ 71.7 $ \tiny{$ \pm 1.5 $} & $82.5$ & $ 65.5 $ \tiny{$ \pm 0.5 $}   &   $ 99.9 $ \tiny{$ \pm 0.2 $}     & $ 99.0 $ \tiny{$ \pm 0.3 $}  & $88.1$\\
-		FM           & $\boldsymbol{99.2}$ \tiny{$\pm 0.1$} & $ 91.1 $ \tiny{$ \pm 0.4 $}   & $\boldsymbol{90.0}$ \tiny{$\pm 0.8$} & $93.4$ & $ 70.3 $ \tiny{$ \pm 0.6 $}   & $ 99.7 $ \tiny{$ \pm 0.2 $}       & $\boldsymbol{99.2}$ \tiny{$\pm 0.4$} & $89.7$\\
-		MODA-FM                      & $ 98.8 $ \tiny{$ \pm 0.1 $}  & $\boldsymbol{95.4}$ \tiny{$\pm 0.4$}  & $ 89.4 $ \tiny{$ \pm 1.4 $} & $\boldsymbol{94.5}$ & $\boldsymbol{70.7}$ \tiny{$\pm 0.9$}  & $ \boldsymbol{100.0} $ \tiny{$ \pm 0.0 $} & $ 99.1 $ \tiny{$ \pm 0.1 $} & $\boldsymbol{89.9}$\\ \hline
-		Fully supervised            & $ 98.9 $ \tiny{$ \pm 0.1 $}  & $ 96.2 $ \tiny{$ \pm 0.1 $}   & $ 90.3 $ \tiny{$ \pm 0.5 $} & $95.1$ & $ 88.1 $ \tiny{$ \pm 1.6 $}   & $ 99.3 $ \tiny{$ \pm 1.1 $}       & $ 99.5 $ \tiny{$ \pm 0.7 $} & $95.6$
-	\end{tabular}}
-	\caption{Average accuracy $\pm$ standard deviation (\%) over 5 independent runs on digits and objects classification (Office-31). The domain on each column corresponds to the target.}
-	\label{tab:digits_office_acc}
+    \centering
+    \resizebox{\linewidth}{!}{
+    \begin{tabular}{l|ccc:c|ccc:c}
+        \multicolumn{1}{c|}{} & \multicolumn{4}{c|}{Digits} & \multicolumn{4}{c}{Office-31} \\
+        & MNIST                        & MNIST-M                       & SVHN  & Avg.                        & Amazon                        & DSLR                              & Webcam & Avg.                      \\ \hline
+        DANN-SS \cite{Ganin2015}  & $ 97.9 $ \tiny{$ \pm 0.4 $}  & $ 73.2 $\tiny{$ \pm 1.6 $}   & $ 72.8 $ \tiny{$ \pm 3.3 $} & $81.3$ & $ 60.5 $ \tiny{$ \pm 1.4 $}   & $\boldsymbol{100.0}$ \tiny{$\pm 0.0$}     & $ 98.0$     \tiny{$ \pm 0.3 $} & $86.2$\\
+        DANN-MS \cite{Ganin2015}  & $ 97.9 $ \tiny{$ \pm 1.6 $}  & $ 67.5 $ \tiny{$ \pm 1.4 $}   & $ 71.5 $ \tiny{$ \pm 1.6 $} & $79.0$ & $ 61.2 $ \tiny{$ \pm 1.3 $}   & $ 99.9 $ \tiny{$ \pm 0.2 $}       & $ 98.8 $ \tiny{$ \pm 0.3 $} & $86.6$\\
+        MADA \cite{Pei2018}       & --                        & --                             & --                         & --  & $ 70.3 $ \tiny{$ \pm 0.3 $}   & $ 99.6 $ \tiny{$ \pm 0.1 $}       & $ 97.4 $ \tiny{$ \pm 0.1 $} &  $89.1$\\
+        MDAN \cite{Zhao2018}      & $ 98.3 $ \tiny{$ \pm 0.2 $}  & $ 69.1 $ \tiny{$ \pm 1.2 $}   & $ 69.5 $ \tiny{$ \pm 2.8 $} & $79.0$ & $ 65.2 $ \tiny{$ \pm 0.4 $}   & $ 99.3 $ \tiny{$ \pm 0.2 $}       & $ 97.8 $ \tiny{$ \pm 0.5 $} & $87.4$\\
+        MoE \cite{Guo2018}       & $ 98.6 $ \tiny{$ \pm 0.2 $}                     & $ 69.9 $ \tiny{$ \pm 1.1 $}                      & $ 81.8 $ \tiny{$ \pm 0.8 $}  & $83.4$ & --                            & --                                & --                          & --\\ \hline
+        MODA         & $ 98.4 $ \tiny{$ \pm 0.2 $}  & $ 77.4 $ \tiny{$ \pm 1.6 $}   & $ 71.7 $ \tiny{$ \pm 1.5 $} & $82.5$ & $ 65.5 $ \tiny{$ \pm 0.5 $}   &   $ 99.9 $ \tiny{$ \pm 0.2 $}     & $ 99.0 $ \tiny{$ \pm 0.3 $}  & $88.1$\\
+        FM           & $\boldsymbol{99.2}$ \tiny{$\pm 0.1$} & $ 91.1 $ \tiny{$ \pm 0.4 $}   & $\boldsymbol{90.0}$ \tiny{$\pm 0.8$} & $93.4$ & $ 70.3 $ \tiny{$ \pm 0.6 $}   & $ 99.7 $ \tiny{$ \pm 0.2 $}       & $\boldsymbol{99.2}$ \tiny{$\pm 0.4$} & $89.7$\\
+        MODA-FM                      & $ 98.8 $ \tiny{$ \pm 0.1 $}  & $\boldsymbol{95.4}$ \tiny{$\pm 0.4$}  & $ 89.4 $ \tiny{$ \pm 1.4 $} & $\boldsymbol{94.5}$ & $\boldsymbol{70.7}$ \tiny{$\pm 0.9$}  & $ \boldsymbol{100.0} $ \tiny{$ \pm 0.0 $} & $ 99.1 $ \tiny{$ \pm 0.1 $} & $\boldsymbol{89.9}$\\ \hline
+        Fully supervised            & $ 98.9 $ \tiny{$ \pm 0.1 $}  & $ 96.2 $ \tiny{$ \pm 0.1 $}   & $ 90.3 $ \tiny{$ \pm 0.5 $} & $95.1$ & $ 88.1 $ \tiny{$ \pm 1.6 $}   & $ 99.3 $ \tiny{$ \pm 1.1 $}       & $ 99.5 $ \tiny{$ \pm 0.7 $} & $95.6$
+    \end{tabular}}
+    \caption{Average accuracy $\pm$ standard deviation (\%) over 5 independent runs on digits and objects classification (Office-31). The domain on each column corresponds to the target.}
+    \label{tab:digits_office_acc}
 \end{table}
 
 \paragraph{Object classification on Office-31 dataset} Office-31 (\citet{Saenko2010}) is a standard benchmark dataset for domain adaptation. It comprises 31 object categories extracted from 3 domains: Amazon, which contains 2817 images downloaded from \url{amazon.com}, DSLR and Webcam, which contain 498 and 795 images captured with DSLR cameras and webcams, respectively, under different environments. In this experiment, we adopt the fully-transductive setting, following \citet{Pei2018}, where all unlabeled data from the target domain are used for training (except for the fully supervised model, where we use 80\% of the data for training and the remaining for testing). All models are implemented using a pre-trained (on ImageNet) ResNet-50 (\citet{He2016}) as the base architecture. We take each domain as the target in turn and all remaining are used as sources. The results are presented in \Tableref{tab:digits_office_acc}.
@@ -745,36 +745,36 @@ We now conduct several experiments using standard benchmark datasets for multi-s
 \paragraph{Sentiment analysis on Amazon Reviews dataset} The Amazon Reviews dataset (\citet{Blitzer2007}) is another multi-domain dataset widely used as a benchmark for domain adaptation. It contains binary (i.e.\ positive and negative) reviews on four types of products: books, DVDs, electronics, and kitchen appliances. Here, we follow the experimental setting from \citet{Chen2012}, where samples were pre-processed to 5k-dimensional TF-IDF feature vectors, thus word order information was not preserved. We choose 2k training samples from each domain randomly and the remaining target samples are used for testing, following the non-transductive setting. Since the data are not images, we use dropout as our (pseudo-)label-preserving transformation. Specifically, on each training iteration, we randomly choose a dropout rate (in a pre-specified range) to be applied at the input and hidden layers of the multi-layer perceptron (MLP) and the corresponding output prediction is used as the pseudo-label $\tilde{y}$. No dropout is applied for source and non-augmented target samples. All domains are taken as the target in turn and all remaining are used as sources. The results are in~\Tableref{tab:amazon_acc}.
 
 \begin{table}[]
-	\centering
-	\begin{tabular}{l|cccc:c}
-		& Books           & DVD             & Electronics     & Kitchen  & Avg. \\ \hline
-		DANN-SS \cite{Ganin2015} & $ 77.5 $ \tiny{$ \pm 1.0 $} & $ 78.9 $ \tiny{$ \pm 0.9 $} & $ 84.2 $ \tiny{$ \pm 0.2 $} & $ 85.8 $ \tiny{$ \pm 0.4 $} & $81.6$ \\
-		DANN-MS \cite{Ganin2015} & $ 78.9 $ \tiny{$ \pm 0.2 $} & $ 80.8 $ \tiny{$ \pm 1.0 $} & $ 84.7 $ \tiny{$ \pm 0.6 $} & $ 87.0 $ \tiny{$ \pm 0.4 $} & $82.9$ \\
-		MDAN \cite{Zhao2018}     & $ 79.1 $ \tiny{$ \pm 0.3 $} & $ 81.3 $ \tiny{$ \pm 0.8 $} & $ 84.6 $ \tiny{$ \pm 0.3 $} & $ 85.6 $ \tiny{$ \pm 1.6 $} & $82.7$ \\
-		MoE \cite{Guo2018}      & $ 80.3 $ \tiny{$ \pm 0.3 $} & $ 81.9 $ \tiny{$ \pm 0.6 $} & $ 85.2 $ \tiny{$ \pm 0.6 $} & $ 87.4 $ \tiny{$ \pm 0.5 $} & $83.7$\\ \hline
-		MODA     & $ 79.0 $ \tiny{$ \pm 0.2 $} & $ 80.7 $ \tiny{$ \pm 1.2 $} & $ 84.7 $ \tiny{$ \pm 0.3 $} & $ 86.8 $ \tiny{$ \pm 0.6 $} & $82.8$\\
-		FM         & $ 78.8 $ \tiny{$ \pm 2.0 $} & $ 81.0 $ \tiny{$ \pm 1.5 $} & $\boldsymbol{85.6}$ \tiny{$\pm 0.9 $} & $ 87.6 $ \tiny{$ \pm 0.7 $} & $83.3$\\
-		MODA-FM    & $\boldsymbol{80.9}$ \tiny{$\pm 1.1$} & $\boldsymbol{82.0}$ \tiny{$\pm 1.0$} & $ 85.3 $ \tiny{$ \pm 0.4 $} & $\boldsymbol{88.4}$ \tiny{$\pm 0.3$} & $\boldsymbol{84.2}$\\ \hline
-		Fully supervised & $ 83.6 $ \tiny{$ \pm 0.4 $} & $ 83.6 $ \tiny{$ \pm 0.6 $} & $ 85.4 $ \tiny{$ \pm 0.4 $} & $ 87.8 $ \tiny{$ \pm 0.2 $} & $85.1$
-	\end{tabular}
-	\caption{Average accuracy $\pm$ standard deviation (\%) over 5 independent runs on sentiment analysis (Amazon Reviews). The domain on each column corresponds to the target.}
-	\label{tab:amazon_acc}
+    \centering
+    \begin{tabular}{l|cccc:c}
+        & Books           & DVD             & Electronics     & Kitchen  & Avg. \\ \hline
+        DANN-SS \cite{Ganin2015} & $ 77.5 $ \tiny{$ \pm 1.0 $} & $ 78.9 $ \tiny{$ \pm 0.9 $} & $ 84.2 $ \tiny{$ \pm 0.2 $} & $ 85.8 $ \tiny{$ \pm 0.4 $} & $81.6$ \\
+        DANN-MS \cite{Ganin2015} & $ 78.9 $ \tiny{$ \pm 0.2 $} & $ 80.8 $ \tiny{$ \pm 1.0 $} & $ 84.7 $ \tiny{$ \pm 0.6 $} & $ 87.0 $ \tiny{$ \pm 0.4 $} & $82.9$ \\
+        MDAN \cite{Zhao2018}     & $ 79.1 $ \tiny{$ \pm 0.3 $} & $ 81.3 $ \tiny{$ \pm 0.8 $} & $ 84.6 $ \tiny{$ \pm 0.3 $} & $ 85.6 $ \tiny{$ \pm 1.6 $} & $82.7$ \\
+        MoE \cite{Guo2018}      & $ 80.3 $ \tiny{$ \pm 0.3 $} & $ 81.9 $ \tiny{$ \pm 0.6 $} & $ 85.2 $ \tiny{$ \pm 0.6 $} & $ 87.4 $ \tiny{$ \pm 0.5 $} & $83.7$\\ \hline
+        MODA     & $ 79.0 $ \tiny{$ \pm 0.2 $} & $ 80.7 $ \tiny{$ \pm 1.2 $} & $ 84.7 $ \tiny{$ \pm 0.3 $} & $ 86.8 $ \tiny{$ \pm 0.6 $} & $82.8$\\
+        FM         & $ 78.8 $ \tiny{$ \pm 2.0 $} & $ 81.0 $ \tiny{$ \pm 1.5 $} & $\boldsymbol{85.6}$ \tiny{$\pm 0.9 $} & $ 87.6 $ \tiny{$ \pm 0.7 $} & $83.3$\\
+        MODA-FM    & $\boldsymbol{80.9}$ \tiny{$\pm 1.1$} & $\boldsymbol{82.0}$ \tiny{$\pm 1.0$} & $ 85.3 $ \tiny{$ \pm 0.4 $} & $\boldsymbol{88.4}$ \tiny{$\pm 0.3$} & $\boldsymbol{84.2}$\\ \hline
+        Fully supervised & $ 83.6 $ \tiny{$ \pm 0.4 $} & $ 83.6 $ \tiny{$ \pm 0.6 $} & $ 85.4 $ \tiny{$ \pm 0.4 $} & $ 87.8 $ \tiny{$ \pm 0.2 $} & $85.1$
+    \end{tabular}
+    \caption{Average accuracy $\pm$ standard deviation (\%) over 5 independent runs on sentiment analysis (Amazon Reviews). The domain on each column corresponds to the target.}
+    \label{tab:amazon_acc}
 \end{table}
 
 \paragraph{Large scale object classification on DomainNet dataset} To the best of our knowledge, the DomainNet dataset (\citet{Peng2019}) is the largest domain adaptation image dataset to date. It consists of 6 domains, each containing 345 categories of common objects. The domains are: clipart images (\textit{clp}), infographic images (\textit{inf}), artist paintings (\textit{pnt}), drawings made by worldwide players of the game ``Quick, Draw!" (\textit{qdr}), real world images (\textit{rel}), and sketches of objects (\textit{skt}). The dataset consists of around 423.5k images split in prespecified train/test partitions. For training the models, we use all the data from the training partition, excluding the labels for the target domain. For testing, we use the target domain data from the test partition. All models were implemented on top of a pre-trained (on ImageNet) ResNet-152. All domains are taken as the target in turn and all remaining are used as sources. The results are in~\Tableref{tab:domainnet_acc}.
 
 \begin{table}[]
-	\centering
-	\begin{tabular}{l|cccccc:c}
-		& \textit{clp} & \textit{inf} & \textit{pnt} & \textit{qdr}  & \textit{rel} & \textit{skt} & Avg. \\ \hline
-		DANN-MS \cite{Ganin2015} & $\boldsymbol{62.6}$ & $21.7$  & $50.3$ & $14.3$ & $\boldsymbol{63.5}$ & $48.3$ & $43.5$ \\
-		MDAN \cite{Zhao2018} & $52.2$ & $19.1$ & $46.0$ & $12.6$ & $48.2$& $40.4$ & $36.4$\\
-		M$^3$SDA-$\beta$ \cite{Peng2019} & $58.6$& $\boldsymbol{26.0}$& $\boldsymbol{52.3}$ & $6.3$& $62.7$ & $49.5$ & $42.6$\\ \hline
-		MODA-FM       & $61.2$ & $24.5$  & $51.2$  & $\boldsymbol{17.2}$  & $62.3$ & $\boldsymbol{52.4}$ & $\boldsymbol{44.8}$\\ \hline
-		Fully supervised & $68.5$ & $28.7$ & $61.5$ & $64.5$ & $78.5$ & $59.3$ & $60.2$
-	\end{tabular}
-	\caption{Accuracy on object classification (DomainNet). The domain on each column corresponds to the target.}
-	\label{tab:domainnet_acc}
+    \centering
+    \begin{tabular}{l|cccccc:c}
+        & \textit{clp} & \textit{inf} & \textit{pnt} & \textit{qdr}  & \textit{rel} & \textit{skt} & Avg. \\ \hline
+        DANN-MS \cite{Ganin2015} & $\boldsymbol{62.6}$ & $21.7$  & $50.3$ & $14.3$ & $\boldsymbol{63.5}$ & $48.3$ & $43.5$ \\
+        MDAN \cite{Zhao2018} & $52.2$ & $19.1$ & $46.0$ & $12.6$ & $48.2$& $40.4$ & $36.4$\\
+        M$^3$SDA-$\beta$ \cite{Peng2019} & $58.6$& $\boldsymbol{26.0}$& $\boldsymbol{52.3}$ & $6.3$& $62.7$ & $49.5$ & $42.6$\\ \hline
+        MODA-FM       & $61.2$ & $24.5$  & $51.2$  & $\boldsymbol{17.2}$  & $62.3$ & $\boldsymbol{52.4}$ & $\boldsymbol{44.8}$\\ \hline
+        Fully supervised & $68.5$ & $28.7$ & $61.5$ & $64.5$ & $78.5$ & $59.3$ & $60.2$
+    \end{tabular}
+    \caption{Accuracy on object classification (DomainNet). The domain on each column corresponds to the target.}
+    \label{tab:domainnet_acc}
 \end{table}
 
 \subsubsection{Discussion}

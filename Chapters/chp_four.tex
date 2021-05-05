@@ -15,17 +15,17 @@
 % Use \subsection and \subsubsection to organize text
 
 \begin{tcolorbox}
-	\small{
-		Some parts of this chapter were originally published in or adapted from:
-		\begin{itemize}
-			\item[] \cite{DeSIRe} \bibentry{DeSIRe} (presented in \Secref{sec:desire})
-			\item[] \cite{AdvSInvConf} \bibentry{AdvSInvConf} (presented in \Secref{sec:adv_signer_inv})
-			\item[] \cite{AdvSInvJournal} \bibentry{AdvSInvJournal} (idem)
-			\item[] \cite{AdvInvAttack} \bibentry{AdvInvAttack} (\Secref{sec:adv_iris_attack})
-		\end{itemize}
+    \small{
+    Some parts of this chapter were originally published in or adapted from:
+    \begin{itemize}
+        \item[] \cite{DeSIRe} \bibentry{DeSIRe} (presented in \Secref{sec:desire})
+        \item[] \cite{AdvSInvConf} \bibentry{AdvSInvConf} (presented in \Secref{sec:adv_signer_inv})
+        \item[] \cite{AdvSInvJournal} \bibentry{AdvSInvJournal} (idem)
+        \item[] \cite{AdvInvAttack} \bibentry{AdvInvAttack} (\Secref{sec:adv_iris_attack})
+    \end{itemize}
 
-		The first two authors contributed equally in \cite{DeSIRe} and \cite{AdvSInvConf}. Both conceived the models and designed and conducted the experiments, with the supervision of Rebelo and Cardoso. Diogo Pernes was slightly more focused on the problem and model formalization, while Ferreira was more involved on dataset selection and preprocessing. The work in \cite{AdvSInvJournal} extends \cite{AdvSInvConf} by including a more exhaustive experimental evaluation. In \cite{AdvInvAttack}, Diogo Pernes contributed on the development of the proposed methodology, together with the first two authors, who motivated the application, formalized the problem and conducted all experiments. Rebelo and Cardoso supervised the work.
-	}
+    The first two authors contributed equally in \cite{DeSIRe} and \cite{AdvSInvConf}. Both conceived the models and designed and conducted the experiments, with the supervision of Rebelo and Cardoso. Diogo Pernes was slightly more focused on the problem and model formalization, while Ferreira was more involved on dataset selection and preprocessing. The work in \cite{AdvSInvJournal} extends \cite{AdvSInvConf} by including a more exhaustive experimental evaluation. In \cite{AdvInvAttack}, Diogo Pernes contributed on the development of the proposed methodology, together with the first two authors, who motivated the application, formalized the problem and conducted all experiments. Rebelo and Cardoso supervised the work.
+    }
 \end{tcolorbox}
 
 \section{Introduction}
@@ -134,28 +134,28 @@ By definition, signer-invariant representations discard all signer-specific info
 
 Therefore, the signer-classifier network shall be trained to minimize the negative log-likelihood of correct signer predictions:
 \begin{equation}
-\label{eq:signer_loss}
-\min_{\vtheta_d} \; \left\lbrace L_{\text{signer}}(\vtheta_g, \vtheta_d) \triangleq -\frac{1}{n}\sum_{i=1}^n \log p(s_i \mid g(\mX_{i}; \vtheta_g); \vtheta_d) \right\rbrace
+    \label{eq:signer_loss}
+    \min_{\vtheta_d} \; \left\lbrace L_{\text{signer}}(\vtheta_g, \vtheta_d) \triangleq -\frac{1}{n}\sum_{i=1}^n \log p(s_i \mid g(\mX_{i}; \vtheta_g); \vtheta_d) \right\rbrace
 \end{equation}
 
 In the perspective of the encoder, the predictions of the sign-classifier should be as accurate as possible and the predictions of the signer-classifier should be kept close to uniform, meaning that this latter model is not capable of doing better than random guessing the signer identity. Formally, this may be translated into the following constrained objective:
 \begin{align}
-\label{eq:sign_loss}
-&\min_{\vtheta_g, \vtheta_h} \; \left\lbrace L_{\text{sign}}(\vtheta_g, \vtheta_h)\triangleq-\frac{1}{n}\sum_{i=1}^n \log p(y_i \mid g(\mX_{i}; \vtheta_g); \vtheta_h)\right\rbrace,\\
-\label{eq:kl_obj}
-&\text{subject to } \; \frac{1}{n}\sum_{i=1}^n \KL(\gU(\rs) || p(\rs \mid g(\mX_{i}; \vtheta_h); \vtheta_g) \leq \epsilon,
+    \label{eq:sign_loss}
+    &\min_{\vtheta_g, \vtheta_h} \; \left\lbrace L_{\text{sign}}(\vtheta_g, \vtheta_h)\triangleq-\frac{1}{n}\sum_{i=1}^n \log p(y_i \mid g(\mX_{i}; \vtheta_g); \vtheta_h)\right\rbrace,\\
+    \label{eq:kl_obj}
+    &\text{subject to } \; \frac{1}{n}\sum_{i=1}^n \KL(\gU(\rs) || p(\rs \mid g(\mX_{i}; \vtheta_h); \vtheta_g) \leq \epsilon,
 \end{align}
 where $\KL$ is the Kullback-Leibler (KL) divergence and $\gU(\rs)$ denotes the discrete uniform distribution on the random variable $\rs$, defined over the set of signer identities $\{1, 2, \dots, k\}$ in the training set. Here, $\epsilon \geq 0$ determines how far from uniform the signer-classifier predictions are allowed to be (as measured by the KL divergence). The choice of the uniform distribution implies the underlying assumption that the training set is balanced relatively to the number of examples per signer (which should be true for most practical datasets). When this is not the case, the empirical distribution of signer identities in the training set may be used instead.
 
 The inequality constraint~\plaineqref{eq:kl_obj} may be rewritten as:
 \begin{equation}
-\label{eq:adv_loss}
-L_{\text{adv}}(\vtheta_g, \vtheta_d) \triangleq \frac{1}{nk}\sum_{i=1}^n \sum_{\rs} \log p(\rs \mid g(\mX_{i}; \vtheta_g); \vtheta_d) \leq \epsilon + \log k,
+    \label{eq:adv_loss}
+    L_{\text{adv}}(\vtheta_g, \vtheta_d) \triangleq \frac{1}{nk}\sum_{i=1}^n \sum_{\rs} \log p(\rs \mid g(\mX_{i}; \vtheta_g); \vtheta_d) \leq \epsilon + \log k,
 \end{equation}
 and the constrained optimization problem may be equivalently formulated as:
 \begin{equation}
-\label{eq:tr_obj}
-\min_{\vtheta_g, \vtheta_h}  \left\lbrace L(\vtheta_g, \vtheta_h, \vtheta_d) \triangleq L_{\text{sign}}(\vtheta_g, \vtheta_h) + \mu_d L_{\text{adv}}(\vtheta_g, \vtheta_d) \right\rbrace,
+    \label{eq:tr_obj}
+    \min_{\vtheta_g, \vtheta_h}  \left\lbrace L(\vtheta_g, \vtheta_h, \vtheta_d) \triangleq L_{\text{sign}}(\vtheta_g, \vtheta_h) + \mu_d L_{\text{adv}}(\vtheta_g, \vtheta_d) \right\rbrace,
 \end{equation}
 where $\mu_d \geq 0$ depends on $\epsilon$ and $L_{\text{adv}}$ plays the role of an adversarial loss with respect to the signer classification loss $L_{\text{signer}}$.
 
@@ -164,24 +164,24 @@ This objective and the structure of our model are similar to those used by \cite
 \subsubsection{Signer-transfer training objective}
 To further encourage the latent representations $\vz$ to be signer-invariant, we introduce an additional term in objective~\plaineqref{eq:tr_obj}, the so-called signer-transfer loss $L_{\text{transfer}}$. The core idea of $L_{\text{transfer}}$ is to match first order statistics of different signers earlier in the network. For this purpose, let $g^{(l)}(\cdot;\vtheta_g)$ be the $l$-th layer of the encoder network, $l \in \{1,...,m\}$, and consider the distance $\gD^{(l)}(s, s'; \vtheta_g)$ between two distinct signers $s$ and $s'$, defined as:
 \begin{equation}
-\label{eq:sign_transfer_pairwise_loss}
-\gD^{(l)}(s, s'; \vtheta_g) \triangleq \Big|\Big| \frac{1}{n_s} \sum_{i=1}^n g^{(l)}(\mX_{i}; \vtheta_g) \1_{s_i = s} - \frac{1}{n_{s'}}\sum_{j=1}^n g^{(l)}(\mX_{j}; \vtheta_g) \1_{s_j = s'} \Big|\Big|^2,
+    \label{eq:sign_transfer_pairwise_loss}
+    \gD^{(l)}(s, s'; \vtheta_g) \triangleq \Big|\Big| \frac{1}{n_s} \sum_{i=1}^n g^{(l)}(\mX_{i}; \vtheta_g) \1_{s_i = s} - \frac{1}{n_{s'}}\sum_{j=1}^n g^{(l)}(\mX_{j}; \vtheta_g) \1_{s_j = s'} \Big|\Big|^2,
 \end{equation}
 $n_s$ and $n_{s'}$ denote the number of training examples for signers $s$ and $s'$, respectively. Accordingly, the signer-transfer loss at the $l$-th layer is the sum of the pairwise distances between all signers, i.e.:
 \begin{equation}
-L_{\text{transfer}}^{(l)}(\vtheta_g) \triangleq \sum_{\substack{s,s'=1 \\ s' \neq s}}^k \gD^{(l)}(s,s'; \vtheta_g).
+    L_{\text{transfer}}^{(l)}(\vtheta_g) \triangleq \sum_{\substack{s,s'=1 \\ s' \neq s}}^k \gD^{(l)}(s,s'; \vtheta_g).
 \end{equation}
 The overall signer-transfer loss $L_{\text{transfer}}$ is then a weighted sum of the losses computed at each layer of the encoder network:
 \begin{equation}
-\label{eq:signer_transfer_loss}
-L_{\text{transfer}}(\vtheta_g) \triangleq \sum_{l=1}^{m} \beta^{(l)} L_{\text{transfer}}^{(l)}(\vtheta_g),
+    \label{eq:signer_transfer_loss}
+    L_{\text{transfer}}(\vtheta_g) \triangleq \sum_{l=1}^{m} \beta^{(l)} L_{\text{transfer}}^{(l)}(\vtheta_g),
 \end{equation}
 where $\beta^{(l)}\geq 0$ is a hyperparameter that controls the relative importance of the loss obtained at the $l$-th layer.
 By combining \plaineqref{eq:tr_obj} and \plaineqref{eq:signer_transfer_loss}, the encoder and sign-classifier networks are trained to minimize the following loss function:
 \begin{equation}
-\label{eq:enc_sign_loss}
-\min_{\vtheta_g, \vtheta_h} \left\lbrace L(\vtheta_g, \vtheta_h, \vtheta_d) \triangleq L_{\text{sign}}(\vtheta_g, \vtheta_h) + \mu_d L_{\text{adv}}(\vtheta_g, \vtheta_d) +
-\mu_t L_{\text{transfer}}(\vtheta_g) \right\rbrace,
+    \label{eq:enc_sign_loss}
+    \min_{\vtheta_g, \vtheta_h} \left\lbrace L(\vtheta_g, \vtheta_h, \vtheta_d) \triangleq L_{\text{sign}}(\vtheta_g, \vtheta_h) + \mu_d L_{\text{adv}}(\vtheta_g, \vtheta_d) +
+    \mu_t L_{\text{transfer}}(\vtheta_g) \right\rbrace,
 \end{equation}
 where $\mu_t \geq 0$ is the weight that controls the relative importance of the signer-transfer term.
 
@@ -245,7 +245,7 @@ Throughout this section, the proposed model is compared with state of the art me
 \end{itemize}
 Here, the triplet loss concept is explored in order to impose signer-independence in the representation space and, hence, build up a more robust baseline. The underlying idea is to minimize the distance between an \textit{anchor} and a \textit{positive} latent representation, $\vz_{y_{i}, s_{i}}$ and $\vz_{y_{p}, s_{p}}$, respectively; while maximizing the distance between the anchor $\vz_{y_{i}, s_{i}}$ and a \textit{negative} representation $\vz_{y_{n}, s_{n}}$. It is important to note that while anchor and positive latent representations have to be from the same sign class, their signer identity may or not change. On the other hand, anchor and negative representations are from different sign classes, whereas their signer identity may also change. In order to train baseline 2 in an end-to-end fashion for sign classification, the overall loss function to be minimized is a trade-off between the triplet loss $L_{\text{triplet}}$, defined below, and the classification loss $L_{\text{sign}}$:
 \begin{equation}
-L_{\text{triplet}} \triangleq \frac{1}{n}\sum_{i=1}^{n}\Big[||\vz_{y_{i}, s_{i}}-\vz_{y_{p}, s_{p}}||^2_2 - ||\vz_{y_{i}, s_{i}}-\vz_{y_{n}, s_{n}}||^2_2 + \alpha\Big],
+    L_{\text{triplet}} \triangleq \frac{1}{n}\sum_{i=1}^{n}\Big[||\vz_{y_{i}, s_{i}}-\vz_{y_{p}, s_{p}}||^2_2 - ||\vz_{y_{i}, s_{i}}-\vz_{y_{n}, s_{n}}||^2_2 + \alpha\Big],
 \end{equation}
 where $y_{p}=y_{i}$ and $y_{n} \neq y_{i}$ and the margin $\alpha$ enforced between \emph{positive} and \emph{negative} pairs was fixed at $\alpha=1$. In addition, following \citet{Schroff2015}, we adopted an \emph{online} triplet generation strategy, by selecting the hardest positive/negative samples within every mini-batch. The overall loss for this model is therefore $L_{\text{sign}} + \rho L_{\text{triplet}}$, where $\rho \geq 0$ is a hyperparameter.
 
@@ -253,14 +253,14 @@ All deep models were implemented in PyTorch and trained with the Adam optimizati
 
 \begin{table}[t]
     \centering
-        \begin{tabular}{c|c|c}
-            Hyperparameters                    & Symbol & Set                \\ \hline
-            Leaning rate                                & --      & \{$1\text{e}^{-04}$,$1\text{e}^{-03}$\}             \\
-            $\normltwo$-norm coefficient                              & --       & \{$1\text{e}^{-05}$,$1\text{e}^{-04}$\}             \\
-            $L_{\text{triplet}}$ weight                 & $\rho$                & \{0.1,0.5,1,5,10\}                  \\
-            $L_{\text{adv}}$ weight                 & $\mu_d$                & \{0.1,0.5,0.8,1,3\}                  \\
-            $L_{\text{transfer}}$ weight                 & $\mu_t$                & $\{1.5\text{e}^{-04}$,$2\text{e}^{-04}$,$4\text{e}^{-04}$,$1\text{e}^{-03}\}$
-        \end{tabular}
+    \begin{tabular}{c|c|c}
+        Hyperparameters                    & Symbol & Set                \\ \hline
+        Leaning rate                                & --      & \{$1\text{e}^{-04}$,$1\text{e}^{-03}$\}             \\
+        $\normltwo$-norm coefficient                              & --       & \{$1\text{e}^{-05}$,$1\text{e}^{-04}$\}             \\
+        $L_{\text{triplet}}$ weight                 & $\rho$                & \{0.1,0.5,1,5,10\}                  \\
+        $L_{\text{adv}}$ weight                 & $\mu_d$                & \{0.1,0.5,0.8,1,3\}                  \\
+        $L_{\text{transfer}}$ weight                 & $\mu_t$                & $\{1.5\text{e}^{-04}$,$2\text{e}^{-04}$,$4\text{e}^{-04}$,$1\text{e}^{-03}\}$
+    \end{tabular}
     \caption{Hyperparameter sets for the proposed adversarial model and baselines.}
     \label{tab:hyperparam}
 \end{table}
@@ -272,19 +272,19 @@ Experiments on the Jochen-Triesch and MKLM databases are summarized in \Tableref
     \centering
     \resizebox{\linewidth}{!}{
     \begin{tabular}{c|c c c|c c c}
-                & \multicolumn{3}{c|}{Jochen Triesch} & \multicolumn{3}{c}{MKLM}\\
-                & Uniform  Bg.      & Complex Bg.        & Both  & Avg. $\pm$ std.  & min         & max        \\ \hline
-                \citet{Just2006}       & 92.8           & 81.3           & 87.9         & -- & -- & --\\
-                \citet{Kelly2010} & 91.8 & -- & -- & -- & -- & --\\
-                \citet{Dahmani2014} & 93.1 & -- & -- & -- & -- & --\\
-                \citet{Marin2014}  & -- & --  & -- & 89.7 & -- & --\\
-                \citet{Ferreira2018} & -- & --  & -- & 93.2 & -- & -- \\
-                \hline
-                CNN (baseline 1)                            & 97.50           & 74.4           & 89.8   & 89.9 \footnotesize{$\pm 8.8$}            & 73.0                & 98.0\\
-                CNN with triplet loss (baseline 2)          & 98.13           & 75.6           & 90.6 & 91.4 \footnotesize{$\pm 3.9$}             & 86.5                & 96.5\\
-                Proposed method       &      \textbf{98.8}     & \textbf{91.3}
-                & \textbf{96.3} & \textbf{94.8} \footnotesize{$\pm 3.5$}      & \textbf{89.5}
-                & \textbf{100.0}
+        & \multicolumn{3}{c|}{Jochen Triesch} & \multicolumn{3}{c}{MKLM}\\
+        & Uniform  Bg.      & Complex Bg.        & Both  & Avg. $\pm$ std.  & min         & max        \\ \hline
+        \citet{Just2006}       & 92.8           & 81.3           & 87.9         & -- & -- & --\\
+        \citet{Kelly2010} & 91.8 & -- & -- & -- & -- & --\\
+        \citet{Dahmani2014} & 93.1 & -- & -- & -- & -- & --\\
+        \citet{Marin2014}  & -- & --  & -- & 89.7 & -- & --\\
+        \citet{Ferreira2018} & -- & --  & -- & 93.2 & -- & -- \\
+        \hline
+        CNN (baseline 1)                            & 97.50           & 74.4           & 89.8   & 89.9 \footnotesize{$\pm 8.8$}            & 73.0                & 98.0\\
+        CNN with triplet loss (baseline 2)          & 98.13           & 75.6           & 90.6 & 91.4 \footnotesize{$\pm 3.9$}             & 86.5                & 96.5\\
+        Proposed method       &      \textbf{98.8}     & \textbf{91.3}
+        & \textbf{96.3} & \textbf{94.8} \footnotesize{$\pm 3.5$}      & \textbf{89.5}
+        & \textbf{100.0}
     \end{tabular}}
     \caption{Classification accuracy (\%) of the proposed adversarial method and baselines on Jochen-Triesch and MKLM datasets.}
     \label{tab:adv_signer_inv_results}
@@ -576,16 +576,16 @@ In addition to the baselines used in \Secref{sec:adv_signer_inv_experiments} and
 \begin{table}[t]
     \centering
     \resizebox{\linewidth}{!}{
-        \begin{tabular}{c|c c c|c c c}
-            & \multicolumn{3}{c|}{Jochen Triesch} & \multicolumn{3}{c}{MKLM}\\
-            & Uniform  Bg.      & Complex Bg.        & Both  & Avg. $\pm$ std.  & min         & max        \\ \hline
-            DANN \cite{Ganin2015} & 98.1 & 83.8  & 93.3 & 94.3 \footnotesize{$\pm 2.5$} & 91.5 & 96.5 \\
-            DTML \cite{Hu2016} & 98.8 & 85.6  & 94.4 & 94.1 \footnotesize{$\pm 3.8$} & 87.0 & 97.5 \\
-            \hline
-            Proposed adv.\ model (\Secref{sec:adv_signer_inv})       &      98.8     & 91.3
-            &   96.3 &    94.8 \footnotesize{$\pm 3.5$}      &  89.5
-            &  \textbf{100.0}    \\
-            DeSIRe & \textbf{99.7} & \textbf{92.5} & \textbf{97.3} & \textbf{96.8} \footnotesize{$\pm 2.4$} & \textbf{93.0} & 99.0
+    \begin{tabular}{c|c c c|c c c}
+        & \multicolumn{3}{c|}{Jochen Triesch} & \multicolumn{3}{c}{MKLM}\\
+        & Uniform  Bg.      & Complex Bg.        & Both  & Avg. $\pm$ std.  & min         & max        \\ \hline
+        DANN \cite{Ganin2015} & 98.1 & 83.8  & 93.3 & 94.3 \footnotesize{$\pm 2.5$} & 91.5 & 96.5 \\
+        DTML \cite{Hu2016} & 98.8 & 85.6  & 94.4 & 94.1 \footnotesize{$\pm 3.8$} & 87.0 & 97.5 \\
+        \hline
+        Proposed adv.\ model (\Secref{sec:adv_signer_inv})       &      98.8     & 91.3
+        &   96.3 &    94.8 \footnotesize{$\pm 3.5$}      &  89.5
+        &  \textbf{100.0}    \\
+        DeSIRe & \textbf{99.7} & \textbf{92.5} & \textbf{97.3} & \textbf{96.8} \footnotesize{$\pm 2.4$} & \textbf{93.0} & 99.0
     \end{tabular}}
     \caption{Classification accuracy (\%) of DeSIRe and baselines on Jochen-Triesch and MKLM datasets.}
     \label{tab:desire_jt_mklm_results}
@@ -598,14 +598,14 @@ The classification accuracy for sign classification in the CorSiL database is pr
 \begin{table}[t]
     \centering
     \begin{tabular}{c|c c c}
-            & Top-1  & Top-3 & Top-5 \\\hline
-            DANN \cite{Ganin2015} & 48.7             & 75.5                    & 83.3           \\
-            DTML \cite{Hu2016} & 39.3            & 68.0                    & 79.8            \\
-            \hline
-            CNN (baseline 1)                              & 46.0           & 74.7          & 86.8        \\
-            CNN with triplet loss (baseline 2)            &  42.7          & 72.3          & 82.0       \\
-            Proposed adv.\ model (\Secref{sec:adv_signer_inv}) & 49.1 & 76.0 & 85.2 \\
-            DeSIRe         & \textbf{51.9}  & \textbf{76.6} & \textbf{87.9}        \\
+        & Top-1  & Top-3 & Top-5 \\\hline
+        DANN \cite{Ganin2015} & 48.7             & 75.5                    & 83.3           \\
+        DTML \cite{Hu2016} & 39.3            & 68.0                    & 79.8            \\
+        \hline
+        CNN (baseline 1)                              & 46.0           & 74.7          & 86.8        \\
+        CNN with triplet loss (baseline 2)            &  42.7          & 72.3          & 82.0       \\
+        Proposed adv.\ model (\Secref{sec:adv_signer_inv}) & 49.1 & 76.0 & 85.2 \\
+        DeSIRe         & \textbf{51.9}  & \textbf{76.6} & \textbf{87.9}        \\
     \end{tabular}
     \caption{Classification accuracy (\%) of DeSIRe and baselines on the CorSiL dataset.}
     \label{tab:desire_corsil_results}
