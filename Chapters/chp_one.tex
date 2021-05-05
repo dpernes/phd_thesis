@@ -52,12 +52,12 @@ for a discrete or continuous $\rx$, respectively.
 \subsection{Definition and structural properties}
 \label{sec:bayesian_net_definition}
 
-Given $n$ random variables $\rx_1, \rx_2, \dots, \rx_n$, the \emph{chain rule of probability} allows the factorization of their joint distribution as:\footnote{The expression on the right-hand side of \eqref{eq:chain_rule} is not well defined outside the support of $p(\rx_1), p(\rx_1, \rx_2), \dots, p(\rx_1, \rx_2, \dots, \rx_{n-1})$. For those values, one has $p(\rx_1, \rx_2, \dots, \rx_n)=0$.}
+Given $n$ random variables $\rx_1, \rx_2, \dots, \rx_n$, the \emph{chain rule of probability} allows the factorization of their joint distribution as a product of conditional distributions:\footnote{The expression on the right-hand side of \eqref{eq:chain_rule} is not well defined outside the support of $p(\rx_1), p(\rx_1, \rx_2), \dots, p(\rx_1, \rx_2, \dots, \rx_{n-1})$. For those values, one has $p(\rx_1, \rx_2, \dots, \rx_n)=0$.}
 \begin{equation}
     \label{eq:chain_rule}
     p(\rx_1,\rx_2,\dots,\rx_n) = p(\rx_1) \prod_{i=1}^n p(\rx_i \mid \rx_{1}, \rx_{2}, \dots, \rx_{i-1}).
 \end{equation}
-Starting from this product, we may build a directed graph $\gG$ with $n$ vertices, one for each random variable, where there exists an edge $i \rightarrow j$ if and only if there is a factor where $\rx_i$ is conditioned on $\rx_j$. Such a graph is known as a \emph{Bayesian network}. From its definition, it is clear that the factorization in \eqref{eq:chain_rule} corresponds to the graph in \Figref{fig:complete_bayesian_net}. Clearly, a Bayesian network defines a bijection between random variables and graph nodes, so with a slight abuse of terminology we represent and refer to nodes by the random variable they are associated with, rather than by their index.
+Starting from this product, we may build a directed graph $\gG$ with $n$ vertices, one for each random variable, where there exists an edge $i \rightarrow j$ if and only if there is a factor where $\rx_j$ is conditioned on $\rx_i$. Such a graph is known as a \emph{Bayesian network}. From its definition, it is clear that the factorization in \eqref{eq:chain_rule} corresponds to the graph in \Figref{fig:complete_bayesian_net}. Clearly, a Bayesian network defines a bijection between random variables and graph nodes, so with a slight abuse of terminology we represent and refer to nodes by the random variable they are associated with, rather than by their index.
 
 \begin{figure}
     \centering
@@ -92,7 +92,7 @@ Starting from this product, we may build a directed graph $\gG$ with $n$ vertice
     \label{fig:complete_bayesian_net}
 \end{figure}
 
-Since the factorization in \eqref{eq:chain_rule} is general (i.e.\ it does not assume any conditional independence between random variables), the Bayesian network in \Figref{fig:complete_bayesian_net} is said to be \emph{complete}. When conditional independences are present, the graph becomes sparser. For instance, for all $i \geq 3$, $\rx_i$ is conditionally independent of $\rx_{1}, \rx_{2}, \dots, \rx_{i-2}$ given $\rx_{i-1}$, then $p(\rx_i \mid \rx_{1}, \rx_{2}, \dots, \rx_{i-1}) = p(\rx_i \mid \rx_{i-1})$ and thus the Bayesian network reduces to the \emph{chain} represented in \Figref{fig:chain_bayesian_net}.
+Since the factorization in \eqref{eq:chain_rule} is general (i.e.\ it does not assume any conditional independence between random variables), the Bayesian network in \Figref{fig:complete_bayesian_net} is said to be \emph{complete}. When conditional independences are present, the graph becomes sparser. For instance, if, for all $i \geq 3$, $\rx_i$ is conditionally independent of $\rx_{1}, \rx_{2}, \dots, \rx_{i-2}$ given $\rx_{i-1}$, then $p(\rx_i \mid \rx_{1}, \rx_{2}, \dots, \rx_{i-1}) = p(\rx_i \mid \rx_{i-1})$ and thus the Bayesian network reduces to the \emph{chain} represented in \Figref{fig:chain_bayesian_net}.
 
 \begin{figure}
     \centering
@@ -119,11 +119,11 @@ Since the factorization in \eqref{eq:chain_rule} is general (i.e.\ it does not a
     \caption{A chain.}
     \label{fig:chain_bayesian_net}
 \end{figure}
-An important property of Bayesian networks is the fact that they are always directed \emph{acyclic} graphs. The non-existence of loops allows us to recover the factorization of the joint distribution by examining the structure of the graph $\gG$ and applying the formula:
+An important property of Bayesian networks is the fact that they are always directed \emph{acyclic} graphs. The non-existence of cycles allows us to recover the factorization of the joint distribution by examining the structure of the graph $\gG$ and applying the formula:
 \begin{equation}
     p(\rx_1, \rx_2, \dots, \rx_n) = \prod_{i=1}^n p(\rx_i \mid \parents_\gG(\rx_i)),
 \end{equation}
-where $\parents_\gG(\rx_i)$ are the parents of the node $\rx_i$ in the graph $\gG$. It is important to highlight that, although there is a one-to-one correspondence between a factorization of a joint distribution into conditional distributions and a Bayesian network, the same joint distribution can sometimes be factorized in multiple different but equivalent forms, each one corresponding to a different Bayesian network. This is the case of \emph{chains} and \emph{forks}, which we discuss next.
+where $\parents_\gG(\rx_i)$ are the parents of node $\rx_i$ in $\gG$. It is important to highlight that, although there is a one-to-one correspondence between a factorization of a joint distribution into conditional distributions and a Bayesian network, the same joint distribution can sometimes be factorized in multiple different but equivalent forms, each one corresponding to a different Bayesian network. This is the case of chains and \emph{forks}, which we discuss next.
 
 \subsection{Chains and forks}
 \label{sec:chains_forks}
@@ -133,7 +133,7 @@ Let us consider the case where we have three random variables $\rx_1, \rx_2, \rx
     &= p(\rx_2) p(\rx_1 \mid \rx_2) p(\rx_3 \mid \rx_2) \label{eq:fork}\\
     &= p(\rx_3) p(\rx_2 \mid \rx_3) p(\rx_1 \mid \rx_2) \label{eq:reversed_chain}
 \end{align}
-The three equivalent factorizations \plaineqref{eq:chain} -- \plaineqref{eq:reversed_chain} correspond, from left to right, to the three Bayesian networks in \Figref{fig:equiv_bayesian_nets}.
+The three equivalent factorizations \plaineqref{eq:chain} -- \plaineqref{eq:reversed_chain} correspond to the three Bayesian networks in \Figref{fig:equiv_bayesian_nets}, respectively from left to right.
 
 \begin{figure}
     \centering
@@ -200,3 +200,78 @@ The three equivalent factorizations \plaineqref{eq:chain} -- \plaineqref{eq:reve
 
 \subsection{Immoralities}
 \label{sec:immoralities}
+Now let us assume that $\rx_1$ and $\rx_3$ are marginally independent, which notably does not imply that they are conditionally independent given $\rx_2$. In this case, the joint distribution factorizes as:
+\begin{equation}
+    p(\rx_1, \rx_2, \rx_3) = p(\rx_1) p(\rx_3) p(\rx_2 \mid \rx_1, \rx_3)
+\end{equation}
+and this factorization is unique. The corresponding Bayesian network is represented in \Figref{fig:immorality_bayesian_net}. A (sub)graph where the two parents of a node have no edge connecting them is  an \emph{immorality} and the node where the two incoming edges coincide is a \emph{collider}.
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[auto, node distance=3cm, every loop/.style={},thick,
+        main node/.style={circle,draw,font=\sffamily\Large\bfseries},
+        hidden node/.style={circle,draw,fill=lightgray,font=\sffamily\Large\bfseries},
+        box node/.style={rectangle,dashed,draw,anchor=center},
+        empty node/.style={rectangle,fill=white,anchor=center},]
+
+
+        \node[main node,minimum size=1.5cm] (x1) {$\rx_1$};
+        \node[main node,minimum size=1.5cm] (x2) [right of=x1] {$\rx_2$};
+        \node[main node,minimum size=1.5cm] (x3) [right of=x2] {$\rx_3$};
+
+        \draw[->]
+        (x1) edge (x2)
+        (x3) edge (x2);
+    \end{tikzpicture}
+    \caption{An immorality where $\rx_2$ is the collider.}
+    \label{fig:immorality_bayesian_net}
+\end{figure}
+
+\subsection{D-separation}
+\label{sec:d_separation}
+Armed with the notions of chains, forks, and immoralities, and the conditional independences implied by them, we are ready to introduce the concept of \emph{blocked paths} and \emph{d-separation}. The latter provides a powerful graphical criterion to evaluate the conditional independences implied by any Bayesian network.
+
+Specifically, we say that an undirected path between two nodes $\rx$ and $\ry$ is \emph{blocked} by a conditioning set $\gS$ if the following two conditions hold:
+\begin{itemize}
+    \item Along the path there is a chain or a fork which includes at least one node in $\gS$.
+    \item Along the path there is a collider and neither the collider nor any of its descendants are in $\gS$.
+\end{itemize}
+The two nodes $\rx$ and $\ry$ are \emph{d-separated} by a set of nodes $\gS$ if conditioning on $\gS$ blocks all paths between $\rx$ and $\ry$. Remarkably, if $\rx$ and $\ry$ are d-separated by $\gS$, then they are conditionally independent given $\gS$ (see \citet{Koller2009} for a proof).
+
+\subsection{The hidden Markov model}
+\label{sec:hmm}
+A classical example of a Bayesian network is the hidden Markov model, represented in \Figref{fig:hmm_bayesian_net}. The HMM will be the backbone of both models presented in Chapter \ref{chp:networked_data_streams} and hence it is appropriate to introduce it here.
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[auto, node distance=3cm, every loop/.style={},thick,
+        main node/.style={circle,draw,font=\sffamily\Large\bfseries},
+        hidden node/.style={circle,draw,fill=lightgray,font=\sffamily\Large\bfseries},
+        box node/.style={rectangle,dashed,draw,anchor=center},
+        empty node/.style={rectangle,fill=white,anchor=center},]
+
+        \node[main node,minimum size=1.5cm] (h0)  {$\rh^{(0)}$};
+        \node[main node,minimum size=1.5cm] (h1) [right of=h0] {$\rh^{(1)}$};
+        \node[main node,minimum size=1.5cm] (h2) [right of=h1] {$\rh^{(2)}$};
+        \node[empty node] (dots) [right of=h2] {$\dots$};
+        \node[main node,minimum size=1.5cm] (ht) [right of=dots] {$\rh^{(T)}$};
+        \node[main node,minimum size=1.5cm] (x1) [below of=h1] {$\rx^{(1)}$};
+        \node[main node,minimum size=1.5cm] (x2) [below of=h2] {$\rx^{(2)}$};
+        \node[main node,minimum size=1.5cm] (xt) [below of=ht] {$\rx^{(T)}$};
+
+
+        \draw[->]
+        (h0) edge (h1)
+        (h1) edge (h2)
+        (h2) edge (dots)
+        (dots) edge (ht)
+        (h1) edge (x1)
+        (h2) edge (x2~)
+        (ht) edge (xt);
+
+    \end{tikzpicture}
+    \caption{Hidden Markov model represented as Bayesian network.}
+    \label{fig:hmm_bayesian_net}
+\end{figure}
+
+The structure of the graph in \Figref{fig:hmm_bayesian_net} corresponds to the following factorization:
