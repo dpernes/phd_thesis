@@ -289,9 +289,13 @@ Furthermore, it is also assumed that both the state transition distribution $p(\
 
 \section{The Expectation-Maximization algorithm}
 \label{sec:expectation_maximization}
-Given a dataset $\lbrace \vx_i \rbrace_{i=1}^n$ and a probabilistic model with $m$ random variables, the parameters $\Theta$ of the model are often estimated using the \emph{maximum likelihood} criterion, i.e.\ they are trained to maximize:
+Given a dataset $\lbrace \vx_i \rbrace_{i=1}^n$ and a probabilistic model with $m$ random variables, the parameters $\Theta$ of the model are often estimated using the \emph{maximum likelihood criterion} , i.e.\ the optimal parameters maximize:
 \begin{equation}
     \label{eq:maximum_likelihood}
     J(\Theta) \triangleq \sum_{i=1}^n \log p(\vx_i; \Theta).
 \end{equation}
-When every data vector $\vx_i$ contains an observation for each of the $m$ random variables in the model, objective \plaineqref{eq:maximum_likelihood} is concave and therefore it has a unique maximizer $\Theta^*$. For instance, when $\Theta$ corresponds to the parameters of table conditional probability distributions, $\Theta^*$ is given by the empirical conditional probabilities obtained from the provided dataset.
+When every data vector $\vx_i$ contains an observation for each of the $m$ random variables in the model, objective \plaineqref{eq:maximum_likelihood} is concave and therefore it has a unique maximizer $\Theta^*$. For instance, when $\Theta$ corresponds to the parameters of table conditional probability distributions, $\Theta^*$ is given by the empirical conditional probabilities  the provided dataset (see \citet{Koller2009} for a proof).
+
+However, if there exist $\vx_i$ which do not contain observations for some of the $m$ random variables, the maximum likelihood objective becomes non-concave and admits multiple (local) optima. A procedure to find one of those optimum values is (stochastic) gradient ascent over the likelihood function. An usually better option is the Expectation-Maximization algorithm, explained next, since it exhibits faster convergence.
+
+For simplicity, assume that if a random variable $\rz$ is not observed in the data vector $\vx_i$ then it is unobserved in all remaining samples as well, i.e.\ assume that the $m$ random variables can be partitioned as $\lbrace \rx^{(j)} \rbrace_{j=1}^o \cup \lbrace \rz^{(j)} \rbrace_{j=1}^l$ where the $\rx^{(j)}$ are the $o$ observed variables and the $\rz^{(j)}$ are the $l$ unobserved (or \emph{latent}) variables and $o+l=m$. Let $\rvx \triangleq \left(\rx^{(1)}, \dots, \rx^{(o)} \right)$ and $\rvz \triangleq \left(\rz^{(1)}, \dots, \rz^{(l)} \right)$ be the vectors of observed and latent variables, respectively.
