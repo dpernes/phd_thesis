@@ -809,7 +809,7 @@ Although very different in terms of their internal structure, all aforementioned
 \subsection{Offline, centralized learning}
 \label{sec:offline_learning}
 
-It is reasonable to assume that an initial dataset composed of sequences from all entities may be gathered and used to learn an initial model for all entities. This model could then be refined online in each instance using a distributed algorithm. Hence, it makes sense to derive a algorithm to learn the meta-model defined by \eqref{eq:generalized_mixture} in an offline and centralized setting. This is the idea we followed in \cite{SpaMHMM}, which solves this problem for the particular of the SpaMHMM model using EM. This algorithm is based on the alternated maximization over variational densities $q(\rvz)$ and model parameters of an evidence lower bound (ELBO):
+It is reasonable to assume that an initial dataset composed of sequences from all entities may be gathered and used to learn an initial model for all entities. This model could then be refined online in each instance using a distributed algorithm. Hence, it makes sense to derive a algorithm to learn the meta-model defined by \eqref{eq:generalized_mixture} in an offline and centralized setting. This is the idea we followed in \Secref{sec:spamhmm}, which solves this problem for the particular of the SpaMHMM model using EM. This algorithm is based on the alternated maximization over variational densities $q(\rvz)$ and model parameters of an evidence lower bound (ELBO):
 \begin{equation}
     \log p(\rmX \mid \ry) \geq \E_{\rvz \sim q(\rvz)} \log p(\rmX, \rvz \mid \ry)  - \E_{\rvz \sim q(\rvz)}\log q(\rvz) \triangleq \mathrm{ELBO}.
 \end{equation}

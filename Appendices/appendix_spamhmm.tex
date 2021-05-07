@@ -8,7 +8,7 @@
 
 \subsection{EM for MHMM (\Algref{alg:mhmm})}
 \label{sec:proof_em_noreg}
-\Algref{alg:mhmm} follows straightforwardly from applying EM to the model defined by \twoeqrefs{eq:spamhmm_density}{eq:spamhmm_hmm} with the objective \plaineqref{eq:spamhmm_log_likelihood}. As explained in \Secref{sec:background_em}, for table CPDs, the E-step consists in finding expected sufficient statistics $M(x, u)$ and $M(u)$, as defined in \twoeqrefs{eq:?}{eq:?} for each $(x, u) \in \mathrm{Val}(\rx,  \parents_\gG(\rx))$, where $\gG$ is the Bayesian network in \Figref{fig:spamhmm_bayesian_net}. Thus, in our setting, those equations yield:
+\Algref{alg:mhmm} follows straightforwardly from applying EM to the model defined by \twoeqrefs{eq:spamhmm_density}{eq:spamhmm_hmm} with the objective \plaineqref{eq:spamhmm_log_likelihood}. As mentioned in \Secref{sec:em_table_cpd}, for table CPDs, the E-step consists in finding expected sufficient statistics $M(w,\vv)$ and $M(\vv)$, as defined in \twoeqrefs{eq:joint_suf_stat}{eq:marginal_suf_stat}, for each $(w,\vv) \in \mathrm{Val}(\rw,\parents_\gG(\rw))$ and for each $\rw$ in $\gG$. In this case, $\gG$ is the Bayesian network in \Figref{fig:spamhmm_bayesian_net}. Thus, in our setting, those equations yield:
 \begingroup
 \allowdisplaybreaks
 \begin{align}
@@ -33,10 +33,10 @@ For the state transition matrices update, the same idea applies after summing ov
 \end{equation}
 Now, defining $n_y$, $\eta^{(z)}_i$, $\gamma^{(z)}_{i,h}(t)$, and $\xi^{(z)}_{i,h,h'}(t)$ as in \Algref{alg:mhmm}, the update formulas for $\evalpha^{(y)}_z$, $\evpi^{(z)}_h$, and $\emA^{(z)}_{h,h'}$ become as defined in that algorithm.
 
-Deriving the update equations for the means and covariances of the Gaussian emission distributions is not so simple, since these are not table CPDs and therefore the procedure we have just used is no longer valid. Nonetheless, the desired equations can be obtained by explicitly maximizing the ELBO with respect to these parameters. As we have seen in \Secref{sec:background_em},
+Deriving the update equations for the means and covariances of the Gaussian emission distributions is not so simple, since these are not table CPDs and therefore the procedure we have just used is no longer valid. Nonetheless, the desired equations can be obtained by explicitly maximizing the ELBO with respect to these parameters. As we have seen in \Secref{sec:m_step},
 \begin{equation}
 	\label{eq:mhmm_elbo}
-	\mathrm{ELBO} = \sum_{i=1}^{n} \E_{(\rvh_i,\rz_i) \sim q} \log p(\mX_i, \rvh_i, \rz_i \mid y_i; \Theta),
+	\mathrm{ELBO} = \sum_{i=1}^{n} \E_{(\rvh_i,\rz_i) \sim q} \log p(\mX_i, \rvh_i, \rz_i \mid y_i; \Theta) + \text{const}
 \end{equation}
 where $q(\rvh_i,\rz_i) = p(\rvh_i, \rz_i \mid \vx_i, y_i; \Theta^{(-)})$, being $\Theta^{(-)}$ the set of current values for all parameters. We are solely interested in maximizing the ELBO with respect to the parameters $\vmu^{(z)}_h$ and $\vsigma^{(z)}_h$, so we can plug in the expression for the joint $p(\vx_i, \rvh_i, \rz_i \mid y_i; \Theta)$ and ignore all terms that do not depend on these parameters:
 \begin{align}
@@ -64,7 +64,7 @@ Again, the formulas in \Algref{alg:mhmm} follow by plugging $\eta^{(z)}_i$ and $
 \label{sec:proof_em_reg}
 We start by showing that the E-step is unaffected by the regularization term in \eqref{eq:spamhmm_objective} and then we will derive the update equations for the M-step.
 
-As is a common practice in EM and variational methods, let $q(\rz, \rvh)$ be an arbitrary distribution over the hidden variables of our model whose support is contained in the support of $p$. Then,
+As is a common practice in EM and variational methods, let $q(\rz, \rvh)$ be an arbitrary distribution over the hidden variables of our model whose support contains the support of $p$. Then,
 \begin{align}
 	J_r(\Theta) &= \frac{1}{n}\sum_{i=1}^n \log \E_{(\rz_i, \rvh_i) \sim q} \left[ \frac{p(\mX_i \mid y_i; \Theta)}{q(\rz_i, \rvh_i)} \right] + \reg R(\gG; \Theta) \nonumber\\
 	&\geq  \frac{1}{n}\sum_{i=1}^n \E_{(\rz_i, \rvh_i) \sim q} \log \left[ \frac{p(\mX_i \mid y_i; \Theta)}{q(\rz_i, \rvh_i)} \right] + \reg R(\gG; \Theta).
