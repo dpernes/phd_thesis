@@ -123,7 +123,7 @@ An important property of Bayesian networks is the fact that they are always dire
 \begin{equation}
     p(\rx^{(1)}, \rx^{(2)}, \dots, \rx^{(n)}) = \prod_{j=1}^m p(\rx^{(j)} \mid \parents_\gG(\rx^{(j)})),
 \end{equation}
-where $\parents_\gG(\rx^{(j)})$ are the parents of node $\rx^{(j)}$ in $\gG$. It is important to highlight that, although there is a one-to-one correspondence between a factorization of a joint distribution into conditional distributions and a Bayesian network, the same joint distribution can sometimes be factorized in multiple different but equivalent forms, each one corresponding to a different Bayesian network. This is the case of chains and \emph{forks}, which we discuss next.
+where $\parents_\gG(\rx^{(j)})$ are the parents of node $\rx^{(j)}$ in $\gG$. It is important to highlight that, although there is a one-to-one correspondence between a factorization of a joint distribution into conditional distributions and a Bayesian network, the same joint distribution can sometimes be factorized in multiple different but equivalent forms, each one corresponding to a different Bayesian network. Note, for instance, that \eqref{eq:chain_rule} is just one out of $m!$ possible ways of factorizing $p(\rx^{(1)},\rx^{(2)},\dots,\rx^{(m)})$ using the chain rule and any of those factorizations would yield a different graph. This is also the case for chains and \emph{forks}, which we discuss next.
 
 \subsection{Chains and forks}
 \label{sec:chains_forks}
@@ -229,9 +229,9 @@ and this factorization is unique. The corresponding Bayesian network is represen
 
 \subsection{D-separation}
 \label{sec:d_separation}
-Armed with the notions of chains, forks, and immoralities, and the conditional independencies implied by them, we are ready to introduce the concept of \emph{blocked paths} and \emph{d-separation}. The latter provides a powerful graphical criterion to evaluate the conditional independencies implied by any Bayesian network.
+Armed with the notions of chains, forks, and immoralities, and the conditional independencies implied by them, we are ready to introduce the concept of \emph{blocked paths} and \emph{d-separation}. The latter provides a powerful graphical method to discover all the conditional independencies implied by any Bayesian network.
 
-Specifically, we say that an undirected path between two nodes $\rx$ and $\ry$ is \emph{blocked} by a conditioning set $\gS$ if the following two conditions hold:
+Specifically, we say that an undirected path between two nodes $\rx$ and $\ry$ is \emph{blocked} by a (potentially empty) conditioning set $\gS$ if at least one of the following two conditions holds:
 \begin{itemize}
     \item Along the path there is a chain or a fork which includes at least one node in $\gS$.
     \item Along the path there is a collider and neither the collider nor any of its descendants are in $\gS$.
@@ -291,7 +291,7 @@ Furthermore, it is also assumed that both the state transition distribution $p(\
 \label{sec:expectation_maximization}
 
 \subsection{Formulation}
-Given a dataset $\lbrace \vx_i \rbrace_{i=1}^n$ and a probabilistic model with $m$ random variables, the parameters $\Theta$ of the model are often estimated using the \emph{maximum likelihood criterion} , i.e.\ the optimal parameters maximize:
+Given a dataset $\lbrace \vx_i \rbrace_{i=1}^n$ and a probabilistic model with $m$ random variables, the parameters $\Theta$ of the model are often estimated using the \emph{maximum likelihood criterion}, i.e.\ the optimal parameters maximize:
 \begin{equation}
     \label{eq:maximum_likelihood}
     J(\Theta) \triangleq \sum_{i=1}^n \log p(\vx_i; \Theta).
@@ -351,6 +351,6 @@ We now provide the E-step and M-step update equations applicable to any Bayesian
 
 \paragraph{M-step:} Now, given the expected sufficient statistics computed at the previous E-step, we update the parameters $\Theta$ using:
 \begin{equation}
-    \theta_{w \mid \vu} = \frac{M(w,\vu)}{M(\vu)},
+    \theta_{w \mid \vv} = \frac{M(w,\vv)}{M(\vv)},
 \end{equation}
-where $\theta_{w \mid \vu}$ denotes the table entry corresponding to the probability $p(\rw=w \mid \parents_\gG(\rw)=\vu)$. The set $\Theta$ is the union of all these parameters.
+where $\theta_{w \mid \vv}$ denotes the table entry corresponding to the probability $p(\rw=w \mid \parents_\gG(\rw)=\vv)$. The set $\Theta$ is the union of all these parameters.
