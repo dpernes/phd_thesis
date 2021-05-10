@@ -48,7 +48,7 @@ We start by analyzing the problem of DA from a theoretical perspective and then 
 Before we present and discuss the most important results, let us introduce a few preliminary definitions. A \newterm{domain} $\gD$ is defined by a joint distribution $p_\gD(\rvx, \rvy)$ over input features $\rvx \in \gX$ and target variables $\rvy \in \gY$, where $\gX$ and $\gY$ denote the input and target spaces, respectively. For the domain adaptation task to be well defined, at least two domains must be considered: a \newterm{source} domain $\gS$, with joint distribution denoted by $p_\gS(\rvx, \rvy)$, from which abundant annotated data is usually available, and a \newterm{target} domain $\gT$, with joint distribution $p_\gT(\rvx, \rvy)$, from which scarce or even zero annotated data is available at training time. Following most classical results from statistical learning theory, \citet{BenDavid2010} focused on binary classification, thus $\gY = \{0, 1\}$. Under this setting, it is possible to define a \newterm{labeling function} $f_\gD: \gX \mapsto [0, 1]$ for each domain, given by $f_\gD(\vx) = p_\gD(\ry=1 \mid \vx)$. A \newterm{hypothesis} is any function $h: \gX \mapsto \{0,1\}$ and a set $\gH$ of these functions is called a \newterm{hypothesis class}. The expected absolute difference between $h$ and $f_\gD$ is called the \newterm{risk} (or \newterm{error}) of hypothesis $h$ (with respect to the labeling function $f_\gD$):
 \begin{equation}
     \label{eq:risk}
-    \epsilon(h,f_\gD) \triangleq \E_{\rvx \sim p_\gD} |h(\rvx) - f_\gD(\rvx)|.
+    \epsilon(h,f_\gD) \triangleq \E_{\rvx \sim p_\gD} \left[|h(\rvx) - f_\gD(\rvx)|\right].
 \end{equation}
 We use $\epsilon_\gS(h)$ and $\epsilon_\gT(h)$ as shorthands for $\epsilon(h,f_\gS)$ and $\epsilon(h,f_\gT)$ and refer to them as the source and target risks (or errors), respectively. The empirical estimates of these are denoted as $\widehat{\epsilon}_\gS(h)$ and $\widehat{\epsilon}_\gT(h)$, respectively.
 
@@ -205,13 +205,13 @@ In the \newterm{conditional shift} setting, the marginal distribution of labels 
 \end{figure}
 \newterm{Covariate shift} is by far the most common assumption and therefore the most widely addressed setting in the DA literature. As implied by the graphical representation in \Figref{fig:cov_shift}, here the conditional distribution of labels given features is constant and the marginal distribution of features is domain-dependent. Thus, $p_\gD(\rvx, \ry) = p(\ry \mid \rvx) p_\gD(\rvx)$, where $p(\ry \mid \rvx)$ is constant across domains. This assumption might hold for instance in image classification problems where the domain shift is caused by different sensors or lighting conditions.
 
-Since $p_\gT(\ry \mid \rvx) = p_\gS(\ry \mid \rvx)$, infinite labeled data from the source domain and a consistent estimator of this conditional distribution would solve this DA task. However, the former is obviously unrealistic and therefore the problem should be analyzed taking into account that the available data is finite. Let $\ell(\cdot, \cdot)$ be any loss function for the supervised learning problem. The goal is then to find an unbiased estimator of the target loss $\E_{\rvx, \ry \sim p_\gT} \ell(h(\rvx),\ry)$ when no labeled samples from the target domain are available. Following \citet{Sugiyama2007}, if the marginal densities $p_\gS(\rvx)$ and $p_\gT(\rvx)$ are known and assuming $\mathrm{Supp}(p_\gT(\rvx)) \subseteq \mathrm{Supp}(p_\gS(\rvx))$, this estimator can be obtained using \newterm{importance weights} $w(\rvx) \triangleq p_\gT(\rvx)/p_\gS(\rvx)$:
+Since $p_\gT(\ry \mid \rvx) = p_\gS(\ry \mid \rvx)$, infinite labeled data from the source domain and a consistent estimator of this conditional distribution would solve this DA task. However, the former is obviously unrealistic and therefore the problem should be analyzed taking into account that the available data is finite. Let $\ell(\cdot, \cdot)$ be any loss function for the supervised learning problem. The goal is then to find an unbiased estimator of the target loss $\E_{\rvx, \ry \sim p_\gT} \left[\ell(h(\rvx),\ry)\right]$ when no labeled samples from the target domain are available. Following \citet{Sugiyama2007}, if the marginal densities $p_\gS(\rvx)$ and $p_\gT(\rvx)$ are known and assuming $\mathrm{Supp}(p_\gT(\rvx)) \subseteq \mathrm{Supp}(p_\gS(\rvx))$, this estimator can be obtained using \newterm{importance weights} $w(\rvx) \triangleq p_\gT(\rvx)/p_\gS(\rvx)$:
 \begin{align}
-    \E_{\rvx, \ry \sim p_\gT} \ell(h(\rvx),\ry) &= \sum_{\ry} \int l(h(\rvx),\ry) p_\gT(\rvx, \ry) \d\rvx \nonumber\\
+    \E_{\rvx, \ry \sim p_\gT} \left[\ell(h(\rvx),\ry)\right] &= \sum_{\ry} \int l(h(\rvx),\ry) p_\gT(\rvx, \ry) \d\rvx \nonumber\\
     &= \sum_{\ry} \int \ell(h(\rvx),\ry) p(\ry \mid \rvx) p_\gT(\rvx) \d\rvx \nonumber\\
     &= \sum_{\ry} \int \frac{p_\gT(\rvx)}{p_\gS(\rvx)} \ell(h(\rvx),\ry)  p(\ry \mid \rvx) p_\gS(\rvx) \d\rvx \nonumber\\
     &= \sum_{\ry} \int w(\rvx) \ell(h(\rvx),\ry)  p_\gS(\rvx, \ry) \d\rvx \nonumber\\
-    &= \E_{\rvx, \ry \sim p_\gS} w(\rvx) \ell(h(\rvx),\ry).
+    &= \E_{\rvx, \ry \sim p_\gS} \left[w(\rvx) \ell(h(\rvx),\ry)\right].
 \end{align}
 Hence, $(1/n) \sum_{i=1}^{n} w(\vx_i) \ell(h(\vx_i),y_i)$ is an unbiased estimator of the target loss, constructed using only source data, which can therefore be used as the loss for the supervised learning problem. When the marginal distributions are unknown and the feature space is low-dimensional, kernel density estimation techniques can be employed to estimate them (e.g.\ \citet{Shimodaira2000,Sugiyama2007,Cortes2010}). An alternative that removes the constraint on the support of the marginal target distribution is learning a transformation $T: \gX \mapsto \gX$ such that $p_{\gS}(T(\rvx)) = p_{\gT}(\rvx)$, which can be accomplished using optimal transport theory (\citet{Courty2015}). Later approaches aim to relax the covariate shift assumption by trying to align the joint source and target distributions (\citet{Courty2017}) and extend the same principles to the multi-source setting (\citet{Turrisi2020}).
 
@@ -656,17 +656,17 @@ We first address the problem of casting the objective~\plaineqref{eq:formal_obj}
 \end{equation}
 where
 \begin{align}
-    &\gL_\text{class}(\alpha, \vtheta_g, \vtheta_h) = -\sum_{j=1}^M \alpha_j\E_{\rvz \sim \gS_j^g}\log p(\ry=f_{\gS_j^g}(\rvz) \mid \rvz, \vtheta_h), \\
+    &\gL_\text{class}(\alpha, \vtheta_g, \vtheta_h) = -\sum_{j=1}^M \alpha_j\E_{\rvz \sim \gS_j^g} \left[\log p(\ry=f_{\gS_j^g}(\rvz) \mid \rvz, \vtheta_h)\right], \\
     %
-    &\gL_\text{disc}(\alpha, \vtheta_g, \vtheta_d) = -\E_{\rvz \sim \gS_{\valpha}^g} \log p(\rd=0 \mid \rvz, \theta_d) - \E_{\rvz \sim \gT^g} \log p(\rd=1 \mid \rvz, \vtheta_d).
+    &\gL_\text{disc}(\alpha, \vtheta_g, \vtheta_d) = -\E_{\rvz \sim \gS_{\valpha}^g} \left[ \log p(\rd=0 \mid \rvz, \theta_d) \right] - \E_{\rvz \sim \gT^g} \left[ \log p(\rd=1 \mid \rvz, \vtheta_d) \right].
 \end{align}
 Here, $\vtheta_h$ and $\vtheta_d$ are the parameters of the classifier and domain discriminator networks, respectively, $\mu_d, \mu_s > 0$ are hyperparameters, $\ry \in \gY$ is the categorical r.v. associated with the class label, $f_{\gS_j^g}: \gZ \mapsto \gY$ is the true (multiclass) labeling function for the $j$-th source domain, $\rd$ is a Bernoulli random variable that discriminates source and target domains and the function $g = g(\cdot, \vtheta_g): \gX \mapsto \gZ$ is a neural network, parametrized by $\vtheta_g$, mapping input samples to features. By linearity of expectations and using the fact that $\rvz = g(\rvx, \vtheta_g)$, for input samples $\rvx \in \gX$, we have:
 \begin{align}
     \label{eq:loss_class}
-    \gL_\text{class}(\valpha, \vtheta_g, \vtheta_h) &\triangleq -\sum_{j=1}^k \alpha_j\E_{\rvx \sim \gS_j} \log p(\ry=f_{\gS_j}(\rvx) \mid \rvx; \vtheta_g, \vtheta_h), \\
+    \gL_\text{class}(\valpha, \vtheta_g, \vtheta_h) &\triangleq -\sum_{j=1}^k \alpha_j\E_{\rvx \sim \gS_j} \left[ \log p(\ry=f_{\gS_j}(\rvx) \mid \rvx; \vtheta_g, \vtheta_h) \right], \\
     \allowdisplaybreaks
     \label{eq:loss_disc}
-    \gL_\text{disc}(\valpha, \vtheta_g, \vtheta_d) &\triangleq -\sum_{j=1}^k \alpha_j\E_{\rvx \sim \gS_j} \log p(\rd=0 \mid \rvx; \vtheta_g, \vtheta_d)  - \E_{\rvx \sim \gT} \log p(\rd=1 \mid \rvx; \vtheta_g, \vtheta_d) .
+    \gL_\text{disc}(\valpha, \vtheta_g, \vtheta_d) &\triangleq -\sum_{j=1}^k \alpha_j\E_{\rvx \sim \gS_j} \left[ \log p(\rd=0 \mid \rvx; \vtheta_g, \vtheta_d) \right] - \E_{\rvx \sim \gT} \left[ \log p(\rd=1 \mid \rvx; \vtheta_g, \vtheta_d) \right] .
 \end{align}
 In order to satisfy the constraint $\valpha \in \Delta$, we reparametrize the model using $\alpha = \softmax(\vbeta)$, for an unconstrained parameter $\vbeta \in \sR^k$. Finally, since we assume to have access to labeled datasets $\widehat{\gS}_1,\widehat{\gS}_2,\dots,\widehat{\gS}_k$ from each source domain and to a unlabeled dataset $\widehat{\gT}$ from the target, we may compute empirical estimates of losses \plaineqref{eq:loss_class} and \plaineqref{eq:loss_disc}:
 \begin{equation}

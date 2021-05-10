@@ -126,6 +126,6 @@ p(\rmX \mid \mX_\text{pref}, \rz) &= \sum_{\rvh_\text{pref}, \rvh} p(\rmX, \rvh_
 &= \sum_{\rvh} p(\rmX \mid \rvh, \rz) p(\rvh \mid \mX_\text{pref}, \rz) \nonumber\\
 &= \sum_{\rvh} p(\rh^{(0)} \mid \mX_\text{pref}, \rz) \prod_{\tau=1}^{t} p(\rh^{(\tau)} \mid \rh^{(\tau-1)}, \rz) p(\rvx^{(\tau)} \mid \rh^{(\tau)}, \rz),
 \end{align}
-where we have used the independence assumptions that characterize the HMM. Here, the initial state posteriors $p(\rh^{(0)} \mid \mX_\text{pref}, \rz)$ are actually the final state posteriors for the sequence $\mX_\text{pref}$ for each HMM in the mixture, so they can also be computed as indicated \Algref{alg:mhmm}.
+where we have used the independence assumptions that characterize the HMM. Here, the initial state posteriors $p(\rh^{(0)} \mid \mX_\text{pref}, \rz)$ are actually the final state posteriors for the sequence $\mX_\text{pref}$ for each HMM in the mixture, so they can be computed as in \Algref{alg:forward_backward}.
 
 Thus, we conclude that inference in the posterior model $p(\rmX \mid \mX_\text{pref}, y)$ corresponds to inference in a (Spa)MHMM where the original mixture coefficients and initial state probabilites are replaced with their respective posteriors, $p(\rz \mid \mX_\text{pref}, y)$ and $p(\rh^{(0)} \mid \mX_\text{pref}, \rz)$. All remaining parameters are unchanged.

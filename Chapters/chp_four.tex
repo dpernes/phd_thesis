@@ -484,7 +484,7 @@ where $u$ is such that $y_{u}=y_{i}$ and $s_u$ takes values in $\{1,2,\dots,k\} 
 The signer-invariant latent representations $\rvz$ learned by the CVAE are then used to regularize the hidden representations $\tilde{\vz}$ of the classifier. Such regularization is promoted by the $L_{\text{emb}}$ loss term, which encourages the latent representations of the CVAE and the classifier to be as similar as possible. Following this idea, the embedding loss $L_{\text{emb}}$ is defined as the expected mean-squared error between $\rvz$ and $\tilde{\vz}$, that is:
 \begin{equation}
     \label{eq:emb_loss}
-    L_{\text{emb}}(\vtheta_e, \vtheta_g) \triangleq \frac{1}{nl} \sum_{i=1}^{n} \E_{\rvz_{i} \sim q(\rvz \mid \mX^{(r_{i})}_{y_{i},s_{i}}, y_{i}, s_{i}; \vtheta_e)}||\rvz_i-\tilde{\vz}_i||^2.
+    L_{\text{emb}}(\vtheta_e, \vtheta_g) \triangleq \frac{1}{nl} \sum_{i=1}^{n} \E_{\rvz_{i} \sim q(\rvz \mid \mX^{(r_{i})}_{y_{i},s_{i}}, y_{i}, s_{i}; \vtheta_e)} \left[ ||\rvz_i-\tilde{\vz}_i||^2 \right].
 \end{equation}
 In practice, we replace \eqref{eq:emb_loss} by its empirical approximation with one sample, which yields:
 \begin{equation}

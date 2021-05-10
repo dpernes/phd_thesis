@@ -14,6 +14,10 @@
 % Write text in here
 % Use \subsection and \subsubsection to organize text
 
+\algdef{SE}[SUBALG]{Indent}{EndIndent}{}{\algorithmicend\ }%
+\algtext*{Indent}
+\algtext*{EndIndent}
+
 \section{Introduction}
 \label{sec:background_intro}
 We will use deep neural networks and probabilistic models extensively throughout this thesis. Although the basic concepts of the former should be fairly familiar to most readers, the latter might be less widely known. Moreover, some of the tools and algorithms that we are going to use are not so trivial and therefore they should better be introduced first, for the sake of completeness and readability.
@@ -92,7 +96,7 @@ Starting from a factorization of a joint distribution into conditionals, we may 
     \label{fig:complete_bayesian_net}
 \end{figure}
 
-Since the factorization in \eqref{eq:chain_rule} is general (i.e.\ it does not assume any conditional independencies between random variables), the Bayesian network in \Figref{fig:complete_bayesian_net} is said to be \emph{complete}. When conditional independencies are present, the graph becomes sparser. For instance, if, for all $j \geq 3$, $\rx^{(j)}$ is conditionally independent of $\rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-2)}$ given $\rx^{(j-1)}$, then $p(\rx^{(j)} \mid \rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-1)}) = p(\rx^{(j)} \mid \rx^{(j-1)})$ and thus the Bayesian network reduces to the \emph{chain} represented in \Figref{fig:chain_bayesian_net}. A sparser graph implies a more compact parametrization of the model. For instance, if each of the $m$ random variables takes values on a discrete set of size $s$, describing the joint distribution corresponding to \Figref{fig:complete_bayesian_net} would require $s^{m}-1$ parameters. However, the joint distribution corresponding to \Figref{fig:chain_bayesian_net} can be fully described using table conditional probability distributions (CPDs) with $(s-1)sm$ parameters only.
+Since the factorization in \eqref{eq:chain_rule} is general (i.e.\ it does not assume any conditional independencies between random variables), the Bayesian network in \Figref{fig:complete_bayesian_net} is said to be \emph{complete}. When conditional independencies are present, the graph becomes sparser. For instance, if, for all $j \geq 3$, $\rx^{(j)}$ is conditionally independent of $\rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-2)}$ given $\rx^{(j-1)}$, then $p(\rx^{(j)} \mid \rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-1)}) = p(\rx^{(j)} \mid \rx^{(j-1)})$ and thus the Bayesian network reduces to the \emph{chain} represented in \Figref{fig:chain_bayesian_net}. A sparser graph implies a more compact parametrization of the model. For instance, if each of the $m$ random variables takes values on a discrete set of size $s$, defining the joint distribution corresponding to a complete Bayesian network (\Figref{fig:complete_bayesian_net}) would require $s^{m}-1$ parameters. However, in the same setting, the joint distribution corresponding to a chain (\Figref{fig:chain_bayesian_net}) can be fully described using table conditional probability distributions (CPDs) with less than $s^2m$ parameters in total.
 
 \begin{figure}
     \centering
@@ -250,8 +254,7 @@ A classical example of a Bayesian network is the hidden Markov model, represente
         box node/.style={rectangle,dashed,draw,anchor=center},
         empty node/.style={rectangle,fill=white,anchor=center},]
 
-        \node[main node,minimum size=1.5cm] (h0)  {$\rh^{(0)}$};
-        \node[main node,minimum size=1.5cm] (h1) [right of=h0] {$\rh^{(1)}$};
+        \node[main node,minimum size=1.5cm] (h1) {$\rh^{(1)}$};
         \node[main node,minimum size=1.5cm] (h2) [right of=h1] {$\rh^{(2)}$};
         \node[empty node] (dots) [right of=h2] {$\dots$};
         \node[main node,minimum size=1.5cm] (ht) [right of=dots] {$\rh^{(T)}$};
@@ -261,7 +264,6 @@ A classical example of a Bayesian network is the hidden Markov model, represente
 
 
         \draw[->]
-        (h0) edge (h1)
         (h1) edge (h2)
         (h2) edge (dots)
         (dots) edge (ht)
@@ -276,16 +278,40 @@ A classical example of a Bayesian network is the hidden Markov model, represente
 
 The structure of the graph in \Figref{fig:hmm_bayesian_net} corresponds to the following factorization:
 \begin{equation}
-    p(\rx^{(1)},\rx^{(2)},\dots,\rx^{(T)},\rh^{(0)},\rh^{(1)},\dots,\rh^{(t)}) = p(\rh^{(0)}) \prod_{t=1}^T p(h^{(t)} \mid h^{(t-1)}) p(x^{(t)} \mid h^{(t)})
+    p(\rx^{(1)},\rx^{(2)},\dots,\rx^{(T)},\rh^{(1)},\rh^{(2)},\dots,\rh^{(t)}) = p(\rh^{(1)}) p(x^{(1)} \mid h^{(1)}) \prod_{t=2}^T p(h^{(t)} \mid h^{(t-1)}) p(x^{(t)} \mid h^{(t)})
 \end{equation}
-Here, $\rx^{(1)},\rx^{(2)},\dots,\rx^{(T)}$ is the sequence of \emph{observations} and $\rh^{(0)},\rh^{(1)},\dots,\rh^{(T)}$ is the sequence of \emph{hidden states}.\footnote{The word \emph{hidden} refers to the fact that the states are usually not observed in the training data.} Observations can be either discrete or continuous, while hidden states are usually discrete, although continuous state versions exist (\citet{Turin2004}).
+Here, $\rx^{(1)},\rx^{(2)},\dots,\rx^{(T)}$ is the sequence of \emph{observations} and $\rh^{(1)},\rh^{(2)},\dots,\rh^{(T)}$ is the sequence of \emph{hidden states}.\footnote{The word \emph{hidden} refers to the fact that the states are usually not observed in the training data.} Observations can be either discrete or continuous, while hidden states are usually discrete, although continuous-state versions exist (\citet{Turin2004}).
 
 By analyzing d-separation in \Figref{fig:hmm_bayesian_net}, two fundamental assumptions of the HMM are revealed:
 \begin{itemize}
-    \item For all $t$, the hidden state $\rh^{(t)}$ is conditionally independent of all past hidden states $\rh^{(0)},\rh^{(1)},\dots,\rh^{(t-2)}$ given the previous hidden state $\rh^{(t-1)}$ --- \emph{Markov} assumption.
-    \item For all $t$, the observation $\rx^{(t)}$ is conditionally independent of all past and future observations $\rx^{(1)},\dots,\rx^{(t-1)},\rx^{(t+1)},\dots,\rx^{(T)}$ and of all past and future hidden states $\rh^{(0)},\dots,\rh^{(t-1)},\rh^{(t+1)},\dots,\rh^{(T)}$ given the current hidden state $\rh^{(t)}$ --- \emph{output independence} assumption.
+    \item For all $t$, the hidden state $\rh^{(t)}$ is conditionally independent of all past hidden states $\rh^{(1)},\rh^{(2)},\dots,\rh^{(t-2)}$ given the previous hidden state $\rh^{(t-1)}$ --- \emph{Markov} assumption.
+    \item For all $t$, the observation $\rx^{(t)}$ is conditionally independent of all past and future observations $\rx^{(1)},\dots,\rx^{(t-1)},\rx^{(t+1)},\dots,\rx^{(T)}$ and of all past and future hidden states $\rh^{(1)},\dots,\rh^{(t-1)},\rh^{(t+1)},\dots,\rh^{(T)}$ given the current hidden state $\rh^{(t)}$ --- \emph{output independence} assumption.
 \end{itemize}
-Furthermore, it is also assumed that both the state transition distribution $p(\rh^{(t)} \mid \rh^{(t-1)})$ and the emission distribution $p(\rx^{(t)} \mid \rh^{(t)})$ are \emph{stationary}, i.e.\ they are the same for all $t$. Besides reducing the number of parameters required to describe the model, the stationarity assumption allows the model to work with sequences of arbitrary length $T$. It should be noted that these assumptions can be relaxed yielding HMMs where the hidden state depends on the $m$ previous hidden states ($m$-th order HMM) or where the distributions are time-dependent (non-stationary HMM).
+Furthermore, it is also assumed that both the state transition distribution $p(\rh^{(t)} \mid \rh^{(t-1)})$ and the emission distribution $p(\rx^{(t)} \mid \rh^{(t)})$ are \emph{stationary}, i.e.\ they are the same for all $t$. Besides reducing the number of parameters required to describe the model, the stationarity assumption allows the model to work with sequences of arbitrary length $T$. It should be noted that, in some applications, these assumptions are relaxed yielding HMMs where the hidden state depends on the $k$ previous hidden states ($k$-th order HMM) or where the distributions are time-dependent (non-stationary HMM).
+
+The independence assumptions of the HMM also have the advantage of making inference in this model a tractable problem. Here, we will be particularly interested in computing $p(\rx^{(1)}, \rx^{(2)}, \dots, \rx^{(T)})$, $p(\rh^{(t)} \mid \rvx^{(1)}, \rvx^{(2)}, \dots, \rx^{(T)})$, and $p(\rh^{(t-1)}, \rh^{(t)}  \mid \rx^{(1)}, \rx^{(2)}, \dots, \rx^{(T)})$, which can be obtained with \Algref{alg:forward_backward} (see \citet{Bishop2006} for the derivation).
+
+\begin{algorithm}
+    \caption{Forward-backward algorithm (\citet{Rabiner1986}).}
+    \label{alg:forward_backward}
+    \begin{algorithmic}[1]
+        \State \textbf{Inputs:} An observation sequence $x^{(1)}, x^{(2)}, \dots, x^{(T)}$ and an HMM with defined initial state, state transition, and emission distributions.
+        \vspace{0.3cm}
+        \State Define $\alpha_h(t) \triangleq p(x^{(1)}, x^{(2)}, \dots, x^{(t)}, \rh^{(t)}=h)$ and $\beta_h(t) \triangleq p(x^{(t+1)}, x^{(t+2)}, \dots, x^{(T)} \mid \rh^{(t)}=h)$.
+        \vspace{0.3cm}
+        \State Initialize $\alpha_h(1) \coloneqq p(\rh^{(1)}=h)p(x^{(1)} \mid \rh^{(1)}=h)$ and $\beta_h(T) \coloneqq 1$ for all $h$ in the state dictionary.
+        \vspace{0.3cm}
+        \State Compute the forward recursion $\alpha_h(t) \coloneqq \sum_{\rh^{(t-1)}} \alpha_{\rh^{(t-1)}}(t-1) p(\rh^{(t)}=h \mid \rh^{(t-1)}) p(x^{(t)} \mid \rh^{(t)}=h)$ for all $h$ in the state dictionary and $t=2, 3, \dots, T$.
+        \vspace{0.3cm}
+        \State Compute the backward recursion $\beta_h(t) \coloneqq \sum_{\rh^{(t+1)}} \beta_{\rh^{(t+1)}}(t+1) p(\rh^{(t+1)} \mid \rh^{(t)}=h) p(x^{(t+1)} \mid \rh^{(t+1)}=h)$ for all $h$ in the state dictionary and $t=T-1, T-2, \dots, 1$.
+        \vspace{0.01cm}
+        \State Obtain the marginal likelihood of the observed sequence as $p(x^{(1)}, x^{(2)}, \dots, x^{(T)}) \coloneqq \sum_{\rh^{(T)}} \alpha_{\rh^{(T)}}(T)$.
+        \vspace{0.3cm}
+        \State Obtain the state posterior distribution as $p(\rh^{(t)}=h \mid x^{(1)}, x^{(2)}, \dots, x^{(T)}) = \frac{\alpha_h(t)\beta_h(t)}{p(x^{(1)}, x^{(2)}, \dots, x^{(T)})}$ for all $h$ in the state dictionary.
+        \vspace{0.3cm}
+        \State Obtain the joint posterior distribution of two consecutive states as $p(\rh^{(t-1)}=h, \rh^{(t)}=h' \mid x^{(1)}, x^{(2)}, \dots, x^{(T)}) = \frac{\alpha_h(t-1)p(\rh^{(t)}=h' \mid \rh^{(t-1)}=h) p(x^{(t)} \mid \rh^{(t)}=h')\beta_{h'}(t)}{p(x^{(1)}, x^{(2)}, \dots, x^{(T)})}$ for all $h,h'$ in the state dictionary.
+    \end{algorithmic}
+\end{algorithm}
 
 \section{The Expectation-Maximization algorithm}
 \label{sec:expectation_maximization}
@@ -296,7 +322,7 @@ Given a dataset $\lbrace \vx_i \rbrace_{i=1}^n$ and a probabilistic model with $
     \label{eq:maximum_likelihood}
     J(\Theta) \triangleq \sum_{i=1}^n \log p(\vx_i; \Theta).
 \end{equation}
-When every example $\vx_i$ is a vector containing an observation for each of the $m$ random variables in the model and $p$ is a usual family of distributions (e.g.\ exponential family or table CPD), objective \plaineqref{eq:maximum_likelihood} is concave and therefore it has a unique maximizer $\Theta^*$. For instance, when $\Theta$ corresponds to the parameters of table CPDs, $\Theta^*$ is given by the empirical conditional probabilities  the provided dataset (see \citet{Koller2009} for a proof).
+When every example $\vx_i$ is a vector containing an observation for each of the $m$ random variables in the model and $p$ is a usual family of distributions (e.g.\ exponential family or table CPD), objective \plaineqref{eq:maximum_likelihood} is concave and therefore it has a unique maximizer $\Theta^*$. For instance, when $\Theta$ corresponds to the parameters of table CPDs, $\Theta^*$ is given by the empirical conditional probabilities obtained from the provided dataset (see \citet{Koller2009} for a proof).
 
 However, if there exist $\vx_i$ which do not contain observations for some of the $m$ random variables, the maximum likelihood objective becomes non-concave and admits multiple local optima. A procedure to find one of those optimum values is (stochastic) gradient ascent over the likelihood function. A usually better alternative is the Expectation-Maximization algorithm, explained next, since it exhibits faster convergence.
 
@@ -313,7 +339,7 @@ Now, let $q(\rz)$ be an arbitrary distribution such that $\mathrm{Supp}(q(\rvz))
     &\geq \sum_{i=1}^n \E_{\rvz \sim q} \left[ \log  \frac{p(\vx_i, \rvz; \Theta)}{q(\rvz)} \right] \triangleq \mathrm{ELBO}(q,\Theta),
 \end{align}
 \endgroup
-where the inequality is a particular case of Jensen's inequality. The EM algorithm proceeds by maximizing this \emph{evidence lower bound} (ELBO) in the following block coordinate ascent manner until a convergence criterion is satisfied:
+where the inequality is a particular case of Jensen's inequality. The EM algorithm proceeds maximizes this \emph{evidence lower bound} (ELBO) in the following block coordinate ascent manner, until a convergence criterion is satisfied:
 \begin{itemize}
     \item Keep $\Theta = \Theta^{(-)}$ (fixed) and find $q^* = \argmax_q \mathrm{ELBO}(q, \Theta^{(-)})$ --- \emph{E-step}.
     \item Keep $q = q^{(-)}$ (fixed) and find $\Theta^* = \argmax_\Theta \mathrm{ELBO}(q^{(-)}, \Theta)$ --- \emph{M-step}.
@@ -355,6 +381,46 @@ We now provide the E-step and M-step update equations applicable to any Bayesian
 \end{equation}
 where $\theta_{w \mid \vv}$ denotes the table entry corresponding to the probability $p(\rw=w \mid \parents_\gG(\rw)=\vv)$. The set $\Theta$ is the union of all these parameters.
 
+\subsection{EM for the discrete emission HMM}
+An example of a table CPD model is the HMM with discrete emission distribution. Under this setting, the hidden state $\rh^{(t)}$ and the observation $\rx^{(t)}$ both take values in discrete and finite sets. Thus, we can use \twoeqrefs{eq:joint_suf_stat}{eq:marginal_suf_stat} together with the structure of the Bayesian network in \Figref{fig:hmm_bayesian_net} and \Algref{alg:forward_backward} to obtain the EM training procedure for this model, which is summarized in \Algref{alg:baum_welch}.
+
+The parameters to be learned here are:
+\begin{itemize}
+    \item the initial state probabilities $\evpi_h \triangleq p(\rh^{(1)}=h)$, for all $h$ in the state dictionary;
+    \item the state transition probabilities $\emA_{h,h'} \triangleq p(\rh^{(t)}=h' \mid \rh^{(t-1)}=h)$, for all $h,h'$ in the state dictionary;
+    \item the emission probabilities $\emB_{h,x} \triangleq p(\rx^{(t)}=x \mid \rh^{(t)}=h)$, for all $h, x$, in the state and observation dictionaries, respectively.
+\end{itemize}
+
+\begin{algorithm}
+    \caption{Baum-Welch algorithm (\citet{Baum1972}).}
+    \label{alg:baum_welch}
+    \begin{algorithmic}[1]
+        \State \textbf{Inputs:} A training set $\lbrace \vx_i \rbrace_{i=1}^n$ of observation sequences $x_i^{(1)}, x_i^{(2)}, \dots, x_i^{(T_i)}$, a set of initial parameters $\Theta^{(0)}$ for the HMM, and the number of training iterations \texttt{trainIter}.
+        \vspace{0.01cm}
+        \For{$j = 1, \dots,$ \texttt{trainIter}}
+        \vspace{0.3cm}
+        \State \textbf{E-step:}
+        \vspace{0.3cm}
+        \Indent
+        \State Obtain the state posteriors $\gamma_{i,h}(t) \coloneqq p(\rh^{(t)}=h \mid \vx_i)$ and $\xi_{i,h,h'}(t) \coloneqq p(\rh^{(t-1)}=h, \rh^{(t)}=h' \mid \vx_i)$ for $i=1,\dots,n$, $t=1,\dots,T_i$, and $h,h'$ in the state dictionary, as done in \Algref{alg:forward_backward}.
+        \vspace{0.3cm}
+        \EndIndent
+        \State \textbf{M-step:}
+        \vspace{0.3cm}
+        \Indent
+        \State $\evpi_h \coloneqq \frac{1}{n} \sum_{i=1}^n \gamma_{i,h}(1)$, for all $h$ in the state dictionary;
+        \vspace{0.3cm}
+        \State $\emA_{h,h'} \coloneqq \frac{\sum_{i=1}^n \sum_{t=1}^{T_i}\xi_{i,h,h'}(t)}{\sum_{i=1}^n \sum_{t=1}^{T_i} \gamma_{i,h}(t)}$, for all $h,h'$ in the state dictionary;
+        \vspace{0.3cm}
+        \State $\emB_{h,x} \coloneqq \frac{\sum_{i=1}^n \sum_{t=1}^{T_i} \gamma_{i,h}(t) \1_{x_i^{(t)}=x}}{\sum_{i=1}^n \sum_{t=1}^{T_i} \gamma_{i,h}(t)}$, for all $h,x$ in the state and observation dictionaries, respectively;
+        \vspace{0.3cm}
+        \State $\Theta^{(j)} \coloneqq \bigcup_{h,h',x} \left\lbrace \evpi_h, \emA_{h,h'}, \emB_{h,x} \right\rbrace.$
+        \EndIndent
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+
 \section{Variational methods}
 \label{sec:variational_methods}
 
@@ -362,4 +428,4 @@ In \Secref{sec:e_step}, we have shown that the posterior distribution $p(\rvz \m
 \begin{equation}
     p(\rvz \mid \rvx; \Theta) = \frac{p(\rvx, \rvz; \Theta)}{\int p(\rvx, \rvz; \Theta) \d \rvz},
 \end{equation}
-where the integral in the denominator is commonly designated as the \emph{partition function}. When $\rvz$ is high-dimensional, this integral becomes computationally intractable and, therefore, the computation of the exact posterior is infeasible. This is where variational methods come into play.
+where the integral in the denominator is usually designated as the \emph{partition function}. When $\rvz$ is high-dimensional, this integral becomes computationally intractable and, therefore, the computation of the exact posterior is infeasible. This is where variational methods come into play.

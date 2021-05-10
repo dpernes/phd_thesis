@@ -102,9 +102,9 @@ Following the idea of SOMs, the SOHMMM algorithm aims to minimize an \newterm{en
 where $\Theta$ summarizes all parameters of the HMMs, $\rz$ indexes the $m$ HMMs in the lattice, and $p(\rvx \mid \rz)$ is the marginal distribution of observations of a standard HMM:
 \begin{equation}
     \label{eq:sohmmm_hmm}
-    p(\rvx \mid \rz) = \sum_{\rvh} p(\rh^{(0)} \mid \rz) \prod_{t=1}^T p(\rh^{(t)} \mid \rh^{(t-1)},\rz) p(\rx^{(t)} \mid \rh^{(t)},\rz),
+    p(\rvx \mid \rz) = \sum_{\rvh} p(\rh^{(1)} \mid \rz) p(\rx^{(1)} \mid \rh^{(1)},\rz) \prod_{t=2}^T p(\rh^{(t)} \mid \rh^{(t-1)},\rz) p(\rx^{(t)} \mid \rh^{(t)},\rz),
 \end{equation}
-where $\rvh = \left(\rh^{(0)},\dots,\rh^{(T)}\right)$ is the sequence of hidden states of the HMM and $\rh^{(t)} \in \{1, \dots, s\}$, being $s$ the number of hidden states. Finally, $z^*$ corresponds to the index of the \newterm{winner node} for the observation $\vx$:
+where $\rvh = \left(\rh^{(1)},\dots,\rh^{(T)}\right)$ is the sequence of hidden states of the HMM and $\rh^{(t)} \in \{1, \dots, s\}$, being $s$ the number of hidden states. Finally, $z^*$ corresponds to the index of the \newterm{winner node} for the observation $\vx$:
 \begin{equation}
     \label{eq:sohmmm_winner}
     z^* \triangleq \argmax_{z' \in \{1,\dots,m\}} \sum_{\rz} p(\vx \mid \rz, \Theta)v(\rz, z').
@@ -112,7 +112,7 @@ where $\rvh = \left(\rh^{(0)},\dots,\rh^{(T)}\right)$ is the sequence of hidden 
 
 The set $\Theta$ consists of the following parameters:
 \begin{itemize}
-    \item the $s$-dimensional initial state probabilities, $\vpi^{(z)}$, where $\evpi_h^{(z)} \triangleq p(\rh^{(0)}=h \mid \rz=z)$, for $h \in \{1,\dots,s\}$ and $z \in \{1,\dots,m\}$;
+    \item the $s$-dimensional initial state probabilities, $\vpi^{(z)}$, where $\evpi_h^{(z)} \triangleq p(\rh^{(1)}=h \mid \rz=z)$, for $h \in \{1,\dots,s\}$ and $z \in \{1,\dots,m\}$;
     \item the $s \times s$ state transition matrices, $\mA^{(z)}$, where $\emA^{(z)}_{h,h'} \triangleq p(\rh^{(t)}=h' \mid \rh^{(t-1)}=h, \rz=z)$, for $h,h' \in \{1,\dots,s\}$ and $z \in \{1,\dots,m\}$;
     \item the $s \times o$ emission probability matrices, $\mB^{(z)}$, where $\emB^{(z)}_{h,x} \triangleq p(\rx^{(t)}=x \mid \rh^{(t)}=h, \rz=z)$, for $h \in \{1,\dots,s\}$, $x \in \{1,\dots,o\}$, and $z \in \{1,\dots,m\}$.
 \end{itemize}
@@ -125,7 +125,7 @@ Thus, $\Theta \triangleq \{(\vpi^{(z)}, \mA^{(z)}, \mB^{(z)})\}_{z=1}^m$, where 
 The full algorithm, comprising the update equations for each parameter, is presented in \Algref{alg:sohmmm_discrete} and its derivation can be found in \citet{Ferles2008}.
 
 \begin{algorithm}
-    \caption{SOHMMM Learning Algorithm for Discrete Observations \cite{Ferles2008}}
+    \caption{SOHMMM learning algorithm for discrete observations \cite{Ferles2008}}
     \label{alg:sohmmm_discrete}
 
     \begin{algorithmic}[1]
@@ -135,7 +135,7 @@ The full algorithm, comprising the update equations for each parameter, is prese
         \vspace{0.3cm}
         \State Observe $\rvx = \vx$, with length $t$.
         \vspace{0.3cm}
-        \For{$z = 1, \dots, m$} $\quad$(Forward-Backward algorithm)
+        \For{$z = 1, \dots, m$} $\quad$(forward-backward algorithm)
         \vspace{0.3cm}
         \State $ \alpha_1^{(z)}(h) \coloneqq \pi_{h}^{(z)}\emB^{(z)}_{h,x^{(1)}}, \quad h = 1, \dots, s$;
         \vspace{0.3cm}
@@ -180,7 +180,7 @@ For the purpose of modeling AP usage data, we should consider a slightly differe
 We shall now derive the necessary readjustments in \Algref{alg:sohmmm_discrete}. Let us denote by $\vx$ the observation at a given time $t$ (i.e.\ $\rvx^{(t)}=\vx$) and consider the corresponding state $\rh^{(t)}$ and the node $\rz$ as fixed at $h$ and $z$, respectively. Thus, we use the notation $p(\vx \mid h, z)$ as a short for $p(\rvx^{(t)}=\vx \mid \rh^{(t)}=h, \rz=z)$. We have:
 \begin{align}
     \frac{\partial p(\mX \mid z)}{\partial p(\vx \mid h, z)} &= \frac{\partial}{\partial p(\vx \mid h, z)} \left[\sum_{\rvh} p(\mX, \rvh \mid z)  \right] \nonumber\\
-    &= \frac{\partial}{\partial p(\vx \mid h, z)} \left[\sum_{\rvh} p(\rh^{(0)} \mid \rz) \prod_{t'=1}^T p(\rh^{(t')} \mid \rh^{(t'-1)},\rz) p(\rvx^{(t')} \mid \rh^{(t')},\rz)\right] \nonumber\\
+    &= \frac{\partial}{\partial p(\vx \mid h, z)} \left[\sum_{\rvh} p(\rh^{(1)} \mid \rz) \prod_{t'=1}^T p(\rh^{(t')} \mid \rh^{(t'-1)},\rz) p(\rvx^{(t')} \mid \rh^{(t')},\rz)\right] \nonumber\\
     &= \frac{1}{p(\vx \mid h, z)} \sum_{\rvh:\, \rh^{(t)}=h} p(\mX, \rvh \mid z) \nonumber\\
     &= \frac{p(\mX, h \mid z)}{p(\vx \mid h, z)} \nonumber\\
     &= \frac{\alpha_{t}^{(z)}(h) \beta_{t}^{(z)}(h)}{p(\vx \mid h, z)}.
@@ -212,7 +212,7 @@ Finally, by applying the chain rule once again, we get the desired gradients of 
 Given \twoeqrefs{eq:sohmmm_grad_mu}{eq:sohmmm_grad_s}, it is straightforward to adapt \Algref{alg:sohmmm_discrete} to our setting. For completeness, the full algorithm is provided in \Algref{alg:sohmmm_gaussian}.
 
 \begin{algorithm}
-    \caption{SOHMMM Learning Algorithm for Gaussian Observations}
+    \caption{SOHMMM learning algorithm for Gaussian observations}
     \label{alg:sohmmm_gaussian}
 
     \begin{algorithmic}[1]
@@ -425,9 +425,9 @@ Assume we have a set of nodes $\gY=\{1, \dots, k\}$ connected by an undirected w
 where $\rz \in \{1, \dots, m\}$ is a latent random variable, being $m$ the size of the mixture. This is a particular realization of \eqref{eq:sparse_coding} where $f$ is the probability density function $p(\rmX \mid \ry)$ and the coefficients $s_z$ correspond to the probabilities $p(\rz = z \mid \ry)$. Here, $p(\rmX \mid \rz)$ is the marginal distribution of observations of a standard first-order homogeneous HMM:
 \begin{equation}
     \label{eq:spamhmm_hmm}
-    p(\rmX \mid \rz) = \sum_{\rvh} p(\rh^{(0)}\mid\rz) \prod_{t=1}^T p(\rh^{(t)}\mid\rh^{(t-1)},\rz) p(\rvx^{(t)}\mid\rh^{(t)},\rz),
+    p(\rmX \mid \rz) = \sum_{\rvh} p(\rh^{(1)} \mid \rz) p(\rvx^{(1)} \mid \rh^{(1)},\rz) \prod_{t=2}^T p(\rh^{(t)}\mid\rh^{(t-1)},\rz) p(\rvx^{(t)} \mid \rh^{(t)},\rz),
 \end{equation}
-where $\rvh = \left(\rh^{(0)}, \dots,\rh^{(T)} \right)$ is the sequence of hidden states of the HMM and $\rh^{(t)} \in \{1, \dots, s\}$, being $s$ the number of hidden states. Note that the factorization in \eqref{eq:spamhmm_density} enforces conditional independence between the sequence $\rmX$ and the node $\ry$, given the latent variable $\rz$. This is a key assumption of this model since in this way the distributions for the observations in the nodes in $\gY$ share the same dictionary of HMMs, promoting parameter sharing among the $k$ mixtures. The Bayesian network representing this model is presented in \Figref{fig:spamhmm_bayesian_net}.
+where $\rvh = \left(\rh^{(1)}, \dots,\rh^{(T)} \right)$ is the sequence of hidden states of the HMM and $\rh^{(t)} \in \{1, \dots, s\}$, being $s$ the number of hidden states. Note that the factorization in \eqref{eq:spamhmm_density} enforces conditional independence between the sequence $\rmX$ and the node $\ry$, given the latent variable $\rz$. This is a key assumption of this model since in this way the distributions for the observations in the nodes in $\gY$ share the same dictionary of HMMs, promoting parameter sharing among the $k$ mixtures. The Bayesian network representing this model is presented in \Figref{fig:spamhmm_bayesian_net}.
 
 \begin{figure}
     \centering
@@ -441,11 +441,12 @@ where $\rvh = \left(\rh^{(0)}, \dots,\rh^{(T)} \right)$ is the sequence of hidde
 
         \node[main node,minimum size=1.5cm] (y) {$\ry$};
         \node[hidden node,minimum size=1.5cm] (z) [right of=y] {$\rz$};
-        \node[hidden node,minimum size=1.5cm] (h0) [right of=z] {$\rh^{(0)}$};
-        \node[hidden node,minimum size=1.5cm] (h1) [right of=h0] {$\rh^{(1)}$};
-        \node[empty node] (dots) [right of=h1] {$\dots$};
+        \node[hidden node,minimum size=1.5cm] (h1) [right of=z] {$\rh^{(1)}$};
+        \node[hidden node,minimum size=1.5cm] (h2) [right of=h1] {$\rh^{(2)}$};
+        \node[empty node] (dots) [right of=h2] {$\dots$};
         \node[hidden node,minimum size=1.5cm] (ht) [right of=dots] {$\rh^{(T)}$};
         \node[main node,minimum size=1.5cm] (x1) [below of=h1] {$\rvx^{(1)}$};
+        \node[main node,minimum size=1.5cm] (x2) [below of=h2] {$\rvx^{(2)}$};
         \node[main node,minimum size=1.5cm] (xt) [below of=ht] {$\rvx^{(T)}$};
 
         \node[box node,minimum width=12cm,minimum height=5cm] (rect) at (10.5,-1.5) {};
@@ -453,10 +454,11 @@ where $\rvh = \left(\rh^{(0)}, \dots,\rh^{(T)} \right)$ is the sequence of hidde
         \draw[->]
         (y) edge (z)
         (z) edge (z-|rect.west)
-        (h0) edge (h1)
-        (h1) edge (dots)
+        (h1) edge (h2)
+        (h2) edge (dots)
         (dots) edge (ht)
         (h1) edge (x1)
+        (h2) edge (x2)
         (ht) edge (xt);
 
     \end{tikzpicture}}
@@ -466,7 +468,7 @@ where $\rvh = \left(\rh^{(0)}, \dots,\rh^{(T)} \right)$ is the sequence of hidde
 
 \subsubsection{Inference}
 \label{sec:spamhmm_inference}
-Given an observed sequence $\mX$ and its corresponding node $y \in \gY$, the inference problem here consists in finding the likelihood $p(\rmX=\mX \mid \ry=y)$ (from now on, abbreviated as $p(\mX \mid y)$) as defined by  \twoeqrefs{eq:spamhmm_density}{eq:spamhmm_hmm}. The marginals $p(\mX \mid \rz)$ of each HMM in the mixture can be computed efficiently, in $O(Ts^2)$ time, using the Forward algorithm~(\citet{Rabiner1986}). Then, $p(\mX \mid y)$ is obtained by applying \eqref{eq:spamhmm_density}, so inference in the overall model is done in at most $O(Ts^2m)$ time. As we shall see, however, the mixtures we obtain after learning will often be sparse (see \Secref{sec:spamhmm_learning}), leading to even smaller time complexity.
+Given an observed sequence $\mX$ and its corresponding node $y \in \gY$, the inference problem here consists in finding the likelihood $p(\rmX=\mX \mid \ry=y)$ (from now on, abbreviated as $p(\mX \mid y)$) as defined by  \twoeqrefs{eq:spamhmm_density}{eq:spamhmm_hmm}. The marginals $p(\mX \mid \rz)$ of each HMM in the mixture can be computed efficiently, in $O(Ts^2)$ time, using \Algref{alg:forward_backward}. Then, $p(\mX \mid y)$ is obtained by applying \eqref{eq:spamhmm_density}, so inference in the overall model is done in at most $O(Ts^2m)$ time. As we shall see, however, the mixtures we obtain after learning will often be sparse (see \Secref{sec:spamhmm_learning}), leading to even smaller time complexity.
 
 \subsubsection{Learning}
 \label{sec:spamhmm_learning}
@@ -478,7 +480,7 @@ Given an i.i.d.\ dataset consisting of $n$ tuples $(\mX_i, y_i)$ of sequences of
 where $\Theta$ represents all model parameters, namely:
 \begin{enumerate}
     \item the $m$-dimensional mixture coefficients, $\valpha^{(y)}$, where $ \evalpha^{(y)}_z \triangleq p(\rz=z \mid \ry=y)$, for $z \in \{1,\dots,m\}$ and $y \in \{ 1,\dots,k \}$;
-    \item the $s$-dimensional initial state probabilities, $\vpi^{(z)}$, where $\evpi_h^{(z)} \triangleq p(\rh^{(0)}=h \mid \rz=z)$, for $h \in \{1,\dots,s\}$ and $z \in \{1,\dots,m\}$;
+    \item the $s$-dimensional initial state probabilities, $\vpi^{(z)}$, where $\evpi_h^{(z)} \triangleq p(\rh^{(1)}=h \mid \rz=z)$, for $h \in \{1,\dots,s\}$ and $z \in \{1,\dots,m\}$;
     \item the $s \times s$ state transition matrices, $\mA^{(z)}$, where $\emA^{(z)}_{h,h'} \triangleq p(\rh^{(t)}=h' \mid \rh^{(t-1)}=h, \rz=z)$, for $h,h' \in \{1,\dots,s\}$ and $z \in \{1,\dots,m\}$;
     \item the emission probability means, $\vmu^{(z)}_h \in \mathbb{R}^d$, for $z \in \{1,\dots,m\}$ and $h \in \{1,\dots,s\}$;
     \item the emission probability diagonal covariance matrices, $\Sigma^{(z)}_h = \mathrm{diag}(\vsigma^{(z)}_h)^2$, where $\vsigma^{(z)}_h \in \mathbb{R}^d$, for $z \in \{1,\dots,m\}$ and $h \in \{1,\dots,s\}$.
@@ -541,23 +543,23 @@ and so we can treat $\vbeta^{(y)}$ as an unconstrained parameter vector. This re
         \vspace{0.3cm}
         \State Obtain the mixture posteriors $\eta^{(z)}_{i} \coloneqq p(z \mid \mX_i, y_i)$, for $i=1,\dots,n$ and $z=1,\dots,m$, by computing  $\tilde{\eta}^{(z)}_{i} \coloneqq p(\mX_i \mid z)p(z \mid y_i)$ and normalizing it;
         \vspace{0.3cm}
-        \State Obtain the state posteriors $\gamma^{(z)}_{i,h}(t) \coloneqq p(\rh^{(t)}=h \mid z, \mX_i)$ and $\xi^{(z)}_{i,h,h'}(t) \coloneqq p(\rh^{(t-1)}=h, \rh^{(t)}=h' \mid z, \mX_i)$, for $i=1,\dots,n$, $t=1,\dots,T_i$, $z=1,\dots,m$, and $h,h'=1,\dots,s$, as done in the Baum-Welch algorithm (\citet{Baum1972}).
+        \State Obtain the state posteriors $\gamma^{(z)}_{i,h}(t) \coloneqq p(\rh^{(t)}=h \mid z, \mX_i)$ and $\xi^{(z)}_{i,h,h'}(t) \coloneqq p(\rh^{(t-1)}=h, \rh^{(t)}=h' \mid z, \mX_i)$, for $i=1,\dots,n$, $t=1,\dots,T_i$, $z=1,\dots,m$, and $h,h'=1,\dots,s$, as done in \Algref{alg:forward_backward}.
         \vspace{0.3cm}
         \EndIndent
         \State \textbf{M-step:}
         \vspace{0.3cm}
         \Indent
-        \State $\evalpha^{(y)}_{z} := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \1_{y_i=y}}{n_y}$, for $y=1,\dots,k$ and $z=1,\dots,m$, obtaining $\valpha_y$;
+        \State $\evalpha^{(y)}_{z} \coloneqq \frac{\sum_{i=1}^n \eta^{(z)}_{i} \1_{y_i=y}}{n_y}$, for $y=1,\dots,k$ and $z=1,\dots,m$, obtaining $\valpha_y$;
         \vspace{0.3cm}
-        \State $\evpi^{(z)}_h := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \gamma^{(z)}_{i,h}(0)}{\sum_{i=1}^n \eta^{(z)}_{i}}$, for $z=1,\dots,m$ and $h=1,\dots,s$, obtaining $\vpi^{(z)}$;
+        \State $\evpi^{(z)}_h \coloneqq \frac{\sum_{i=1}^n \eta^{(z)}_{i} \gamma^{(z)}_{i,h}(0)}{\sum_{i=1}^n \eta^{(z)}_{i}}$, for $z=1,\dots,m$ and $h=1,\dots,s$, obtaining $\vpi^{(z)}$;
         \vspace{0.3cm}
-        \State $\emA^{(z)}_{h,h'} := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=1}^{T_i} \xi^{(z)}_{i,h,h'}(t)}{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=0}^{T_i-1} \gamma^{(z)}_{i,h}(t)}$, for $z=1,\dots,m$, and $h,h'=1,\dots,s$, obtaining $\mA^{(z)}$;
+        \State $\emA^{(z)}_{h,h'} \coloneqq \frac{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=1}^{T_i} \xi^{(z)}_{i,h,h'}(t)}{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=0}^{T_i-1} \gamma^{(z)}_{i,h}(t)}$, for $z=1,\dots,m$, and $h,h'=1,\dots,s$, obtaining $\mA^{(z)}$;
         \vspace{0.3cm}
-        \State $\vmu^{(z)}_h := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=1}^{T_i} \gamma^{(z)}_{i,h}(t) \vx_i^{(t)}} {\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=1}^{T_i} \gamma^{(z)}_{i,h}(t)}$, for $z=1,\dots,m$ and $h=1,\dots,s$;
+        \State $\vmu^{(z)}_h \coloneqq \frac{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=1}^{T_i} \gamma^{(z)}_{i,h}(t) \vx_i^{(t)}} {\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=1}^{T_i} \gamma^{(z)}_{i,h}(t)}$, for $z=1,\dots,m$ and $h=1,\dots,s$;
         \vspace{0.3cm}
-        \State ${\vsigma^{(z)}_h}^2 := \frac{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=1}^{T_i} \gamma^{(z)}_{i,h}(t) (\vx_i^{(t)} - \vmu^{(z)}_h)^2} {\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=1}^{T_i} \gamma^{(z)}_{i,h}(t)}$, for $z=1,\dots,m$ and $h=1,\dots,s$;
+        \State ${\vsigma^{(z)}_h}^2 \coloneqq \frac{\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=1}^{T_i} \gamma^{(z)}_{i,h}(t) (\vx_i^{(t)} - \vmu^{(z)}_h)^2} {\sum_{i=1}^n \eta^{(z)}_{i} \sum_{t=1}^{T_i} \gamma^{(z)}_{i,h}(t)}$, for $z=1,\dots,m$ and $h=1,\dots,s$;
         \vspace{0.3cm}
-        \State $\Theta^{(j)} := \bigcup_{y,z,h} \left\lbrace \valpha^{(y)}, \vpi^{(z)}, \mA^{(z)}, \vmu^{(z)}_h, \vsigma^{(z)}_h \right\rbrace$.
+        \State $\Theta^{(j)} \coloneqq \bigcup_{y,z,h} \left\lbrace \valpha^{(y)}, \vpi^{(z)}, \mA^{(z)}, \vmu^{(z)}_h, \vsigma^{(z)}_h \right\rbrace$.
         \vspace{0.3cm}
         \EndIndent
         \EndFor
@@ -593,7 +595,7 @@ and so we can treat $\vbeta^{(y)}$ as an unconstrained parameter vector. This re
         \vspace{0.3cm}
         \State Proceed as in lines 9--12 of \Algref{alg:mhmm};
         \vspace{0.3cm}
-        \State $\Theta^{(j)} := \bigcup_{h,y,z} \left\lbrace \vbeta^{(y)}, \vpi^{(z)}, \mA^{(z)}, \vmu^{(z)}_h, \vsigma^{(z)}_h \right\rbrace$.
+        \State $\Theta^{(j)} \coloneqq \bigcup_{h,y,z} \left\lbrace \vbeta^{(y)}, \vpi^{(z)}, \mA^{(z)}, \vmu^{(z)}_h, \vsigma^{(z)}_h \right\rbrace$.
         \vspace{0.3cm}
         \EndIndent
         \EndFor
@@ -787,7 +789,7 @@ Two obvious limitations of SpaMHMM are its inherent dependency on hidden Markov 
 \end{equation}
 This model comprises a latent space that is shared by all entities and where all observations $\rmX$ are produced, according to a \textit{conditional observation density} $p(\rmX \mid \rz)$. Through the \textit{latent density} $p(\rz \mid \ry)$, each entity chooses regions of the latent space that are more likely to explain its own sequences. While not specifying the structure of both $p(\rmX \mid \rz)$ and $p(\rz \mid \ry)$, this is a meta-model that makes no assumptions on the nature of the observed data streams. However, depending on those choices, exact inference on the resulting model may or may not be a tractable problem.
 
-Clearly, the SpaMHMM model is a particular case of \eqref{eq:generalized_mixture}, where the latent space is discrete and finite and the latent generative model is an HMM parametrized by $\rvz$. The discrete nature of the latent space and the underlying independence assumptions of the HMM allow for efficient exact inference in the resulting model using the Forward algorithm~\cite{Rabiner1986}.
+Clearly, the SpaMHMM model is a particular case of \eqref{eq:generalized_mixture}, where the latent space is discrete and finite and the latent generative model is an HMM parametrized by $\rvz$. The discrete nature of the latent space and the underlying independence assumptions of the HMM allow for efficient exact inference in the resulting model using \Algref{alg:forward_backward}.
 
 An interesting, more expressive, and still unexplored possibility would be to implement the conditional observation model $p(\rmX \mid \rz)$ through a recurrent mixture density network (RMDN)~\cite{Bishop1994, Graves2013, Bazzani2016}. An RMDN consists of a recurrent neural network (RNN) whose outputs at each time step parametrize a Gaussian mixture model with $c$ components:
 \begin{align}
@@ -811,7 +813,7 @@ Although very different in terms of their internal structure, all aforementioned
 
 It is reasonable to assume that an initial dataset composed of sequences from all entities may be gathered and used to learn an initial model for all entities. This model could then be refined online in each instance using a distributed algorithm. Hence, it makes sense to derive a algorithm to learn the meta-model defined by \eqref{eq:generalized_mixture} in an offline and centralized setting. This is the idea we followed in \Secref{sec:spamhmm}, which solves this problem for the particular of the SpaMHMM model using EM. This algorithm is based on the alternated maximization over variational densities $q(\rvz)$ and model parameters of an evidence lower bound (ELBO):
 \begin{equation}
-    \log p(\rmX \mid \ry) \geq \E_{\rvz \sim q(\rvz)} \log p(\rmX, \rvz \mid \ry)  - \E_{\rvz \sim q(\rvz)}\log q(\rvz) \triangleq \mathrm{ELBO}.
+    \log p(\rmX \mid \ry) \geq \E_{\rvz \sim q(\rvz)} \left[\log p(\rmX, \rvz \mid \ry) \right]  - \E_{\rvz \sim q(\rvz)} \left[\log q(\rvz)\right] \triangleq \mathrm{ELBO}.
 \end{equation}
 For fixed model parameters, maximization of the ELBO with respect to $q(\rvz)$ is attained when this distribution matches the true posterior $p(\rvz \mid \rmX,\ry)$. For the case of SpaMHMM, computing this posterior is a tractable problem. When this is not the case, some options are constraining the variational density to have a simpler, factorizable form (e.g.\ mean-field approximation, \cite{Blei2003}) or approximating the posterior with a parametric model, like a deep neural network (e.g.\ variational auto-encoders \cite{Kingma2013}).
 
