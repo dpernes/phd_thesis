@@ -92,7 +92,7 @@ Starting from a factorization of a joint distribution into conditionals, we may 
     \label{fig:complete_bayesian_net}
 \end{figure}
 
-Since the factorization in \eqref{eq:chain_rule} is general (i.e.\ it does not assume any conditional independencies between random variables), the Bayesian network in \Figref{fig:complete_bayesian_net} is said to be \emph{complete}. When conditional independencies are present, the graph becomes sparser. For instance, if, for all $j \geq 3$, $\rx^{(j)}$ is conditionally independent of $\rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-2)}$ given $\rx^{(j-1)}$, then $p(\rx^{(j)} \mid \rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-1)}) = p(\rx^{(j)} \mid \rx^{(j-1)})$ and thus the Bayesian network reduces to the \emph{chain} represented in \Figref{fig:chain_bayesian_net}.
+Since the factorization in \eqref{eq:chain_rule} is general (i.e.\ it does not assume any conditional independencies between random variables), the Bayesian network in \Figref{fig:complete_bayesian_net} is said to be \emph{complete}. When conditional independencies are present, the graph becomes sparser. For instance, if, for all $j \geq 3$, $\rx^{(j)}$ is conditionally independent of $\rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-2)}$ given $\rx^{(j-1)}$, then $p(\rx^{(j)} \mid \rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-1)}) = p(\rx^{(j)} \mid \rx^{(j-1)})$ and thus the Bayesian network reduces to the \emph{chain} represented in \Figref{fig:chain_bayesian_net}. A sparser graph implies a more compact parametrization of the model. For instance, if each of the $m$ random variables takes values on a discrete set of size $s$, describing the joint distribution corresponding to \Figref{fig:complete_bayesian_net} would require $s^{m}-1$ parameters. However, the joint distribution corresponding to \Figref{fig:chain_bayesian_net} can be fully described using table conditional probability distributions (CPDs) with $(s-1)sm$ parameters only.
 
 \begin{figure}
     \centering
@@ -296,7 +296,7 @@ Given a dataset $\lbrace \vx_i \rbrace_{i=1}^n$ and a probabilistic model with $
     \label{eq:maximum_likelihood}
     J(\Theta) \triangleq \sum_{i=1}^n \log p(\vx_i; \Theta).
 \end{equation}
-When every example $\vx_i$ is a vector containing an observation for each of the $m$ random variables in the model, objective \plaineqref{eq:maximum_likelihood} is concave and therefore it has a unique maximizer $\Theta^*$. For instance, when $\Theta$ corresponds to the parameters of table conditional probability distributions (CPDs), $\Theta^*$ is given by the empirical conditional probabilities  the provided dataset (see \citet{Koller2009} for a proof).
+When every example $\vx_i$ is a vector containing an observation for each of the $m$ random variables in the model and $p$ is a usual family of distributions (e.g.\ exponential family or table CPD), objective \plaineqref{eq:maximum_likelihood} is concave and therefore it has a unique maximizer $\Theta^*$. For instance, when $\Theta$ corresponds to the parameters of table CPDs, $\Theta^*$ is given by the empirical conditional probabilities  the provided dataset (see \citet{Koller2009} for a proof).
 
 However, if there exist $\vx_i$ which do not contain observations for some of the $m$ random variables, the maximum likelihood objective becomes non-concave and admits multiple local optima. A procedure to find one of those optimum values is (stochastic) gradient ascent over the likelihood function. A usually better alternative is the Expectation-Maximization algorithm, explained next, since it exhibits faster convergence.
 
@@ -304,7 +304,7 @@ For simplicity, assume that if a random variable is observed in a given example 
 \begin{align}
     J(\Theta) &= \sum_{i=1}^n \log \int p(\vx_i, \rvz; \Theta) \d \rvz.
 \end{align}
-Now, let $q(\rz)$ be an arbitrary distribution such that $\mathrm{Supp}(q(\rvz)) \supseteq \mathrm{Supp}(p(\vx_i, \rvz; \Theta))$ for all $i$. Then,
+Now, let $q(\rz)$ be an arbitrary distribution such that $\mathrm{Supp}(q(\rvz)) \supseteq \mathrm{Supp}(p(\rvz \mid \vx_i; \Theta))$ for all $i$. Then,
 \begingroup
 \allowdisplaybreaks
 \begin{align}
@@ -341,7 +341,7 @@ We now provide the E-step and M-step update equations applicable to any Bayesian
 
 \paragraph{E-step:} At this stage, using the parameters $\Theta^{(-)}$ obtained at the previous M-step (or the initial parameters if at the beginning), we should obtain the \emph{expected sufficient statistics}. For this purpose, for each random variable $\rw$ in the Bayesian network $\gG$ and for each $(w,\vv) \in \mathrm{Val}(\rw,\parents_\gG(\rw))$:
 \begin{itemize}
-    \item Compute the joint posterior distributions $p(\rw,\parents_\gG(\rw) \mid \vx_i; \Theta^{(-)})$ and $p(\parents_\gG(\rw) \mid \vx_i; \Theta^{(-)})$ for each $i$.
+    \item Compute the posterior distributions $p(\rw,\parents_\gG(\rw) \mid \vx_i; \Theta^{(-)})$ and $p(\parents_\gG(\rw) \mid \vx_i; \Theta^{(-)})$ for each $i$.
     \item Compute the expected sufficient statistics as:
      \begin{align}
          &M(w,\vv) \triangleq \sum_{i=1}^n p(w,\vv \mid \vx_i; \Theta^{(-)}), \label{eq:joint_suf_stat}\\
@@ -354,3 +354,12 @@ We now provide the E-step and M-step update equations applicable to any Bayesian
     \theta_{w \mid \vv} = \frac{M(w,\vv)}{M(\vv)},
 \end{equation}
 where $\theta_{w \mid \vv}$ denotes the table entry corresponding to the probability $p(\rw=w \mid \parents_\gG(\rw)=\vv)$. The set $\Theta$ is the union of all these parameters.
+
+\section{Variational methods}
+\label{sec:variational_methods}
+
+In \Secref{sec:e_step}, we have shown that the posterior distribution $p(\rvz \mid \rvx; \Theta)$ was the optimal solution for the maximization of the ELBO with respect to the \emph{variational} distribution $q(\rvz)$. In the general case, this posterior is given by:
+\begin{equation}
+    p(\rvz \mid \rvx; \Theta) = \frac{p(\rvx, \rvz; \Theta)}{\int p(\rvx, \rvz; \Theta) \d \rvz},
+\end{equation}
+where the integral in the denominator is commonly designated as the \emph{partition function}. When $\rvz$ is high-dimensional, this integral becomes computationally intractable and, therefore, the computation of the exact posterior is infeasible. This is where variational methods come into play.
