@@ -133,17 +133,17 @@ The full algorithm, comprising the update equations for each parameter, is prese
         \vspace{0.3cm}
         \For{$i = 1, \dots,$\texttt{trainIter}}
         \vspace{0.3cm}
-        \State Observe $\rvx = \vx$, with length $t$.
+        \State Observe $\rvx = \vx$, with length $T$.
         \vspace{0.3cm}
         \For{$z = 1, \dots, m$} $\quad$(forward-backward algorithm)
         \vspace{0.3cm}
-        \State $ \alpha_1^{(z)}(h) \coloneqq \pi_{h}^{(z)}\emB^{(z)}_{h,x^{(1)}}, \quad h = 1, \dots, s$;
+        \State $ \alpha_h^{(z)}(1) \coloneqq \pi_{h}^{(z)}\emB^{(z)}_{h,x^{(1)}}$, for $h = 1, \dots, s$;
         \vspace{0.3cm}
-        \State $ \alpha_{t+1}^{(z)}(h) \coloneqq \emB^{(z)}_{h,x^{(t+1)}} \sum_{h'=1}^{s}\alpha_{t+1}^{(z)}(h')\emA^{(z)}_{h',h}, \quad t = 1, \dots, T-1, \quad h = 1, \dots, s;$
+        \State $ \alpha_{h}^{(z)}(t) \coloneqq \emB^{(z)}_{h,x^{(t)}} \sum_{h'=1}^{s}\alpha_{h'}^{(z)}(t-1)\emA^{(z)}_{h',h}, \quad t = 2, \dots, T$, for $h = 1, \dots, s;$
         \vspace{0.3cm}
-        \State $ \beta_{t}^{(z)}(h) \coloneqq 1, \quad h = 1, \dots, s;$
+        \State $ \beta_{h}^{(z)}(T) \coloneqq 1$, for $h = 1, \dots, s;$
         \vspace{0.3cm}
-        \State $ \beta_{t}^{(z)}(h) \coloneqq \sum_{h'=1}^{s}\emA^{(z)}_{h,h'}\emB^{(z)}_{h,x^{(t+1)}}\beta_{t+1}^{(z)}(h'), \quad t = T-1, \dots,  1, \quad h = 1, \dots, s. $
+        \State $ \beta_{h}^{(z)}(t) \coloneqq \emB^{(z)}_{h,x^{(t+1)}} \sum_{h'=1}^{s} \beta_{h'}^{(z)}(t+1) \emA^{(z)}_{h,h'}$, for $t = T-1, \dots,  1$ and $h = 1, \dots, s$.
         \vspace{0.3cm}
         \EndFor
         \vspace{0.3cm}
@@ -151,21 +151,21 @@ The full algorithm, comprising the update equations for each parameter, is prese
         \vspace{0.3cm}
         \For{$z = 1, \dots, m$}
         \vspace{0.3cm}
-        \State $ \evu_h^{(z)} \coloneqq \evu_h^{(z)} + \eta  \evpi_h^{(z)} \left[ \emB^{(z)}_{h,x^{(1)}} \beta_{1}^{(z)}(h) - p(\vx \mid z, \Theta^{(i-1)}) \right], \quad h = 1, \dots, s;$
+        \State $ \evu_h^{(z)} \coloneqq \evu_h^{(z)} + \eta  \evpi_h^{(z)} \left[ \emB^{(z)}_{h,x^{(1)}} \beta_{1}^{(z)}(h) - p(\vx \mid z, \Theta^{(i-1)}) \right]$, for $h = 1, \dots, s$;
         \vspace{0.3cm}
-        \State $ \emW^{(z)}_{h,h'} \coloneqq  \emW^{(z)}_{h,h'} + \eta v(z,z^*) \emA^{(z)}_{h',h}\sum_{t=1}^{T-1}\left[\alpha_{t}^{(z)}(h) \emB^{(z)}_{h,x^{(t+1)}}\beta_{t+1}^{(z)}(h') - \alpha_{t}^{(z)}(h)\beta_{t}^{(z)}(h) \right], \quad h,h' = 1, \dots, s; $
+        \State $ \emW^{(z)}_{h,h'} \coloneqq  \emW^{(z)}_{h,h'} + \eta v(z,z^*) \emA^{(z)}_{h',h}\sum_{t=1}^{T-1}\left[\alpha_{h}^{(z)}(t) \emB^{(z)}_{h,x^{(t+1)}}\beta_{t+1}^{(z)}(h') - \alpha_{h}^{(z)}(t)\beta_{h}^{(z)}(t) \right]$, for $h,h' = 1, \dots, s$;
         \vspace{0.3cm}
-        \State $ \emR^{(z)}_{h,x'} \coloneqq \emR^{(z)}_{h,x'} + \eta v(z,z^*) \sum_{t=1}^{T}\left[\1_{x^{(t)}=x'}\alpha_{t}^{(z)}(h)\beta_{t}(h) - \emB^{(z)}_{h,x'}\alpha_{t}^{(z)}(h)\beta_{t}^{(z)}(h) \right], \quad h = 1, \dots, s, \quad x' = 1,\dots,o;$
+        \State $ \emR^{(z)}_{h,x'} \coloneqq \emR^{(z)}_{h,x'} + \eta v(z,z^*) \sum_{t=1}^{T}\left[\1_{x^{(t)}=x'}\alpha_{h}^{(z)}(t)\beta_{h}(t) - \emB^{(z)}_{h,x'}\alpha_{h}^{(z)}(t)\beta_{h}^{(z)}(t) \right]$, for $h = 1, \dots, s$ and $x' = 1,\dots,o$;
         \vspace{0.3cm}
-        \State $\evpi_h^{(z)} \coloneqq \exp(\evu_h^{(z)}) \big/ \sum_{h'=1}^{s}\exp(\evu_{h'}^{(z)}), \quad h = 1, \dots, s;$
+        \State $\evpi_h^{(z)} \coloneqq \exp(\evu_h^{(z)}) \big/ \sum_{h'=1}^{s}\exp(\evu_{h'}^{(z)})$, for $h = 1, \dots, s$;
         \vspace{0.3cm}
-        \State $ \emA^{(z)}_{h,h'} \coloneqq \exp(\emW^{(z)}_{h,h'}) \big/ \sum_{h''=1}^{s} \exp(\emW^{(z)}_{h,h''}), \quad h,h' = 1, \dots, s;$
+        \State $ \emA^{(z)}_{h,h'} \coloneqq \exp(\emW^{(z)}_{h,h'}) \big/ \sum_{h''=1}^{s} \exp(\emW^{(z)}_{h,h''})$, for $h,h' = 1, \dots, s$;
         \vspace{0.3cm}
-        \State $\emB^{(z)}_{h,x'} \coloneqq \exp(\emR^{(z)}_{h,x'}) \big/ \sum_{x''=1}^{o} \exp(\emR^{(z)}_{h,x''}), \quad h = 1, \dots, s, \quad x' = 1,\dots,o.$
+        \State $\emB^{(z)}_{h,x'} \coloneqq \exp(\emR^{(z)}_{h,x'}) \big/ \sum_{x''=1}^{o} \exp(\emR^{(z)}_{h,x''})$, for $h = 1, \dots, s$ and $x' = 1,\dots,o$.
         \vspace{0.3cm}
         \EndFor
         \vspace{0.3cm}
-        \State $\Theta^{(i)} \coloneqq \lbrace (\vu^{(z)}, \mW^{(z)}, \mR^{(z)}) \rbrace_{z=1}^m$.
+        \State $\Theta^{(i)} \coloneqq \left\lbrace (\vu^{(z)}, \mW^{(z)}, \mR^{(z)}) \right\rbrace_{z=1}^m$.
         \vspace{0.3cm}
         \EndFor
 
@@ -220,7 +220,7 @@ Given \twoeqrefs{eq:sohmmm_grad_mu}{eq:sohmmm_grad_s}, it is straightforward to 
         \vspace{0.3cm}
         \For{$i = 1, \dots,$\texttt{trainIter}}
         \vspace{0.3cm}
-        \State Observe $\rmX = \mX$, with length $t$.
+        \State Observe $\rmX = \mX$, with length $T$.
         \vspace{0.3cm}
         \State Proceed as in lines 4--8 of \Algref{alg:sohmmm_discrete}, replacing all occurrences of $\emB^{(z)}_{h,x^{(t)}}$ with $\mathcal{N}\left(\vx^{(t)}; \vmu^{(z)}_h, \mS^{(z)}_h {\mS^{(z)}_h}\transp\right)$.
         \vspace{0.3cm}
@@ -230,18 +230,18 @@ Given \twoeqrefs{eq:sohmmm_grad_mu}{eq:sohmmm_grad_s}, it is straightforward to 
         \vspace{0.3cm}
         \State Proceed as in lines 12 and 13 of \Algref{alg:sohmmm_discrete}, replacing all occurrences of $\emB^{(z)}_{h,x^{(t)}}$ with $\mathcal{N}\left(\vx^{(t)}; \vmu^{(z)}_h, \mS^{(z)}_h {\mS^{(z)}_h}\transp\right)$ and all occurences of $\vx$ with $\mX$;
         \vspace{0.3cm}
-        \State $\vmu^{(z)}_h \coloneqq \vmu^{(z)}_h + \eta v(z, z^*) \sum_{t=1}^T \alpha_{t}^{(z)}(h) \beta_{t}^{(z)}(h) (\mS^{(z)}_h {\mS^{(z)}_h} \transp)^{-1} (\vx^{(t)} - \vmu^{(z)}_h), \quad h = 1, \dots, s;$
+        \State $\vmu^{(z)}_h \coloneqq \vmu^{(z)}_h + \eta v(z, z^*) \sum_{t=1}^T \alpha_{t}^{(z)}(h) \beta_{t}^{(z)}(h) (\mS^{(z)}_h {\mS^{(z)}_h} \transp)^{-1} (\vx^{(t)} - \vmu^{(z)}_h)$, for $h = 1, \dots, s$;
         \vspace{0.3cm}
         \State $\begin{aligned}
             \mS^{(z)}_h \coloneqq \mS^{(z)}_h + \eta &v(z, z^*) \sum_{t=1}^T \alpha_{t}^{(z)}(h) \beta_{t}^{(z)}(h) {\mS^{(z)}_h}^{-1} \cdot \\
-            &\cdot \left[ (\vx^{(t)} - \vmu^{(z)}_h) (\vx^{(t)} - \vmu^{(z)}_h)\transp (\mS^{(z)}_h {\mS^{(z)}_h} \transp)^{-1} - I_d\right], \quad h = 1, \dots, s;
+            &\cdot \left[ (\vx^{(t)} - \vmu^{(z)}_h) (\vx^{(t)} - \vmu^{(z)}_h)\transp (\mS^{(z)}_h {\mS^{(z)}_h} \transp)^{-1} - I_d\right],\text{ for }h = 1, \dots, s;
         \end{aligned}$
         \vspace{0.3cm}
         \State Proceed as in lines 15 and 16 of \Algref{alg:sohmmm_discrete}.
         \vspace{0.3cm}
         \EndFor
         \vspace{0.3cm}
-        \State $\Theta^{(i)} \coloneqq \lbrace (\vu^{(z)}, \mW^{(z)}, (\vmu^{(z)}_h, \mS^{(z)}_h)_{h=1}^s) \rbrace_{z=1}^m$.
+        \State $\Theta^{(i)} \coloneqq \left\lbrace (\vu^{(z)}, \mW^{(z)}, (\vmu^{(z)}_h, \mS^{(z)}_h)_{h=1}^s) \right\rbrace_{z=1}^m$.
         \vspace{0.3cm}
         \EndFor
 

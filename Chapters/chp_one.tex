@@ -208,7 +208,7 @@ Now let us assume that $\rx^{(1)}$ and $\rx^{(3)}$ are marginally independent, w
 \begin{equation}
     p(\rx^{(1)}, \rx^{(2)}, \rx^{(3)}) = p(\rx^{(1)}) p(\rx^{(3)}) p(\rx^{(2)} \mid \rx^{(1)}, \rx^{(3)})
 \end{equation}
-and this factorization is unique. The corresponding Bayesian network is represented in \Figref{fig:immorality_bayesian_net}. A subgraph consisting of three nodes where two of them are not  connected and the other one is a child of both is an \emph{immorality}. The node where the two incoming edges coincide is a \emph{collider}. Thus, in the present example, $\rx^{(1)}$, $\rx^{(2)}$, and $\rx^{(3)}$ form an immorality where $\rx^{(2)}$ is the collider.
+and this factorization is unique in the sense that no other implies the same set of conditional independencies. The corresponding Bayesian network is represented in \Figref{fig:immorality_bayesian_net}. A subgraph consisting of three nodes where two of them are not  connected and the other one is a child of both is an \emph{immorality}. The node where the two incoming edges coincide is a \emph{collider}. Thus, in the present example, $\rx^{(1)}$, $\rx^{(2)}$, and $\rx^{(3)}$ form an immorality where $\rx^{(2)}$ is the collider.
 
 \begin{figure}
     \centering
@@ -280,7 +280,7 @@ The structure of the graph in \Figref{fig:hmm_bayesian_net} corresponds to the f
 \begin{equation}
     p(\rx^{(1)},\rx^{(2)},\dots,\rx^{(T)},\rh^{(1)},\rh^{(2)},\dots,\rh^{(t)}) = p(\rh^{(1)}) p(x^{(1)} \mid h^{(1)}) \prod_{t=2}^T p(h^{(t)} \mid h^{(t-1)}) p(x^{(t)} \mid h^{(t)})
 \end{equation}
-Here, $\rx^{(1)},\rx^{(2)},\dots,\rx^{(T)}$ is the sequence of \emph{observations} and $\rh^{(1)},\rh^{(2)},\dots,\rh^{(T)}$ is the sequence of \emph{hidden states}.\footnote{The word \emph{hidden} refers to the fact that the states are usually not observed in the training data.} Observations can be either discrete or continuous, while hidden states are usually discrete, although continuous-state versions exist (\citet{Turin2004}).
+Here, $\rx^{(1)},\rx^{(2)},\dots,\rx^{(T)}$ is the sequence of \emph{observations} and $\rh^{(1)},\rh^{(2)},\dots,\rh^{(T)}$ is the sequence of \emph{hidden states}.\footnote{The word \emph{hidden} refers to the fact that the states are usually not observed in the training data.} Observations can be either discrete or continuous, while hidden states are usually discrete, although continuous state versions exist (\citet{Turin2004}).
 
 By analyzing d-separation in \Figref{fig:hmm_bayesian_net}, two fundamental assumptions of the HMM are revealed:
 \begin{itemize}
@@ -297,14 +297,12 @@ The independence assumptions of the HMM also have the advantage of making infere
     \begin{algorithmic}[1]
         \State \textbf{Inputs:} An observation sequence $x^{(1)}, x^{(2)}, \dots, x^{(T)}$ and an HMM with defined initial state, state transition, and emission distributions.
         \vspace{0.3cm}
-        \State Define $\alpha_h(t) \triangleq p(x^{(1)}, x^{(2)}, \dots, x^{(t)}, \rh^{(t)}=h)$ and $\beta_h(t) \triangleq p(x^{(t+1)}, x^{(t+2)}, \dots, x^{(T)} \mid \rh^{(t)}=h)$.
-        \vspace{0.3cm}
         \State Initialize $\alpha_h(1) \coloneqq p(\rh^{(1)}=h)p(x^{(1)} \mid \rh^{(1)}=h)$ and $\beta_h(T) \coloneqq 1$ for all $h$ in the state dictionary.
         \vspace{0.3cm}
-        \State Compute the forward recursion $\alpha_h(t) \coloneqq \sum_{\rh^{(t-1)}} \alpha_{\rh^{(t-1)}}(t-1) p(\rh^{(t)}=h \mid \rh^{(t-1)}) p(x^{(t)} \mid \rh^{(t)}=h)$ for all $h$ in the state dictionary and $t=2, 3, \dots, T$.
+        \State Compute the forward recursion $\alpha_h(t) \coloneqq p(x^{(t)} \mid \rh^{(t)}=h) \sum_{\rh^{(t-1)}} \alpha_{\rh^{(t-1)}}(t-1) p(\rh^{(t)}=h \mid \rh^{(t-1)})$ for all $h$ in the state dictionary and $t=2, 3, \dots, T$.
         \vspace{0.3cm}
-        \State Compute the backward recursion $\beta_h(t) \coloneqq \sum_{\rh^{(t+1)}} \beta_{\rh^{(t+1)}}(t+1) p(\rh^{(t+1)} \mid \rh^{(t)}=h) p(x^{(t+1)} \mid \rh^{(t+1)}=h)$ for all $h$ in the state dictionary and $t=T-1, T-2, \dots, 1$.
-        \vspace{0.01cm}
+        \State Compute the backward recursion $\beta_h(t) \coloneqq p(x^{(t+1)} \mid \rh^{(t+1)}=h) \sum_{\rh^{(t+1)}} \beta_{\rh^{(t+1)}}(t+1) p(\rh^{(t+1)} \mid \rh^{(t)}=h) $ for all $h$ in the state dictionary and $t=T-1, T-2, \dots, 1$.
+        \vspace{0.3cm}
         \State Obtain the marginal likelihood of the observed sequence as $p(x^{(1)}, x^{(2)}, \dots, x^{(T)}) \coloneqq \sum_{\rh^{(T)}} \alpha_{\rh^{(T)}}(T)$.
         \vspace{0.3cm}
         \State Obtain the state posterior distribution as $p(\rh^{(t)}=h \mid x^{(1)}, x^{(2)}, \dots, x^{(T)}) = \frac{\alpha_h(t)\beta_h(t)}{p(x^{(1)}, x^{(2)}, \dots, x^{(T)})}$ for all $h$ in the state dictionary.
@@ -382,13 +380,13 @@ We now provide the E-step and M-step update equations applicable to any Bayesian
 where $\theta_{w \mid \vv}$ denotes the table entry corresponding to the probability $p(\rw=w \mid \parents_\gG(\rw)=\vv)$. The set $\Theta$ is the union of all these parameters.
 
 \subsection{EM for the discrete emission HMM}
-An example of a table CPD model is the HMM with discrete emission distribution. Under this setting, the hidden state $\rh^{(t)}$ and the observation $\rx^{(t)}$ both take values in discrete and finite sets. Thus, we can use \twoeqrefs{eq:joint_suf_stat}{eq:marginal_suf_stat} together with the structure of the Bayesian network in \Figref{fig:hmm_bayesian_net} and \Algref{alg:forward_backward} to obtain the EM training procedure for this model, which is summarized in \Algref{alg:baum_welch}.
+An example of a table CPD model with latent variables is the HMM with discrete emission distribution. Under this setting, the hidden state $\rh^{(t)}$ and the observation $\rx^{(t)}$ both take values in discrete and finite sets. Thus, we can use \twoeqrefs{eq:joint_suf_stat}{eq:marginal_suf_stat} together with the structure of the Bayesian network in \Figref{fig:hmm_bayesian_net} and \Algref{alg:forward_backward} to obtain the EM training procedure for this model, which is summarized in \Algref{alg:baum_welch}.
 
 The parameters to be learned here are:
 \begin{itemize}
     \item the initial state probabilities $\evpi_h \triangleq p(\rh^{(1)}=h)$, for all $h$ in the state dictionary;
     \item the state transition probabilities $\emA_{h,h'} \triangleq p(\rh^{(t)}=h' \mid \rh^{(t-1)}=h)$, for all $h,h'$ in the state dictionary;
-    \item the emission probabilities $\emB_{h,x} \triangleq p(\rx^{(t)}=x \mid \rh^{(t)}=h)$, for all $h, x$, in the state and observation dictionaries, respectively.
+    \item the emission probabilities $\emB_{h,x} \triangleq p(\rx^{(t)}=x \mid \rh^{(t)}=h)$, for all $h$ and $x$ in the state and observation dictionaries, respectively.
 \end{itemize}
 
 \begin{algorithm}
@@ -402,7 +400,7 @@ The parameters to be learned here are:
         \State \textbf{E-step:}
         \vspace{0.3cm}
         \Indent
-        \State Obtain the state posteriors $\gamma_{i,h}(t) \coloneqq p(\rh^{(t)}=h \mid \vx_i)$ and $\xi_{i,h,h'}(t) \coloneqq p(\rh^{(t-1)}=h, \rh^{(t)}=h' \mid \vx_i)$ for $i=1,\dots,n$, $t=1,\dots,T_i$, and $h,h'$ in the state dictionary, as done in \Algref{alg:forward_backward}.
+        \State Obtain the state posteriors $\gamma_{i,h}(t) \coloneqq p(\rh^{(t)}=h \mid \vx_i; \Theta^{(j-1)})$ and $\xi_{i,h,h'}(t) \coloneqq p(\rh^{(t-1)}=h, \rh^{(t)}=h' \mid \vx_i; \Theta^{(j-1)})$ for $i=1,\dots,n$, $t=1,\dots,T_i$, and $h,h'$ in the state dictionary, as done in \Algref{alg:forward_backward}.
         \vspace{0.3cm}
         \EndIndent
         \State \textbf{M-step:}
@@ -412,7 +410,7 @@ The parameters to be learned here are:
         \vspace{0.3cm}
         \State $\emA_{h,h'} \coloneqq \frac{\sum_{i=1}^n \sum_{t=1}^{T_i}\xi_{i,h,h'}(t)}{\sum_{i=1}^n \sum_{t=1}^{T_i} \gamma_{i,h}(t)}$, for all $h,h'$ in the state dictionary;
         \vspace{0.3cm}
-        \State $\emB_{h,x} \coloneqq \frac{\sum_{i=1}^n \sum_{t=1}^{T_i} \gamma_{i,h}(t) \1_{x_i^{(t)}=x}}{\sum_{i=1}^n \sum_{t=1}^{T_i} \gamma_{i,h}(t)}$, for all $h,x$ in the state and observation dictionaries, respectively;
+        \State $\emB_{h,x} \coloneqq \frac{\sum_{i=1}^n \sum_{t=1}^{T_i} \gamma_{i,h}(t) \1_{x_i^{(t)}=x}}{\sum_{i=1}^n \sum_{t=1}^{T_i} \gamma_{i,h}(t)}$, for all $h$ and $x$ in the state and observation dictionaries, respectively;
         \vspace{0.3cm}
         \State $\Theta^{(j)} \coloneqq \bigcup_{h,h',x} \left\lbrace \evpi_h, \emA_{h,h'}, \emB_{h,x} \right\rbrace.$
         \EndIndent
@@ -428,4 +426,6 @@ In \Secref{sec:e_step}, we have shown that the posterior distribution $p(\rvz \m
 \begin{equation}
     p(\rvz \mid \rvx; \Theta) = \frac{p(\rvx, \rvz; \Theta)}{\int p(\rvx, \rvz; \Theta) \d \rvz},
 \end{equation}
-where the integral in the denominator is usually designated as the \emph{partition function}. When $\rvz$ is high-dimensional, this integral becomes computationally intractable and, therefore, the computation of the exact posterior is infeasible. This is where variational methods come into play.
+where the integral in the denominator is usually designated as the \emph{partition function}. When $\rvz$ is high-dimensional, computing the partition function becomes intractable and, therefore, the computation of the exact posterior is infeasible. This is where variational methods come into play.
+
+Variational methods are used as approximation methods in a wide variety of settings, from quantum mechanics (\citet{Sakurai2017}) to statistics (\citet{Rustagi1976}). The application of these techniques converts a complex problem into a simpler one, where thesimpler problem is generally characterized by a decoupling of the degrees of freedom in theoriginal problem (\citet{Jordan1999}).
