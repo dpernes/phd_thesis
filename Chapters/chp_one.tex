@@ -314,7 +314,8 @@ The independence assumptions of the HMM also have the advantage of making infere
 \section{The Expectation-Maximization algorithm}
 \label{sec:expectation_maximization}
 
-\subsection{Formulation}
+\subsection{General formulation}
+\label{sec:general_em}
 Given a dataset $\lbrace \vx_i \rbrace_{i=1}^n$ and a probabilistic model with $m$ random variables, the parameters $\Theta$ of the model are often estimated using the \emph{maximum likelihood criterion}, i.e.\ the optimal parameters maximize:
 \begin{equation}
     \label{eq:maximum_likelihood}
@@ -326,6 +327,7 @@ However, if there exist $\vx_i$ which do not contain observations for some of th
 
 For simplicity, assume that if a random variable is observed in a given example $\vx_i$ then it is observed in all remaining $n-1$ examples as well, i.e.\ assume that the $m$ random variables can be partitioned as $\lbrace \rx^{(j)} \rbrace_{j=1}^o \cup \lbrace \rz^{(j)} \rbrace_{j=1}^l$ where the $\rx^{(j)}$ are the $o$ observed variables and the $\rz^{(j)}$ are the $l$ unobserved (or \emph{latent}) variables and $o+l=m$.\footnote{This assumption is not necessary for the EM algorithm to be valid. However, it makes the exposition simpler and it will hold for all latent variable models considered in this thesis.} Let $\rvx \triangleq \left(\rx^{(1)}, \dots, \rx^{(o)} \right)$ and $\rvz \triangleq \left(\rz^{(1)}, \dots, \rz^{(l)} \right)$ be the vectors of observed and latent variables, respectively. Under this setting, objective \plaineqref{eq:maximum_likelihood} becomes:
 \begin{align}
+    \label{eq:maximum_marginal_likelihood}
     J(\Theta) &= \sum_{i=1}^n \log \int p(\vx_i, \rvz; \Theta) \d \rvz.
 \end{align}
 Now, let $q(\rz)$ be an arbitrary distribution such that $\mathrm{Supp}(q(\rvz)) \supseteq \mathrm{Supp}(p(\rvz \mid \vx_i; \Theta))$ for all $i$. Then,
@@ -419,13 +421,53 @@ The parameters to be learned here are:
 \end{algorithm}
 
 
-\section{Variational methods}
-\label{sec:variational_methods}
+\section{Variational autoencoder}
+\label{sec:variational_autoencoder}
 
+\subsection{Formulation}
 In \Secref{sec:e_step}, we have shown that the posterior distribution $p(\rvz \mid \rvx; \Theta)$ was the optimal solution for the maximization of the ELBO with respect to the \emph{variational} distribution $q(\rvz)$. In the general case, this posterior is given by:
 \begin{equation}
     p(\rvz \mid \rvx; \Theta) = \frac{p(\rvx, \rvz; \Theta)}{\int p(\rvx, \rvz; \Theta) \d \rvz},
 \end{equation}
 where the integral in the denominator is usually designated as the \emph{partition function}. When $\rvz$ is high-dimensional, computing the partition function becomes intractable and, therefore, the computation of the exact posterior is infeasible. This is where variational methods come into play.
 
-Variational methods are used as approximation methods in a wide variety of settings, from quantum mechanics (\citet{Sakurai2017}) to statistics (\citet{Rustagi1976}). The application of these techniques converts a complex problem into a simpler one, where thesimpler problem is generally characterized by a decoupling of the degrees of freedom in theoriginal problem (\citet{Jordan1999}).
+Variational methods are used as approximation methods in a wide variety of settings, from quantum mechanics (\citet{Sakurai2017}) to statistics (\citet{Rustagi1976}). In the context of statistics and Bayesian inference, variational methods are used not only to find an approximate posterior in the E-step of the EM algorithm, but also as a general approximate inference tool.
+
+Suppose now that we want to learn a conditional distribution $p(\rmX \mid \rvz; \vtheta_e)$ of images $\rmX$ conditioned on latent codes $\rvz$ by implementing a neural network with parameters $\vtheta_d$. This distribution combined with a prior $p(\rvz)$ over the latent codes define the image likelihood $p(\rmX; \vtheta_d)$ as:
+\begin{equation}
+    \label{eq:vae_likelihood}
+    p(\rmX; \vtheta_d) = \int p(\rmX \mid \rvz; \vtheta_d) p(\rvz) \d \rvz.
+\end{equation}
+Therefore, in principle, this model can be trained using the maximum likelihood criterion and the EM algorithm. Note, however, that \eqref{eq:vae_likelihood} is the partition function of this model. The issue here is the marginalization over $\rvz$, which is intractable since one of the integrands is a neural network and $\rvz$ is usually high-dimensional. To overcome this issue, a parametric variational distribution $q(\rvz \mid \rmX; \vtheta_e)$ is introduced as a replacement for the true posterior $p(\rvz \mid \rmX; \vtheta_d)$. This variational distribution is itself implemented with a deep neural network. If the family of distributions parametrized by the network is rich enough, it will be able to provide a tight approximation of the true posterior and hence maximize the ELBO. Formally, the objective is:
+\begin{equation}
+    \max_{\vtheta_e, \vtheta_d} \left\lbrace \mathrm{ELBO}(\vtheta_e, \vtheta_d) = \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[ \log \frac{p(\mX_i \mid \rvz; \vtheta_d)p(\rvz)}{q(\rvz \mid \mX_i; \vtheta_e)} \right] \right\rbrace.
+\end{equation}
+
+Note that the network $q(\rz \mid \rmX; \vtheta_e)$ defines a stochastic mapping from input images to latent codes and the network $p(\rmX \mid \rvz; \vtheta_d)$ defines its inverse mapping. Hence, the former is an \emph{encoder}, the latter is a \emph{decoder}, and the model itself is called a \emph{variational autoencoder} (VAE, \citet{Kingma2013}). Regarding the choice of prior $p(\rvz)$ and approximate posterior $q(\rvz \mid \rmX; \vtheta_e)$, both are often set as Gaussian, specifically:
+\begin{align}
+    &p(\rvz) \triangleq \mathcal{N}(\rvz; 0, I), \\
+    &q(\rvz \mid \mX; \vtheta_e) \triangleq \mathcal{N}(\rvz; \vmu_e(\mX; \vtheta_e), \mathrm{diag}(\vsigma_e^2(\mX; \vtheta_e))),
+\end{align}
+where, in the latter, $\vmu_e(\mX; \vtheta_e)$ and $\vsigma_e^2(\mX; \vtheta_e)$ are the two outputs of the encoder network. The conditional likelihood $p(\rmX \mid \rvz; \vtheta_d)$ is usually a Bernoulli distribution, for black and white images, or a Gaussian, for grayscale and color images. In the latter case,
+\begin{equation}
+    \label{eq:gaussian_vae}
+    p(\rmX \mid \vz; \vtheta_d) \triangleq \mathcal{N}(\rmX; \vmu_d(\vz; \vtheta_d), \sigma_d^2 I),
+\end{equation}
+where $\sigma_d^2 > 0$ is a hyperparameter.
+
+\subsection{Gradient of the decoder}
+As with most deep learning models, the VAE is usually trained using backpropagation and some form of stochastic gradient descent. For this purpose, the gradients of the ELBO with respect to both the decoder parameters $\vtheta_d$ and encoder parameters $\vtheta_e$ must be computable using automatic differentiation. As we see next, computing the former poses no significant difficulties.
+
+Let us assume that $p(\rmX \mid \rvz; \vtheta_d)$ is as defined in \eqref{eq:gaussian_vae} since this is the version that will be considered later in this document. Under this setting,
+\begin{align}
+    \nabla_{\vtheta_d} \mathrm{ELBO}(\vtheta_e, \vtheta_d) &= \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[\nabla_{\vtheta_d} \log \frac{p(\mX_i \mid \rvz; \vtheta_d)p(\rvz)}{q(\rvz \mid \mX_i; \vtheta_e)} \right] \nonumber\\
+    &= \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[ \nabla_{\vtheta_d} \log p(\mX_i \mid \rvz; \vtheta_d) \right] \nonumber\\
+    &= -\sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[ \frac{1}{2\sigma_d^2} \nabla_{\vtheta_d} ||\mX_i - \vmu_d(\rvz; \vtheta_d)||^2  \right] \label{eq:decoder_gradient}
+\end{align}
+where the first equality is due to the linearity of expectations and the last one comes by plugging in the formula of the Gaussian density and discarding constant terms. This expression makes it clear that the decoder is trained to reconstruct the original image given its latent code by minimizing the $L^2$ distance between the original image and its reconstruction, just like a traditional (i.e.\ non-variational) autoencoder. Finally, the expectation in \eqref{eq:decoder_gradient} is replaced by its empirical approximation with one sample:
+\begin{align}
+    \nabla_{\vtheta_d} \mathrm{ELBO}(\vtheta_e, \vtheta_d) \approx -\sum_{i=1}^n \nabla_{\vtheta_d} ||\mX_i - \vmu_d(\vz_i; \vtheta_d)||^2,
+\end{align}
+where $\vz_i$ is sampled from $q(\rvz \mid \mX_i; \vtheta_e)$, which is Gaussian, so this process is computationally easy and efficient.
+
+\subsection{Gradient of the encoder}
