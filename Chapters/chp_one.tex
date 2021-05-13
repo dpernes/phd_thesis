@@ -499,4 +499,12 @@ where the third equality comes by applying the log derivative trick ($\nabla u =
 \end{equation}
 where the $\vz_{i,j}$ are sampled from $q(\rvz \mid \mX_i; \vtheta_e)$. The problem with this approach is that, early in training, $p(\mX_i \mid \vz_{i,j}; \vtheta_d) \approx 0$ and hence $\log p(\mX_i \mid \vz_{i,j}; \vtheta_d)$ has a very large magnitude, leading to high variance in the estimator. This would imply using a large number of samples $m$ to reduce the variance which in turn would lead to an increased computational cost.
 
-The reparameterization trick is an efficient alternative that overcomes this problem. Note that, if $\vepsilon \sim \mathcal{N}(\vepsilon; 0, \mI)$, then $\rvz \triangleq \vsigma_e \odot \vepsilon + \vmu_e \sim  \mathcal{N}(\rvz; \vmu_e, \mathrm{diag}(\vsigma_e)^2)$.
+The emph{reparameterization trick} is an efficient alternative that overcomes this problem. Note that, if $\vepsilon \sim \mathcal{N}(\vepsilon; 0, \mI)$, then $\rvz \triangleq \vsigma_e \odot \vepsilon + \vmu_e \sim  \mathcal{N}(\rvz; \vmu_e, \mathrm{diag}(\vsigma_e)^2)$, where $\odot$ denotes the element-wise product. Thus,
+\begin{equation}
+    \E_{\rvz \sim q(\rvz \mid \rmX; \vtheta_e)} [\log p(\rmX \mid \rvz; \vtheta_d)] = \E_{\vepsilon \sim \mathcal{N}(\vepsilon; 0, \mI)} \left[\log p(\rmX \mid \vsigma_e \odot \vepsilon + \vmu_e; \vtheta_d) \right]
+\end{equation}
+and therefore
+\begin{equation}
+    \nabla_{\vtheta_e} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} [\log p(\mX_i \mid \rvz; \vtheta_d) ] = \sum_{i=1}^n \E_{\vepsilon \sim \mathcal{N}(\vepsilon; 0, \mI)} \left[\nabla_{\vtheta_e} \log p(\mX_i \mid \vsigma_e(\vtheta_e) \odot \vepsilon + \vmu_e(\vtheta_e); \vtheta_d)\right],
+\end{equation}
+where the dependency of $\vmu_e$ and $\vsigma_e$ on $\vtheta_e$ was written explicitly for clarity.

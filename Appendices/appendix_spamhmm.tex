@@ -51,7 +51,7 @@ Now, all that remains is computing the gradient of the ELBO with respect to the 
 &\nabla_{\vsigma^{(z)}_h} \mathrm{ELBO} = \sum_{i=1}^n \sum_{t=1}^{T_i} \frac{q(\rh^{(t)}_i=h, z)}{p(\vx^{(t)}_i \mid \rh^{(t)}_i=h, z)} \nabla_{\vsigma^{(z)}_h} p(\vx^{(t)}_i \mid \rh^{(t)}_i=h, z) \nonumber\\
 &\hphantom{\nabla_{\vsigma^{(z)}_h} \mathrm{ELBO}} = \sum_{i=1}^n  \sum_{t=1}^{T_i} q(\rh^{(t)}_i=h, z) \left(\frac{(\vx^{(t)}_i - \vmu^{(z)}_h)^2}{{\vsigma^{(z)}_h}^3} - \frac{1}{\vsigma^{(z)}_h}\right),
 \end{align}
-where vector division and exponentiation should be interpreted as elementwise operations. Finally, solving for the critical points yields:
+where vector division and exponentiation should be interpreted as element-wise operations. Finally, solving for the critical points yields:
 \begin{align}
 &\vmu^{(z)}_h = \frac{\sum_{i=1}^n  \sum_{t=1}^{T_i} q(\rh^{(t)}_i=h, z) \vx^{(t)}_i}{\sum_{i=1}^n  \sum_{t=1}^{T_i} q(\rh^{(t)}_i=h, z)} \nonumber\\
 &\hphantom{\vmu^{(z)}_h} = \frac{\sum_{i=1}^n p(z \mid \mX_i, y_i; \Theta^{(-)}) \sum_{t=1}^{T_i} p(\rh^{(t)}=h \mid \mX_i, z; \Theta^{(-)}) \vx^{(t)}_i}{\sum_{i=1}^n p(z \mid \mX_i, y_i; \Theta^{(-)}) \sum_{t=1}^{T_i} p(\rh^{(t)}=h \mid \mX_i, z; \Theta^{(-)})}, \\
