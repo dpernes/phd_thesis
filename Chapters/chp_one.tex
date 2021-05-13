@@ -445,29 +445,58 @@ Therefore, in principle, this model can be trained using the maximum likelihood 
 
 Note that the network $q(\rz \mid \rmX; \vtheta_e)$ defines a stochastic mapping from input images to latent codes and the network $p(\rmX \mid \rvz; \vtheta_d)$ defines its inverse mapping. Hence, the former is an \emph{encoder}, the latter is a \emph{decoder}, and the model itself is called a \emph{variational autoencoder} (VAE, \citet{Kingma2013}). Regarding the choice of prior $p(\rvz)$ and approximate posterior $q(\rvz \mid \rmX; \vtheta_e)$, both are often set as Gaussian, specifically:
 \begin{align}
-    &p(\rvz) \triangleq \mathcal{N}(\rvz; 0, I), \\
-    &q(\rvz \mid \mX; \vtheta_e) \triangleq \mathcal{N}(\rvz; \vmu_e(\mX; \vtheta_e), \mathrm{diag}(\vsigma_e^2(\mX; \vtheta_e))),
+    &p(\rvz) \triangleq \mathcal{N}(\rvz; 0, \mI), \\
+    &q(\rvz \mid \mX; \vtheta_e) \triangleq \mathcal{N}(\rvz; \vmu_e(\mX; \vtheta_e), \mathrm{diag}(\vsigma_e(\mX; \vtheta_e))^2),
 \end{align}
 where, in the latter, $\vmu_e(\mX; \vtheta_e)$ and $\vsigma_e^2(\mX; \vtheta_e)$ are the two outputs of the encoder network. The conditional likelihood $p(\rmX \mid \rvz; \vtheta_d)$ is usually a Bernoulli distribution, for black and white images, or a Gaussian, for grayscale and color images. In the latter case,
 \begin{equation}
     \label{eq:gaussian_vae}
-    p(\rmX \mid \vz; \vtheta_d) \triangleq \mathcal{N}(\rmX; \vmu_d(\vz; \vtheta_d), \sigma_d^2 I),
+    p(\rmX \mid \vz; \vtheta_d) \triangleq \mathcal{N}(\rmX; \vmu_d(\vz; \vtheta_d), \sigma_d^2 \mI),
 \end{equation}
-where $\sigma_d^2 > 0$ is a hyperparameter.
+where $\sigma_d^2 > 0$ is a hyperparameter. Note that, despite all distributions are simple Gaussians, the marginal density $p(\rmX)$ is then a continuous mixture of Gaussians, which is a rather expressive model.
 
 \subsection{Gradient of the decoder}
 As with most deep learning models, the VAE is usually trained using backpropagation and some form of stochastic gradient descent. For this purpose, the gradients of the ELBO with respect to both the decoder parameters $\vtheta_d$ and encoder parameters $\vtheta_e$ must be computable using automatic differentiation. As we see next, computing the former poses no significant difficulties.
 
 Let us assume that $p(\rmX \mid \rvz; \vtheta_d)$ is as defined in \eqref{eq:gaussian_vae} since this is the version that will be considered later in this document. Under this setting,
 \begin{align}
-    \nabla_{\vtheta_d} \mathrm{ELBO}(\vtheta_e, \vtheta_d) &= \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[\nabla_{\vtheta_d} \log \frac{p(\mX_i \mid \rvz; \vtheta_d)p(\rvz)}{q(\rvz \mid \mX_i; \vtheta_e)} \right] \nonumber\\
+    \nabla_{\vtheta_d} \mathrm{ELBO}(\vtheta_e, \vtheta_d) &= \nabla_{\vtheta_d} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[\log \frac{p(\mX_i \mid \rvz; \vtheta_d)p(\rvz)}{q(\rvz \mid \mX_i; \vtheta_e)} \right] \nonumber\\
+    &= \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[\nabla_{\vtheta_d} \log \frac{p(\mX_i \mid \rvz; \vtheta_d)p(\rvz)}{q(\rvz \mid \mX_i; \vtheta_e)} \right] \nonumber\\
     &= \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[ \nabla_{\vtheta_d} \log p(\mX_i \mid \rvz; \vtheta_d) \right] \nonumber\\
-    &= -\sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[ \frac{1}{2\sigma_d^2} \nabla_{\vtheta_d} ||\mX_i - \vmu_d(\rvz; \vtheta_d)||^2  \right] \label{eq:decoder_gradient}
+    &= -\frac{1}{2\sigma_d^2}\sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[ \nabla_{\vtheta_d} ||\mX_i - \vmu_d(\rvz; \vtheta_d)||^2  \right], \label{eq:decoder_gradient}
 \end{align}
-where the first equality is due to the linearity of expectations and the last one comes by plugging in the formula of the Gaussian density and discarding constant terms. This expression makes it clear that the decoder is trained to reconstruct the original image given its latent code by minimizing the $L^2$ distance between the original image and its reconstruction, just like a traditional (i.e.\ non-variational) autoencoder. Finally, the expectation in \eqref{eq:decoder_gradient} is replaced by its empirical approximation with one sample:
+where the second equality is due to the linearity of expectations and the last one comes by plugging in the formula of the Gaussian density and discarding constant terms. This expression makes it clear that the decoder is trained to reconstruct the original image given its latent code by minimizing the $L^2$ distance between the original image and its reconstruction, just like a traditional (i.e.\ non-variational) autoencoder. Finally, the expectation in \eqref{eq:decoder_gradient} is replaced by its empirical approximation with one sample:
 \begin{align}
-    \nabla_{\vtheta_d} \mathrm{ELBO}(\vtheta_e, \vtheta_d) \approx -\sum_{i=1}^n \nabla_{\vtheta_d} ||\mX_i - \vmu_d(\vz_i; \vtheta_d)||^2,
+    \nabla_{\vtheta_d} \mathrm{ELBO}(\vtheta_e, \vtheta_d) \approx -\frac{1}{2\sigma_d^2} \sum_{i=1}^n \nabla_{\vtheta_d} ||\mX_i - \vmu_d(\vz_i; \vtheta_d)||^2,
 \end{align}
-where $\vz_i$ is sampled from $q(\rvz \mid \mX_i; \vtheta_e)$, which is Gaussian, so this process is computationally easy and efficient.
+where the $\vz_i$ are sampled from $q(\rvz \mid \mX_i; \vtheta_e)$, which is Gaussian, so this process is computationally easy and efficient.
 
 \subsection{Gradient of the encoder}
+Finding the gradient of the ELBO with respect to the encoder parameters is not as easy since the distribution we are taking the expectation with respect to depends on the encoder parameters. Thus, the expectation and the gradient operator do not commute and we get:
+\begin{align}
+    \nabla_{\vtheta_e} \mathrm{ELBO}(\vtheta_e, \vtheta_d) &= \nabla_{\vtheta_e} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[\log \frac{p(\mX_i \mid \rvz; \vtheta_d)p(\rvz)}{q(\rvz \mid \mX_i; \vtheta_e)} \right] \nonumber\\
+    &= \nabla_{\vtheta_e} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[\log p(\mX_i \mid \rvz; \vtheta_d) \right] - \nabla_{\vtheta_e} \sum_{i=1}^n \KL(q(\rvz \mid \mX_i; \vtheta_e) \Vert p(\rvz)) \label{eq:encoder_gradient},
+\end{align}
+where the KL divergence is between two Gaussian distributions and hence can be computed analytically as:
+\begin{equation}
+    \KL(q(\rvz \mid \mX_i; \vtheta_e) \Vert p(\rvz)) = \sum_{j=1}^l \left({\evmu_j^{(i)}}^2 + {\evsigma_j^{(i)}}^2 -1 -2\log {\evsigma_j^{(i)}}\right),
+\end{equation}
+where $l$ is the dimension of the latent vector $\rvz$ and $\evmu_j^{(i)}$ and $\evsigma_j^{(i)}$ denote the $j$-th elements of the vectors $\vmu_e(\mX; \vtheta_e)$ and $\vsigma_e^2(\mX; \vtheta_e)$, respectively.
+
+Now, all that remains is the computation of the gradient with respect to the first term in \eqref{eq:encoder_gradient}. Note that:
+\begingroup
+\allowdisplaybreaks
+\begin{align}
+    \nabla_{\vtheta_e} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} [\log p(\mX_i \mid \rvz; &\vtheta_d) ] = \nabla_{\vtheta_e} \sum_{i=1}^n \int q(\rvz \mid \mX_i; \vtheta_e) \log p(\mX_i \mid \rvz; \vtheta_d) \d \rvz \nonumber\\
+    &= \sum_{i=1}^n \int \nabla_{\vtheta_e} q(\rvz \mid \mX_i; \vtheta_e) \log p(\mX_i \mid \rvz; \vtheta_d) \d \rvz \nonumber\\
+    &= \sum_{i=1}^n \int q(\rvz \mid \mX_i; \vtheta_e) \nabla_{\vtheta_e} \log q(\rvz \mid \mX_i; \vtheta_e) \log p(\mX_i \mid \rvz; \vtheta_d) \d \rvz \nonumber\\
+    &= \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[\nabla_{\vtheta_e} \log q(\rvz \mid \mX_i; \vtheta_e) \log p(\mX_i \mid \rvz; \vtheta_d)\right],
+\end{align}
+\endgroup
+where the third equality comes by applying the log derivative trick ($\nabla u = u \nabla \log(u)$). In the last expression, the gradient operator appears inside the expectation and so, in principle, it can be approximated using an empirical expectation:
+\begin{equation}
+    \nabla_{\vtheta_e} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} [\log p(\mX_i \mid \rvz; \vtheta_d) ] \approx \frac{1}{m} \sum_{i=1}^n \sum_{j=1}^m \nabla_{\vtheta_e} \log q(\vz_{i,j} \mid \mX_i; \vtheta_e) \log p(\mX_i \mid \vz_{i,j}; \vtheta_d),
+\end{equation}
+where the $\vz_{i,j}$ are sampled from $q(\rvz \mid \mX_i; \vtheta_e)$. The problem with this approach is that, early in training, $p(\mX_i \mid \vz_{i,j}; \vtheta_d) \approx 0$ and hence $\log p(\mX_i \mid \vz_{i,j}; \vtheta_d)$ has a very large magnitude, leading to high variance in the estimator. This would imply using a large number of samples $m$ to reduce the variance which in turn would lead to an increased computational cost.
+
+The reparameterization trick is an efficient alternative that overcomes this problem. Note that, if $\vepsilon \sim \mathcal{N}(\vepsilon; 0, \mI)$, then $\rvz \triangleq \vsigma_e \odot \vepsilon + \vmu_e \sim  \mathcal{N}(\rvz; \vmu_e, \mathrm{diag}(\vsigma_e)^2)$.
