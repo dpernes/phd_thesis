@@ -96,7 +96,7 @@ Starting from a factorization of a joint distribution into conditionals, we may 
     \label{fig:complete_bayesian_net}
 \end{figure}
 
-Since the factorization in \eqref{eq:chain_rule} is general (i.e.\ it does not assume any conditional independencies between random variables), the Bayesian network in \Figref{fig:complete_bayesian_net} is said to be \emph{complete}. When conditional independencies are present, the graph becomes sparser. For instance, if, for all $j \geq 3$, $\rx^{(j)}$ is conditionally independent of $\rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-2)}$ given $\rx^{(j-1)}$, then $p(\rx^{(j)} \mid \rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-1)}) = p(\rx^{(j)} \mid \rx^{(j-1)})$ and thus the Bayesian network reduces to the \emph{chain} represented in \Figref{fig:chain_bayesian_net}. A sparser graph implies a more compact parameterization of the model. For instance, if each of the $m$ random variables takes values on a discrete set of size $s$, defining the joint distribution corresponding to a complete Bayesian network (\Figref{fig:complete_bayesian_net}) would require $s^{m}-1$ parameters. However, in the same setting, the joint distribution corresponding to a chain (\Figref{fig:chain_bayesian_net}) can be fully described using table conditional probability distributions (CPDs) with less than $s^2m$ parameters in total.
+Since the factorization in \eqref{eq:chain_rule} is general (i.e.\ it does not assume any conditional independencies between random variables), the Bayesian network in \Figref{fig:complete_bayesian_net} is said to be \emph{complete}. When conditional independencies are present, the graph becomes sparser. For instance, if, for all $j \geq 3$, $\rx^{(j)}$ is conditionally independent of $\rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-2)}$ given $\rx^{(j-1)}$, then $p(\rx^{(j)} \mid \rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-1)}) = p(\rx^{(j)} \mid \rx^{(j-1)})$ and thus the Bayesian network reduces to the \emph{chain} represented in \Figref{fig:chain_bayesian_net}. A sparser graph implies a more compact parameterization of the model. If each of the $m$ random variables takes values on a discrete set of size $s$, defining the joint distribution corresponding to a complete Bayesian network (\Figref{fig:complete_bayesian_net}) would require $s^{m}-1$ parameters. However, in the same setting, the joint distribution corresponding to a chain (\Figref{fig:chain_bayesian_net}) can be fully described using table conditional probability distributions (CPDs) with less than $s^2m$ parameters in total.
 
 \begin{figure}
     \centering
@@ -311,7 +311,7 @@ The independence assumptions of the HMM also have the advantage of making infere
     \end{algorithmic}
 \end{algorithm}
 
-\section{The Expectation-Maximization algorithm}
+\section{The expectation-maximization algorithm}
 \label{sec:expectation_maximization}
 
 \subsection{General formulation}
@@ -323,7 +323,7 @@ Given a dataset $\lbrace \vx_i \rbrace_{i=1}^n$ and a probabilistic model with $
 \end{equation}
 When every example $\vx_i$ is a vector containing an observation for each of the $m$ random variables in the model and $p$ is a usual family of distributions (e.g.\ exponential family or table CPD), objective \plaineqref{eq:maximum_likelihood} is concave and therefore it has a unique maximizer $\Theta^*$. For instance, when $\Theta$ corresponds to the parameters of table CPDs, $\Theta^*$ is given by the empirical conditional probabilities obtained from the provided dataset (see \citet{Koller2009} for a proof).
 
-However, if there exist $\vx_i$ which do not contain observations for some of the $m$ random variables, the maximum likelihood objective becomes non-concave and admits multiple local optima. A procedure to find one of those optimum values is (stochastic) gradient ascent over the likelihood function. A usually better alternative is the Expectation-Maximization algorithm, explained next, since it exhibits faster convergence.
+However, if there exist $\vx_i$ which do not contain observations for some of the $m$ random variables, the maximum likelihood objective becomes non-concave and admits multiple local optima. A procedure to find one of those optimum values is (stochastic) gradient ascent over the likelihood function. A usually better alternative is the \emph{expectation-maximization} (EM) algorithm, explained next, since it exhibits faster convergence.
 
 For simplicity, assume that if a random variable is observed in a given example $\vx_i$ then it is observed in all remaining $n-1$ examples as well, i.e.\ assume that the $m$ random variables can be partitioned as $\lbrace \rx^{(j)} \rbrace_{j=1}^o \cup \lbrace \rz^{(j)} \rbrace_{j=1}^l$ where the $\rx^{(j)}$ are the $o$ observed variables and the $\rz^{(j)}$ are the $l$ unobserved (or \emph{latent}) variables and $o+l=m$.\footnote{This assumption is not necessary for the EM algorithm to be valid. However, it makes the exposition simpler and it will hold for all latent variable models considered in this thesis.} Let $\rvx \triangleq \left(\rx^{(1)}, \dots, \rx^{(o)} \right)$ and $\rvz \triangleq \left(\rz^{(1)}, \dots, \rz^{(l)} \right)$ be the vectors of observed and latent variables, respectively. Under this setting, objective \plaineqref{eq:maximum_likelihood} becomes:
 \begin{align}
@@ -345,7 +345,7 @@ where the inequality is a particular case of Jensen's inequality. The EM algorit
     \item Keep $q = q^{(-)}$ (fixed) and find $\Theta^* = \argmax_\Theta \mathrm{ELBO}(q^{(-)}, \Theta)$ --- \emph{M-step}.
 \end{itemize}
 
-\subsection{E-step}
+\subsubsection{E-step}
 \label{sec:e_step}
 Maximizing the ELBO with respect to $q$ is obviously equivalent to the minimization of the difference $J(\Theta^{(-)}) - \mathrm{ELBO}(q, \Theta^{(-)})$ with respect to the same distribution. It is easy to verify that:
 \begin{equation}
@@ -353,7 +353,7 @@ Maximizing the ELBO with respect to $q$ is obviously equivalent to the minimizat
 \end{equation}
 where $\KL(q(\rvz) \Vert p(\rvz \mid \vx_i; \Theta^{(-)}))$ denotes the Kullback-Leibler divergence between the distributions $q(\rvz)$ and $p(\rvz \mid \vx_i; \Theta^{(-)})$. This quantity is always non-negative, being zero if and only if the two distributions coincide. Thus, the optimal $q$ is $q^*(\rvz) = p(\rvz \mid \vx_i; \Theta^{(-)})$.
 
-\subsection{M-step}
+\subsubsection{M-step}
 \label{sec:m_step}
 Having found the optimal $q$, we now maximize the ELBO with respect to the parameters $\Theta$. Plugging in $q^{(-)}(z) = p(\rvz \mid \vx_i; \Theta^{(-)})$ yields:
 \begin{equation}
@@ -365,7 +365,7 @@ where the second term is constant with respect to $\Theta$ and therefore can be 
 \label{sec:em_table_cpd}
 We now provide the E-step and M-step update equations applicable to any Bayesian network $\gG$ whose conditional distributions are described by table CPDs. The derivation of these formulas can be found in \citet{Koller2009}.
 
-\paragraph{E-step:} At this stage, using the parameters $\Theta^{(-)}$ obtained at the previous M-step (or the initial parameters if at the beginning), we should obtain the \emph{expected sufficient statistics}. For this purpose, for each random variable $\rw$ in the Bayesian network $\gG$ and for each $(w,\vv) \in \mathrm{Val}(\rw,\parents_\gG(\rw))$:
+\paragraph{E-step:} At this stage, using the parameters $\Theta^{(-)}$ obtained at the previous M-step (or the initial parameters, if at the beginning), we should obtain the \emph{expected sufficient statistics}. For this purpose, for each random variable $\rw$ in the Bayesian network $\gG$ and for each $(w,\vv) \in \mathrm{Val}(\rw,\parents_\gG(\rw))$:
 \begin{itemize}
     \item Compute the posterior distributions $p(\rw,\parents_\gG(\rw) \mid \vx_i; \Theta^{(-)})$ and $p(\parents_\gG(\rw) \mid \vx_i; \Theta^{(-)})$ for each $i$.
     \item Compute the expected sufficient statistics as:
@@ -439,7 +439,7 @@ Suppose now that we want to learn a conditional distribution $p(\rmX \mid \rvz; 
     \label{eq:vae_likelihood}
     p(\rmX; \vtheta_d) = \int p(\rmX \mid \rvz; \vtheta_d) p(\rvz) \d \rvz.
 \end{equation}
-Therefore, in principle, this model can be trained using the maximum likelihood criterion and the EM algorithm. Note, however, that \eqref{eq:vae_likelihood} is the partition function of this model. The issue here is the marginalization over $\rvz$, which is intractable since one of the integrands is a neural network and $\rvz$ is usually high-dimensional. To overcome this issue, a parametric variational distribution $q(\rvz \mid \rmX; \vtheta_e)$ is introduced as a replacement for the true posterior $p(\rvz \mid \rmX; \vtheta_d)$. This variational distribution is itself implemented with a deep neural network. If the family of distributions parameterized by the network is rich enough, it will be able to provide a tight approximation of the true posterior and hence maximize the ELBO. Formally, the objective is:
+Therefore, in principle, this model can be trained using the maximum likelihood criterion and the EM algorithm. Note, however, that \eqref{eq:vae_likelihood} is the partition function of this model. The issue here is the marginalization over $\rvz$, which is intractable since one of the integrands is a neural network and $\rvz$ is usually high-dimensional. To overcome this problem, a parametric variational distribution $q(\rvz \mid \rmX; \vtheta_e)$ is introduced as a replacement for the true posterior $p(\rvz \mid \rmX; \vtheta_d)$. This variational distribution is itself implemented with a deep neural network. If the family of distributions parameterized by the network is rich enough, it will be able to provide a tight approximation of the true posterior and hence maximize the ELBO. Formally, the objective is:
 \begin{equation}
     \max_{\vtheta_e, \vtheta_d} \left\lbrace \mathrm{ELBO}(\vtheta_e, \vtheta_d) = \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[ \log \frac{p(\mX_i \mid \rvz; \vtheta_d)p(\rvz)}{q(\rvz \mid \mX_i; \vtheta_e)} \right] \right\rbrace.
 \end{equation}
@@ -499,9 +499,9 @@ Now, all that remains is the computation of the gradient with respect to the fir
 \endgroup
 where the third equality comes by applying the log derivative trick ($\nabla u = u \nabla \log(u)$). In the last expression, the gradient operator appears inside the expectation and so, in principle, it can be approximated using an empirical expectation:
 \begin{equation}
-    \nabla_{\vtheta_e} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} [\log p(\mX_i \mid \rvz; \vtheta_d) ] \approx \frac{1}{m} \sum_{i=1}^n \sum_{j=1}^m \nabla_{\vtheta_e} \log q(\vz_{i,j} \mid \mX_i; \vtheta_e) \log p(\mX_i \mid \vz_{i,j}; \vtheta_d),
+    \nabla_{\vtheta_e} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} [\log p(\mX_i \mid \rvz; \vtheta_d) ] \approx \frac{1}{k} \sum_{i=1}^n \sum_{j=1}^k \nabla_{\vtheta_e} \log q(\vz_{i,j} \mid \mX_i; \vtheta_e) \log p(\mX_i \mid \vz_{i,j}; \vtheta_d),
 \end{equation}
-where the $\vz_{i,j}$ are sampled from $q(\rvz \mid \mX_i; \vtheta_e)$. The problem with this approach is that, early in training, $p(\mX_i \mid \vz_{i,j}; \vtheta_d) \approx 0$ and hence $\log p(\mX_i \mid \vz_{i,j}; \vtheta_d)$ is negative and has large magnitude. This, combined with the fact that $\log q(\vz_{i,j} \mid \mX_i; \vtheta_e)$ can be either positive or negative, leads to  large variance in the gradient estimator. Reducing the variance implies using a large number of samples $m$ which in turn leads to an increased computational cost.
+where the $\vz_{i,j}$ are sampled from $q(\rvz \mid \mX_i; \vtheta_e)$ and $k$ is the number of samples. The problem with this approach is that, early in training, $p(\mX_i \mid \vz_{i,j}; \vtheta_d) \approx 0$ and hence $\log p(\mX_i \mid \vz_{i,j}; \vtheta_d)$ is negative and has large magnitude. This, combined with the fact that $\log q(\vz_{i,j} \mid \mX_i; \vtheta_e)$ can be either positive or negative, leads to  large variance in the gradient estimator. Reducing the variance implies using a large number of samples which in turn leads to an increased computational cost.
 
 The \emph{reparameterization trick} is an efficient alternative that overcomes this problem. Note that, if $\vepsilon \sim \mathcal{N}(\vepsilon; 0, \mI)$, then $\rvz \triangleq \vsigma_e \odot \vepsilon + \vmu_e \sim  \mathcal{N}(\rvz; \vmu_e, \mathrm{diag}(\vsigma_e)^2)$, where $\odot$ denotes the element-wise product. Thus,
 \begin{equation}
@@ -511,12 +511,12 @@ and therefore
 \begin{equation}
     \nabla_{\vtheta_e} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} [\log p(\mX_i \mid \rvz; \vtheta_d) ] = \sum_{i=1}^n \E_{\vepsilon \sim \mathcal{N}(\vepsilon; 0, \mI)} \left[\nabla_{\vtheta_e} \log p(\mX_i \mid \vsigma_e^{(i)} \odot \vepsilon + \vmu_e^{(i)}; \vtheta_d)\right],
 \end{equation}
-where $\vmu_e^{(i)}$ and $\vsigma_e^{(i)}$ are shorthand notations for $\vmu_e(\mX_i; \vtheta_e)$ and $\vsigma_e(\mX_i; \vtheta_e)$, respectively. Note that in this case there is no product of logarithms inside the expectation and so the high-variance problem is mitigated. The most common approach is again to use an empirical approximation with one sample, which yields:
+where $\vmu_e^{(i)}$ and $\vsigma_e^{(i)}$ are shorthand notations for $\vmu_e(\mX_i; \vtheta_e)$ and $\vsigma_e(\mX_i; \vtheta_e)$, respectively. In this case, there is no product of logarithms inside the expectation and so the high-variance problem is mitigated. The most common approach is again to use an empirical approximation with one sample, which yields:
 \begin{equation}
     \label{eq:vae_likelihood_encoder_grad}
     \nabla_{\vtheta_e} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} [\log p(\mX_i \mid \rvz; \vtheta_d) ] \approx \sum_{i=1}^n \nabla_{\vtheta_e} \log p(\mX_i \mid \vsigma_e^{(i)} \odot \vepsilon_i + \vmu_e^{(i)}; \vtheta_d),
 \end{equation}
-where $\vepsilon_i$ is sampled from a standard Gaussian.
+where the $\vepsilon_i$ are sampled from a standard Gaussian.
 
 \subsection{Loss function}
 Most deep learning libraries follow the principle that models are trained to minimize a user-defined loss function. In the case of the VAE, we have derived the (approximate) gradients directly. Finding an expression for the corresponding loss (i.e.\ for a loss function that yields the same gradients) is straightforward, but we write it for completeness and also because it provides useful insights into the behavior of the VAE.
