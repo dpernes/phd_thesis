@@ -96,7 +96,7 @@ Starting from a factorization of a joint distribution into conditionals, we may 
     \label{fig:complete_bayesian_net}
 \end{figure}
 
-Since the factorization in \eqref{eq:chain_rule} is general (i.e.\ it does not assume any conditional independencies between random variables), the Bayesian network in \Figref{fig:complete_bayesian_net} is said to be \emph{complete}. When conditional independencies are present, the graph becomes sparser. For instance, if, for all $j \geq 3$, $\rx^{(j)}$ is conditionally independent of $\rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-2)}$ given $\rx^{(j-1)}$, then $p(\rx^{(j)} \mid \rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-1)}) = p(\rx^{(j)} \mid \rx^{(j-1)})$ and thus the Bayesian network reduces to the \emph{chain} represented in \Figref{fig:chain_bayesian_net}. A sparser graph implies a more compact parametrization of the model. For instance, if each of the $m$ random variables takes values on a discrete set of size $s$, defining the joint distribution corresponding to a complete Bayesian network (\Figref{fig:complete_bayesian_net}) would require $s^{m}-1$ parameters. However, in the same setting, the joint distribution corresponding to a chain (\Figref{fig:chain_bayesian_net}) can be fully described using table conditional probability distributions (CPDs) with less than $s^2m$ parameters in total.
+Since the factorization in \eqref{eq:chain_rule} is general (i.e.\ it does not assume any conditional independencies between random variables), the Bayesian network in \Figref{fig:complete_bayesian_net} is said to be \emph{complete}. When conditional independencies are present, the graph becomes sparser. For instance, if, for all $j \geq 3$, $\rx^{(j)}$ is conditionally independent of $\rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-2)}$ given $\rx^{(j-1)}$, then $p(\rx^{(j)} \mid \rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-1)}) = p(\rx^{(j)} \mid \rx^{(j-1)})$ and thus the Bayesian network reduces to the \emph{chain} represented in \Figref{fig:chain_bayesian_net}. A sparser graph implies a more compact parameterization of the model. For instance, if each of the $m$ random variables takes values on a discrete set of size $s$, defining the joint distribution corresponding to a complete Bayesian network (\Figref{fig:complete_bayesian_net}) would require $s^{m}-1$ parameters. However, in the same setting, the joint distribution corresponding to a chain (\Figref{fig:chain_bayesian_net}) can be fully described using table conditional probability distributions (CPDs) with less than $s^2m$ parameters in total.
 
 \begin{figure}
     \centering
@@ -438,7 +438,7 @@ Suppose now that we want to learn a conditional distribution $p(\rmX \mid \rvz; 
     \label{eq:vae_likelihood}
     p(\rmX; \vtheta_d) = \int p(\rmX \mid \rvz; \vtheta_d) p(\rvz) \d \rvz.
 \end{equation}
-Therefore, in principle, this model can be trained using the maximum likelihood criterion and the EM algorithm. Note, however, that \eqref{eq:vae_likelihood} is the partition function of this model. The issue here is the marginalization over $\rvz$, which is intractable since one of the integrands is a neural network and $\rvz$ is usually high-dimensional. To overcome this issue, a parametric variational distribution $q(\rvz \mid \rmX; \vtheta_e)$ is introduced as a replacement for the true posterior $p(\rvz \mid \rmX; \vtheta_d)$. This variational distribution is itself implemented with a deep neural network. If the family of distributions parametrized by the network is rich enough, it will be able to provide a tight approximation of the true posterior and hence maximize the ELBO. Formally, the objective is:
+Therefore, in principle, this model can be trained using the maximum likelihood criterion and the EM algorithm. Note, however, that \eqref{eq:vae_likelihood} is the partition function of this model. The issue here is the marginalization over $\rvz$, which is intractable since one of the integrands is a neural network and $\rvz$ is usually high-dimensional. To overcome this issue, a parametric variational distribution $q(\rvz \mid \rmX; \vtheta_e)$ is introduced as a replacement for the true posterior $p(\rvz \mid \rmX; \vtheta_d)$. This variational distribution is itself implemented with a deep neural network. If the family of distributions parameterized by the network is rich enough, it will be able to provide a tight approximation of the true posterior and hence maximize the ELBO. Formally, the objective is:
 \begin{equation}
     \max_{\vtheta_e, \vtheta_d} \left\lbrace \mathrm{ELBO}(\vtheta_e, \vtheta_d) = \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[ \log \frac{p(\mX_i \mid \rvz; \vtheta_d)p(\rvz)}{q(\rvz \mid \mX_i; \vtheta_e)} \right] \right\rbrace.
 \end{equation}
@@ -467,6 +467,7 @@ Let us assume that $p(\rmX \mid \rvz; \vtheta_d)$ is as defined in \eqref{eq:gau
 \end{align}
 where the second equality is due to the linearity of expectations and the last one comes by plugging in the formula of the Gaussian density and discarding constant terms. This expression makes it clear that the decoder is trained to reconstruct the original image given its latent code by minimizing the $L^2$ distance between the original image and its reconstruction, just like a traditional (i.e.\ non-variational) autoencoder. Finally, the expectation in \eqref{eq:decoder_gradient} is replaced by its empirical approximation with one sample:
 \begin{align}
+    \label{eq:vae_decoder_grad}
     \nabla_{\vtheta_d} \mathrm{ELBO}(\vtheta_e, \vtheta_d) \approx -\frac{1}{2\sigma_d^2} \sum_{i=1}^n \nabla_{\vtheta_d} ||\mX_i - \vmu_d(\vz_i; \vtheta_d)||^2,
 \end{align}
 where the $\vz_i$ are sampled from $q(\rvz \mid \mX_i; \vtheta_e)$, which is Gaussian, so this process is computationally easy and efficient.
@@ -475,15 +476,16 @@ where the $\vz_i$ are sampled from $q(\rvz \mid \mX_i; \vtheta_e)$, which is Gau
 Finding the gradient of the ELBO with respect to the encoder parameters is not as easy since the distribution we are taking the expectation with respect to depends on the encoder parameters. Thus, the expectation and the gradient operator do not commute and we get:
 \begin{align}
     \nabla_{\vtheta_e} \mathrm{ELBO}(\vtheta_e, \vtheta_d) &= \nabla_{\vtheta_e} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[\log \frac{p(\mX_i \mid \rvz; \vtheta_d)p(\rvz)}{q(\rvz \mid \mX_i; \vtheta_e)} \right] \nonumber\\
-    &= \nabla_{\vtheta_e} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[\log p(\mX_i \mid \rvz; \vtheta_d) \right] - \nabla_{\vtheta_e} \sum_{i=1}^n \KL(q(\rvz \mid \mX_i; \vtheta_e) \Vert p(\rvz)) \label{eq:encoder_gradient},
+    &= \nabla_{\vtheta_e} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} \left[\log p(\mX_i \mid \rvz; \vtheta_d) \right] - \nabla_{\vtheta_e} \sum_{i=1}^n \KL(q(\rvz \mid \mX_i; \vtheta_e) \Vert p(\rvz)) \label{eq:vae_encoder_grad},
 \end{align}
 where the KL divergence is between two Gaussian distributions and hence can be computed analytically as:
 \begin{equation}
+    \label{eq:vae_kl}
     \KL(q(\rvz \mid \mX_i; \vtheta_e) \Vert p(\rvz)) = \sum_{j=1}^l \left({\evmu_j^{(i)}}^2 + {\evsigma_j^{(i)}}^2 -1 -2\log {\evsigma_j^{(i)}}\right),
 \end{equation}
-where $l$ is the dimension of the latent vector $\rvz$ and $\evmu_j^{(i)}$ and $\evsigma_j^{(i)}$ denote the $j$-th elements of the vectors $\vmu_e(\mX; \vtheta_e)$ and $\vsigma_e^2(\mX; \vtheta_e)$, respectively.
+where $l$ is the dimension of the latent vector $\rvz$ and $\evmu_j^{(i)}$ and $\evsigma_j^{(i)}$ denote the $j$-th elements of the vectors $\vmu_e(\mX_i; \vtheta_e)$ and $\vsigma_e(\mX_i; \vtheta_e)$, respectively.
 
-Now, all that remains is the computation of the gradient with respect to the first term in \eqref{eq:encoder_gradient}. Note that:
+Now, all that remains is the computation of the gradient with respect to the first term in \eqref{eq:vae_encoder_grad}. Note that:
 \begingroup
 \allowdisplaybreaks
 \begin{align}
@@ -497,14 +499,29 @@ where the third equality comes by applying the log derivative trick ($\nabla u =
 \begin{equation}
     \nabla_{\vtheta_e} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} [\log p(\mX_i \mid \rvz; \vtheta_d) ] \approx \frac{1}{m} \sum_{i=1}^n \sum_{j=1}^m \nabla_{\vtheta_e} \log q(\vz_{i,j} \mid \mX_i; \vtheta_e) \log p(\mX_i \mid \vz_{i,j}; \vtheta_d),
 \end{equation}
-where the $\vz_{i,j}$ are sampled from $q(\rvz \mid \mX_i; \vtheta_e)$. The problem with this approach is that, early in training, $p(\mX_i \mid \vz_{i,j}; \vtheta_d) \approx 0$ and hence $\log p(\mX_i \mid \vz_{i,j}; \vtheta_d)$ has a very large magnitude, leading to high variance in the estimator. This would imply using a large number of samples $m$ to reduce the variance which in turn would lead to an increased computational cost.
+where the $\vz_{i,j}$ are sampled from $q(\rvz \mid \mX_i; \vtheta_e)$. The problem with this approach is that, early in training, $p(\mX_i \mid \vz_{i,j}; \vtheta_d) \approx 0$ and hence $\log p(\mX_i \mid \vz_{i,j}; \vtheta_d)$ is negative and has a very large magnitude. This, combined with the fact that $\log q(\vz_{i,j} \mid \mX_i; \vtheta_e)$ can be either positive or negative, leads to a very large variance in the gradient estimator. Reducing the variance implies using a large number of samples $m$ which in turn leads to an increased computational cost.
 
-The emph{reparameterization trick} is an efficient alternative that overcomes this problem. Note that, if $\vepsilon \sim \mathcal{N}(\vepsilon; 0, \mI)$, then $\rvz \triangleq \vsigma_e \odot \vepsilon + \vmu_e \sim  \mathcal{N}(\rvz; \vmu_e, \mathrm{diag}(\vsigma_e)^2)$, where $\odot$ denotes the element-wise product. Thus,
+The \emph{reparameterization trick} is an efficient alternative that overcomes this problem. Note that, if $\vepsilon \sim \mathcal{N}(\vepsilon; 0, \mI)$, then $\rvz \triangleq \vsigma_e \odot \vepsilon + \vmu_e \sim  \mathcal{N}(\rvz; \vmu_e, \mathrm{diag}(\vsigma_e)^2)$, where $\odot$ denotes the element-wise product. Thus,
 \begin{equation}
     \E_{\rvz \sim q(\rvz \mid \rmX; \vtheta_e)} [\log p(\rmX \mid \rvz; \vtheta_d)] = \E_{\vepsilon \sim \mathcal{N}(\vepsilon; 0, \mI)} \left[\log p(\rmX \mid \vsigma_e \odot \vepsilon + \vmu_e; \vtheta_d) \right]
 \end{equation}
 and therefore
 \begin{equation}
-    \nabla_{\vtheta_e} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} [\log p(\mX_i \mid \rvz; \vtheta_d) ] = \sum_{i=1}^n \E_{\vepsilon \sim \mathcal{N}(\vepsilon; 0, \mI)} \left[\nabla_{\vtheta_e} \log p(\mX_i \mid \vsigma_e(\vtheta_e) \odot \vepsilon + \vmu_e(\vtheta_e); \vtheta_d)\right],
+    \nabla_{\vtheta_e} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} [\log p(\mX_i \mid \rvz; \vtheta_d) ] = \sum_{i=1}^n \E_{\vepsilon \sim \mathcal{N}(\vepsilon; 0, \mI)} \left[\nabla_{\vtheta_e} \log p(\mX_i \mid \vsigma_e^{(i)} \odot \vepsilon + \vmu_e^{(i)}; \vtheta_d)\right],
 \end{equation}
-where the dependency of $\vmu_e$ and $\vsigma_e$ on $\vtheta_e$ was written explicitly for clarity.
+where $\vmu_e^{(i)}$ and $\vsigma_e^{(i)}$ are shorthand notations for $\vmu_e(\mX_i; \vtheta_e)$ and $\vsigma_e(\mX_i; \vtheta_e)$, respectively. Note that in this case there is no product of logarithms inside the expectation and so the high-variance problem is mitigated. The most common approach is again to use an empirical approximation with one sample, which yields:
+\begin{equation}
+    \label{eq:vae_likelihood_encoder_grad}
+    \nabla_{\vtheta_e} \sum_{i=1}^n \E_{\rvz \sim q(\rvz \mid \mX_i; \vtheta_e)} [\log p(\mX_i \mid \rvz; \vtheta_d) ] \approx \sum_{i=1}^n \nabla_{\vtheta_e} \log p(\mX_i \mid \vsigma_e^{(i)} \odot \vepsilon_i + \vmu_e^{(i)}; \vtheta_d),
+\end{equation}
+where $\vepsilon_i$ is sampled from a standard Gaussian.
+
+\subsection{Loss function}
+Most deep learning libraries follow the principle that a model is trained to minimize a given loss function. In the case of the VAE, we have derived the (approximate) gradients directly. Finding an expression for the corresponding loss (i.e.\ for a loss function that yields the same gradients) is straightforward, but we write it for completeness and also because it provides useful insights into the behavior of the VAE.
+
+From equations \plaineqref{eq:vae_decoder_grad}, \plaineqref{eq:vae_encoder_grad}, and \plaineqref{eq:vae_likelihood_encoder_grad}, it should be clear that maximizing the ELBO is equivalent to the minimization of:
+\begin{equation}
+    \label{eq:vae_loss}
+    L_{\text{VAE}}(\vtheta_e, \vtheta_d) \triangleq \sum_{i=1}^n ||\mX_i - \vmu_d(\vz_i; \vtheta_d)||^2 + \lambda \sum_{i=1}^n \KL(q(\rvz \mid \mX_i; \vtheta_e) \Vert p(\rvz)),
+\end{equation}
+where $\vz_i \triangleq \vsigma_e^{(i)} \odot \vepsilon_i + \vmu_e^{(i)}$, $\vepsilon_i$ is sampled from a standard Gaussian, $\lambda = 2\sigma_d^2 > 0$ is a hyperparameter, and $\KL(q(\rvz \mid \mX_i; \vtheta_e) \Vert p(\rvz))$ is as written in \eqref{eq:vae_kl}. \Eqref{eq:vae_loss} shows that the VAE is trained to satisfy to two objectives: i) reconstructing the original samples and ii) approximating the distribution of latent codes to the prior $p(\rz)$, which is a standard Gaussian. If both are accomplished, new images $\mX$ can be generated efficiently by sampling a latent code $\vz$ from a standard Gaussian and performing a forward pass through de decoder, a procedure that corresponds to forward sampling in the chain $\rz \rightarrow \rmX$.

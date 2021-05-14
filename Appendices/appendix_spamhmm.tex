@@ -83,7 +83,7 @@ Now all that remains is the maximization of this lower bound with respect to $\T
 \end{align}
 where $\Lambda \triangleq \bigcup_{h,y,z} \{\mu_y, \nu^{(z)}_h, \varrho_z\}$ is the set of all Lagrange multipliers. Since $R(\gG; \Theta)$ only depends on the mixture coefficients $\valpha^{(y)}$, the update equations for all parameters except those are exactly the same as in \Algref{alg:mhmm}.
 
-Unfortunately, setting $\nabla L = 0$ yields a system of equations that is non-linear in $\valpha^{(y)}$ and no analytical solution can be found. However, we can resort to the reparametrization defined in \eqref{eq:spamhmm_normalization} and update the new parameters $\vbeta^{(y)}$ by performing gradient ascent over the unconstrained lower bound. Thus, computing the required gradient concludes the derivation of the algorithm.
+Unfortunately, setting $\nabla L = 0$ yields a system of equations that is non-linear in $\valpha^{(y)}$ and no analytical solution can be found. However, we can resort to the reparameterization defined in \eqref{eq:spamhmm_normalization} and update the new parameters $\vbeta^{(y)}$ by performing gradient ascent over the unconstrained lower bound. Thus, computing the required gradient concludes the derivation of the algorithm.
 
 Now we only care about the dependency of the ELBO on the mixture coefficients, so, following the same idea as in \eqref{eq:mhmm_elbo_gaussian_params}, we can write:
 \begin{align}
