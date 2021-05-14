@@ -410,7 +410,7 @@ In the analysis regarding the wireless simulation data, we showed how the SOHMMM
 
 \subsection{Overview}
 
-Inspired by the formulation of \eqref{eq:sparse_coding}, we propose to model the generative distribution of the data coming from each of the $k$ nodes of a network as a sparse mixture obtained from a dictionary of generative distributions. Specifically, we shall model the distribution for each node as a sparse mixture over a `large' shared dictionary of HMMs, where each HMM corresponds to an individual atom from the dictionary.
+Inspired by the formulation of \eqref{eq:sparse_coding}, we propose to model the generative distribution of the data coming from each of the $k$ nodes of a network as a sparse mixture obtained from a dictionary of generative distributions. Specifically, we shall model the distribution for each node as a sparse mixture over a large shared dictionary of HMMs, where each HMM corresponds to an individual atom from the dictionary.
 The field knowledge about the similarities between nodes is summarized in an affinity matrix. The objective function of the learning process promotes reusing HMM atoms between similar nodes.
 We now formalize these ideas.
 
@@ -811,11 +811,11 @@ Although very different in terms of their internal structure, all aforementioned
 \subsection{Offline, centralized learning}
 \label{sec:offline_learning}
 
-It is reasonable to assume that an initial dataset composed of sequences from all entities may be gathered and used to learn an initial model for all entities. This model could then be refined online in each instance using a distributed algorithm. Hence, it makes sense to derive a algorithm to learn the meta-model defined by \eqref{eq:generalized_mixture} in an offline and centralized setting. This is the idea we followed in \Secref{sec:spamhmm}, which solves this problem for the particular of the SpaMHMM model using EM. This algorithm is based on the alternated maximization over variational densities $q(\rvz)$ and model parameters of an evidence lower bound (ELBO):
+It is reasonable to assume that an initial dataset composed of sequences from all entities may be gathered and used to learn an initial model for all entities. This model could then be refined online in each instance using a distributed algorithm. Hence, it makes sense to derive a algorithm to learn the meta-model defined by \eqref{eq:generalized_mixture} in an offline and centralized setting. This is the idea we followed in \Secref{sec:spamhmm}, which solves this problem for the particular of the SpaMHMM model using EM. This algorithm is based on the alternated maximization over variational densities $q(\rvz)$ and model parameters of the evidence lower bound:
 \begin{equation}
-    \log p(\rmX \mid \ry) \geq \E_{\rvz \sim q(\rvz)} \left[\log p(\rmX, \rvz \mid \ry) \right]  - \E_{\rvz \sim q(\rvz)} \left[\log q(\rvz)\right] \triangleq \mathrm{ELBO}.
+    \log p(\rmX \mid \ry) \geq \E_{\rvz \sim q(\rvz)} \left[\log p(\rmX, \rvz \mid \ry) \right]  - \E_{\rvz \sim q(\rvz)} \left[\log q(\rvz)\right] = \mathrm{ELBO}.
 \end{equation}
-For fixed model parameters, maximization of the ELBO with respect to $q(\rvz)$ is attained when this distribution matches the true posterior $p(\rvz \mid \rmX,\ry)$. For the case of SpaMHMM, computing this posterior is a tractable problem. When this is not the case, some options are constraining the variational density to have a simpler, factorizable form (e.g.\ mean-field approximation, \cite{Blei2003}) or approximating the posterior with a parametric model, like a deep neural network (e.g.\ variational auto-encoders \cite{Kingma2013}).
+For fixed model parameters, maximization of the ELBO with respect to $q(\rvz)$ is attained when this distribution matches the true posterior $p(\rvz \mid \rmX,\ry)$. For the case of SpaMHMM, computing this posterior is a tractable problem. When this is not the case, some options are constraining the variational density to have a simpler, factorizable form (e.g.\ mean-field approximation \cite{Blei2003}) or approximating the posterior with a parametric model, like a deep neural network (e.g.\ variational auto-encoders \cite{Kingma2013}).
 
 In any of those cases, leveraging the prior contextual information represented by the graph $\gG$ through the introduction of a regularizer term like in \eqref{eq:spamhmm_objective} poses no significant additional difficulties to the optimization algorithm.
 
