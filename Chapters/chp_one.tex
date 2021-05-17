@@ -280,7 +280,7 @@ The structure of the graph in \Figref{fig:hmm_bayesian_net} corresponds to the f
 \begin{equation}
     p(\rx^{(1)},\rx^{(2)},\dots,\rx^{(T)},\rh^{(1)},\rh^{(2)},\dots,\rh^{(t)}) = p(\rh^{(1)}) p(x^{(1)} \mid h^{(1)}) \prod_{t=2}^T p(h^{(t)} \mid h^{(t-1)}) p(x^{(t)} \mid h^{(t)})
 \end{equation}
-Here, $\rx^{(1)},\rx^{(2)},\dots,\rx^{(T)}$ is the sequence of \emph{observations} and $\rh^{(1)},\rh^{(2)},\dots,\rh^{(T)}$ is the sequence of \emph{hidden states}.\footnote{The word \emph{hidden} refers to the fact that the states are usually not observed in the training data.} Observations can be either discrete or continuous, while hidden states are usually discrete, although continuous state versions exist (\citet{Turin2004}).
+Here, $\rx^{(1)},\rx^{(2)},\dots,\rx^{(T)}$ is the sequence of \emph{observations} and $\rh^{(1)},\rh^{(2)},\dots,\rh^{(T)}$ is the sequence of \emph{hidden states}.\footnote{The word \emph{hidden} refers to the fact that the states are usually not observed in the training data.} Observations can be either discrete or continuous, while hidden states are usually discrete, although continuous-state versions exist (\citet{Turin2004}).
 
 By analyzing d-separation in \Figref{fig:hmm_bayesian_net}, two fundamental assumptions of the HMM are revealed:
 \begin{itemize}
@@ -381,7 +381,7 @@ We now provide the E-step and M-step update equations applicable to any Bayesian
 \end{equation}
 where $\theta_{w \mid \vv}$ denotes the table entry corresponding to the probability $p(\rw=w \mid \parents_\gG(\rw)=\vv)$. The set $\Theta$ is the union of all these parameters.
 
-\subsection{EM for the discrete emission HMM}
+\subsection{EM for the discrete-emission HMM}
 \label{sec:em_hmm}
 An example of a table CPD model with latent variables is the HMM with discrete emission distribution. Under this setting, the hidden state $\rh^{(t)}$ and the observation $\rx^{(t)}$ both take values in discrete and finite sets. Thus, we can use \twoeqrefs{eq:joint_suf_stat}{eq:marginal_suf_stat} together with the structure of the Bayesian network in \Figref{fig:hmm_bayesian_net} and \Algref{alg:forward_backward} to obtain the EM training procedure for this model, which is summarized in \Algref{alg:baum_welch}.
 
@@ -457,6 +457,7 @@ where, in the latter, $\vmu_e(\mX; \vtheta_e)$ and $\vsigma_e^2(\mX; \vtheta_e)$
 where $\sigma_d^2 > 0$ is a hyperparameter. Note that, despite all distributions are simple Gaussians, the marginal density $p(\rmX)$ is then a continuous mixture of Gaussians, which is an expressive model.
 
 \subsection{Gradient of the decoder}
+\label{sec:vae_decoder_grad}
 As with most deep learning models, the VAE is usually trained using backpropagation and some form of stochastic gradient descent. For this purpose, the gradients of the ELBO with respect to both the decoder parameters $\vtheta_d$ and encoder parameters $\vtheta_e$ must be computable using automatic differentiation. As we see next, computing the former poses no significant difficulties.
 
 Let us assume that $p(\rmX \mid \rvz; \vtheta_d)$ is as defined in \eqref{eq:gaussian_vae} since this is the version that will be considered later in this document. Under this setting,
@@ -503,7 +504,7 @@ where the third equality comes by applying the log derivative trick ($\nabla u =
 \end{equation}
 where the $\vz_{i,j}$ are sampled from $q(\rvz \mid \mX_i; \vtheta_e)$ and $k$ is the number of samples. The problem with this approach is that, early in training, $p(\mX_i \mid \vz_{i,j}; \vtheta_d) \approx 0$ and hence $\log p(\mX_i \mid \vz_{i,j}; \vtheta_d)$ is negative and has large magnitude. This, combined with the fact that $\log q(\vz_{i,j} \mid \mX_i; \vtheta_e)$ can be either positive or negative, leads to  large variance in the gradient estimator. Reducing the variance implies using a large number of samples which in turn leads to an increased computational cost.
 
-The \emph{reparameterization trick} is an efficient alternative that overcomes this problem. Note that, if $\vepsilon \sim \mathcal{N}(\vepsilon; 0, \mI)$, then $\rvz \triangleq \vsigma_e \odot \vepsilon + \vmu_e \sim  \mathcal{N}(\rvz; \vmu_e, \mathrm{diag}(\vsigma_e)^2)$, where $\odot$ denotes the element-wise product. Thus,
+The \emph{reparameterization trick} is an efficient solution to this problem. Note that, if $\vepsilon \sim \mathcal{N}(\vepsilon; 0, \mI)$, then $\rvz \triangleq \vsigma_e \odot \vepsilon + \vmu_e \sim  \mathcal{N}(\rvz; \vmu_e, \mathrm{diag}(\vsigma_e)^2)$, where $\odot$ denotes the element-wise product. Thus,
 \begin{equation}
     \E_{\rvz \sim q(\rvz \mid \rmX; \vtheta_e)} [\log p(\rmX \mid \rvz; \vtheta_d)] = \E_{\vepsilon \sim \mathcal{N}(\vepsilon; 0, \mI)} \left[\log p(\rmX \mid \vsigma_e \odot \vepsilon + \vmu_e; \vtheta_d) \right]
 \end{equation}

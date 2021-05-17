@@ -53,7 +53,7 @@ The intra and inter-correlations lead to a joint sparse model. An interesting sc
 
 Our contributions in this chapter are summarized as follows: i) we extend an existing model based on a combination of self-organizing maps (SOM) and HMMs and evaluate it in the context of anomaly detection in Wi-Fi networks (\Secref{sec:sohmmm}); ii) we present a novel algorithm that learns an entity-dependent model based on a mixture of shared HMMs (\Secref{sec:spamhmm}); iii) we discuss how the two models intersect each other and, importantly, how the latter can be viewed as a particular case of a general family of generative models for distributed data (\Secref{sec:summary}).
 
-\section{Hidden Markov Models on a Self-Organizing Map for Anomaly Detection in 802.11 Wireless Networks}
+\section{Hidden Markov models on a self-organizing map for anomaly detection in 802.11 wireless networks}
 \label{sec:sohmmm}
 
 \subsection{Introduction}
@@ -85,7 +85,7 @@ Additionally, few efforts exist in the literature that exploit the SOM and HMM f
 
 In this work, we intend to benefit from the collaboration of these two techniques (SOM and HMM), as proposed by \citet{Ferles2008}, to extend previous anomaly-detection frameworks applying only HMM (\citet{Anisa2014,Anisa2017,Anisa2019}).
 
-\subsection{The Self-Organizing Hidden Markov Model Map for Discrete Observations}
+\subsection{The self-organizing hidden Markov model map for discrete observations}
 \label{sec:sohmmm_background}
 
 We start by reviewing SOHMMM as initially formulated by \citet{Ferles2008}. This model defines a mapping between an observed sequence $\rvx \triangleq \left(\rx^{(1)}, \dots, \rx^{(T)} \right)$ and a two-dimensional lattice of HMMs, which constitute its atoms. Each observation is assumed to be discrete, so $\rvx^{(t)} \in \{1,\dots,o\}$, being $o$ the size of the dictionary of observations. The topology of a 2-D lattice of $m$ HMMs is defined by a function $\vr: \{1, \dots, m\} \mapsto \mathbb{R}^2$, mapping the indices of the $m$ nodes to the respective coordinates in the plane. Given the lattice topology, a neighborhood function $v: \{1, \dots, m\}^2 \mapsto [0, \infty)$ can be defined mapping two nodes in the lattice to a scalar representing how close the two atoms are. In SOHMMM, $v$ is a Gaussian kernel:
@@ -172,7 +172,7 @@ The full algorithm, comprising the update equations for each parameter, is prese
     \end{algorithmic}
 \end{algorithm}
 
-\subsection{Extending SOHMMM to Gaussian Observations}
+\subsection{Extending SOHMMM to Gaussian observations}
 \label{sec:sohmmm_gaussian}
 
 For the purpose of modeling AP usage data, we should consider a slightly different setting where each observation $\rvx^{(t)}$ takes values on the $d$-dimensional plane $\sR^d$, rather than being drawn from a discrete and finite set. Hence, now, sequences $\rmX \triangleq \left(\rvx^{(1)}, \dots, \rvx^{(T)} \right)$ take values on $\sR^{d \times T}$. A sensible option, which may be useful in a broad range of applications, is considering the case of multivariate Gaussian emissions, i.e.\ $\rvx^{(t)} \mid (\rh^{(t)}, \rz) \sim \mathcal{N}\left(\vx; \vmu^{(z)}_h, \mSigma^{(z)}_h\right)$, where $\vmu^{(z)}_h \in \sR^d$ is the mean and $\mSigma^{(z)}_h \in \sR^{d \times d}$ is the covariance of the Gaussian component corresponding to state $h$ in the lattice node $z$. These means and covariances replace the emission probability matrices $\mB^{(z)}$ defined for the case of discrete observations.
@@ -252,7 +252,7 @@ Given \twoeqrefs{eq:sohmmm_grad_mu}{eq:sohmmm_grad_s}, it is straightforward to 
 \label{sec:sohmmm_experiments}
 In this section, we consider two types of experiments to analyze the capabilities of the SOHMMM algorithm for nonlinear projection and unsupervised clustering. We validate first the accuracy and convergence of the SOHMMM using \textit{synthetic data}, and then explore its significance and efficiency in anomaly detection using \textit{wireless simulation data}.
 
-\subsubsection{Synthetic Data}
+\subsubsection{Synthetic data}
 \label{sec:sohmmm_experiment_synth}
 
 In this experiment, we generate observations from two reference HMMs, with one-third of the observations coming from one of the models, and the remaining two-thirds from the other reference model. Then, we train a SOHMMM with six nodes, randomly initialized, with the data from the reference models. It is expected that the SOHMMM nodes would converge to the reference models, with the majority of nodes grouping around the dominant reference model. The SOHMMM nodes (HMMs initialized randomly) are organized in a $2 \times 3$ rectangular lattice, as displayed in \Figref{fig:sohmmm_lattice}. This figure shows the positions and connections of the HMMs. The Euclidean distance between adjacent HMMs is set to $1$ and the other distances are computed accordingly. For example, the distance between \textit{hmm0} and \textit{hmm4} is $2$, and between \textit{hmm0} and \textit{hmm3} is $\sqrt{2}$.
@@ -299,7 +299,7 @@ We repeated the experiment for various sequence lengths and different types of n
     \label{fig:sohmmm_dist_neig}
 \end{figure}
 
-\subsubsection{Wireless Simulation Data}
+\subsubsection{Wireless simulation data}
 \label{sec:sohmmm_experiment_wifi}
 
 We implemented a set of wireless simulations using the OMNeT++ \cite{omnetpp} simulator together with the INET framework \cite{inet}. OMNeT++ is a C++-based discrete-event simulator (DES) for modeling communication networks, multiprocessors, and other distributed or parallel systems.
@@ -405,7 +405,7 @@ The experimental analysis investigated two main data sets: \textit{synthetic dat
 
 In the analysis regarding the wireless simulation data, we showed how the SOHMMM algorithm improved the anomaly-detection accuracy and sensitivity, compared to the HMM-UBM and Z-SOHMMM techniques in the AP shutdown/halt, AP overload, noise, and flash-crowd anomalous scenarios. We further investigated the combination of several anomalies in one observation sequence as miscellaneous anomalies and showed that the SOHMMM was capable of detecting contrasting anomalous cases while the HMM-UBM was not.
 
-\section{SpaMHMM: Sparse Mixture of Hidden Markov Models for Graph Connected Entities}
+\section{SpaMHMM: sparse mixture of hidden Markov Models for graph-connected entities}
 \label{sec:spamhmm}
 
 \subsection{Overview}
@@ -646,7 +646,7 @@ The bad performance of k-HMM likely results mostly from the small amount of data
 
 \subsection{Human motion forecasting}
 \label{sec:h36m}
-The human body is constituted by several interdependent parts, which interact as a whole producing sensible global motion patterns. These patterns may correspond to multiple activities like walking, eating, etc. Here, we use our model to make short-time prediction of sequences of human joint positions, represented as motion capture (mocap) data. The current state of the art methodologies use architectures based on deep recurrent neural networks (RNNs), achieving remarkable results both in short-time prediction (\citet{Fragkiadaki2015, Martinez2017}) and in long-term motion generation (\citet{Jain2016, Pavllo2018}).
+The human body is constituted by several interdependent parts, which interact as a whole producing sensible global motion patterns. These patterns may correspond to multiple activities like walking, eating, etc. Here, we use our model to make short-time prediction of sequences of human joint positions, represented as motion capture (mocap) data. The current state-of-the-art methodologies use architectures based on deep recurrent neural networks (RNNs), achieving remarkable results both in short-time prediction (\citet{Fragkiadaki2015, Martinez2017}) and in long-term motion generation (\citet{Jain2016, Pavllo2018}).
 
 Our experiments were conducted on the Human3.6M dataset from \citet{Ionescu2011, Ionescu2014}, consisting of mocap data from 7 subjects performing 15 distinct actions. In this experiment, we have considered only 4 of those actions, namely ``walking'', ``eating'', ``smoking'' and ``discussion''. There, the human skeleton is represented with 32 joints whose position is recorded at 50 Hz. We build our 32x32-dimensional symmetric matrix $\mG$ representing the graph $\gG$ in the following sensible manner: $G_{y,y'}=1$, if there is an actual skeleton connection between joints $y$ and $y'$ (e.g.\  the elbow joint is connected to the wrist joint by the forearm); $G_{y,y}=1$, if joints $y$ and $y'$ are symmetric (e.g.\  left and right elbows); $G_{y,y'}=0$, otherwise.
 
@@ -772,7 +772,7 @@ After a detailed presentation of SOHMMM and SpaMHMM algorithms in sections \ref{
 The similarities between SOHMMM and SpaMHMM go beyond the obvious fact that both models use the hidden Markov model as their core component. It should be noted that \twoeqrefs{eq:sohmmm_energy}{eq:spamhmm_density}, which govern the learning dynamics of these models, are both structurally similar to \eqref{eq:sparse_coding} and, therefore, similar to each other. Despite the fact that the former is an energy function and the latter is a proper density, the SOHMMM energy \plaineqref{eq:sohmmm_energy} could also be transformed into a density by normalization:
 \begin{equation}
     \label{eq:sohmmm_normalized}
-    p(\rmX; \Theta) = \frac{E(\rmX; \Theta)}{Z(\Theta)}, \quad \text{where} \quad Z(\Theta) = \int E(\rmX; \Theta) \d\rmX.
+    p(\rmX; \Theta) = \frac{E(\rmX; \Theta)}{\int E(\rmX; \Theta) \d\rmX}.
 \end{equation}
 This observation makes it clear that, in the learning stage, SOHMMM can also be regarded as a mixture of HMMs.
 
