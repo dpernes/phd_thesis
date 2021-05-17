@@ -704,7 +704,7 @@ where $\tilde{y} \triangleq \argmax_{\ry \in \gY} p(\ry \mid \vx; \vtheta_g, \vt
 \begin{equation}
     \min_{\valpha \in \Delta, \vtheta_g, \vtheta_h}\max_{\vtheta_d} \Big\{ L \triangleq L_\text{class}(\valpha, \vtheta_g, \vtheta_h) + \mu_c \gL_\text{cons}(\vtheta_g, \vtheta_h) - \mu_d \gL_\text{disc}(\valpha, \vtheta_g, \vtheta_d) + \mu_s ||\valpha||_2^2 \Big\},
 \end{equation}
-where $\mu_c > 0$ controls the relative weight of the consistency loss. A full schematic of our model is provided in Appendix \ref{sec:model_overview}.\todo{Maybe add something about the causal interpretation of this heuristic}
+where $\mu_c > 0$ controls the relative weight of the consistency loss. A full schematic of our model is provided in Appendix \ref{sec:model_overview}.
 
 It remains to discuss how to build the transformation $\omega$ in such a way that it is strong and diverse enough while satisfying the constraint of being label-preserving. This is essentially an application-dependent problem, though. For vision applications, there are multiple simple label-preserving transformations (e.g.\ translation, rotation, sharpness enhancement, etc.) that can be applied in a pipeline and, as consequence, the transformed image ends up being a strongly distorted version of the original one. This is the idea followed, for instance, in RandAugment (\citet{Cubuk2019}), which we use here. RandAugment receives as input parameters the magnitude and the number of transformations to be applied and randomly chooses the transformations to apply to each sample in the mini-batch. Here, as \citet{Sohn2020} did, we choose the number and magnitude of the transformations uniformly at random for each mini-batch.
 
