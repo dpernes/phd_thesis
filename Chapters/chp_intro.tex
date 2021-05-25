@@ -1,0 +1,60 @@
+% Chapter Template
+
+% Main chapter title
+%\chapter[toc version]{doc version}
+\chapter{Introduction}
+
+% Short version of the title for the header
+%\chaptermark{version for header}
+
+% Chapter Label
+% For referencing this chapter elsewhere, use \ref{ChapterTemplate}
+\label{chp:intro}
+
+% Write text in here
+% Use \subsection and \subsubsection to organize text
+
+\section{Motivation, objectives, and contributions}
+
+We live in the era of big data and most of us are an active part of that process, producing a continuous, heterogeneous, and multi-modal stream. It is estimated that almost 5 petabytes of internet data are created every single minute in the US only \cite{Forbes}, which include more than 250,000 Instagram stories being uploaded, 4,500,000 YouTube videos being watched, and 500,000 tweets being posted \cite{DOMO}. Each internet user and, more generally, each data source has its own characteristics, and thus correspond to a different \emph{entity}, whose data distribution we may want to learn. For this purpose, it is useful to account for the similarities and correlations that exist between different entities, being able to transfer knowledge from an entity's model to another.
+
+Nonetheless, most machine learning theory and algorithms assume that the data used at training and inference time are independent and identically distributed (i.i.d.). This assumption has proven successful and is a sensible one in many practical applications: the outstanding results achieved by deep learning in recent years have
+been largely driven by supervised learning with large-scale
+annotated datasets like ImageNet (\citet{Deng2009}), where the i.i.d.\ assumption holds. However, one can think of a wide variety of scenarios where this assumption is violated. Will an image classifier trained with photo images be accurate when asked to classify sketch images? Is it possible to exploit similarities between neighboring access points in a Wi-Fi infrastructure to build a better model for the traffic on each specific access point? Should we expect that an automatic sign language recognition system performs well when tested on unseen signers? All these questions, although motivated by substantially different applications, relate to the problem of learning from a particular kind of non-i.i.d.\ data, which we refer to as \emph{multi-entity data}.
+
+In multi-entity data, the i.i.d.\ setting is assumed to hold only locally, i.e.\ when each entity is considered separately. When the data from multiple entities are aggregated, the assumption is violated as a result of the distribution shift between the entities. An apparent solution to this problem would be to consider the data stratified per entity and apply conventional algorithms that rely on the i.i.d.\ assumption. However, such a solution might be greatly inconvenient or even impossible. Consider, for instance, the situation where the number of entities is large but the amount of data for each entity is relatively scarce. In this situation, a separate model for each entity would likely exhibit high variance and hence have a bad performance, due to the small amount of data it had been trained on. Moreover, if there is no annotated data available for some of the entities or if they are not observed at all in the training data, following the aforementioned procedure is infeasible.
+
+These observations motivate the need for algorithms specially designed to learn from multi-entity data, which will be the main focus of this thesis. We shall address three main scenarios and each of them will correspond to a chapter of this document. First, we consider the setting where all entities are observed in the training data and each of them produces a continuous stream whose generative distribution we want to model. The entities are assumed to have some degree of interaction and similarity between them, which are exploited by the proposed learning algorithms. In the following chapter, we address the problem of learning a model for a specific target entity for which no annotated data is available at training time, by using labeled data from the remaining entities and unlabeled data from the target. Finally, we drop the assumption that the target entity is known at training time and focus on the problem of learning a model that generalizes well to new, unseen entities.
+
+The remainder of this document is organized into the following chapters:
+\begin{itemize}
+    \item Chapter \ref{chp:background} -- Background: The main algorithms used in this thesis and the theory that supports them are reviewed and explained.
+    \item Chapter \ref{chp:networked_data_streams} -- Networked data streams: The problem of modeling the generative distribution of multi-entity data streams is considered and two algorithms are proposed to address it.
+    \item Chapter \ref{chp:domain_adaptation} -- Multi-source domain adaptation: The problem of learning a model for a specific target entity is formalized. We formulate and discuss several possible deep neural network architectures for object counting in videos and we present a novel general algorithm for multi-source domain adaptation.
+    \item Chapter \ref{chp:domain_generalization} -- Domain generalization: The assumption that the target entity is known at training time is dropped and two novel algorithms for this setting are presented. Most parts of this chapter are motivated by the problem of automatic sign language recognition, where the model performance is desirably signer-independent.
+    \item Chapter \ref{chp:conclusion} -- Conclusion: The thesis is concluded with some final remarks and observations.
+\end{itemize}
+Additionally, we include three appendix chapters. These provide supplementary material for some sections in each chapter and the reader will be referred to them whenever applicable. This material includes mathematical proofs and derivations as well as further details and experimental results that complement those provided in the main document and support some of the conclusions derived therein.
+
+\section{List of publications}
+The research work conducted by the Ph.D.\ candidate and author of this thesis resulted in the publications listed below.
+
+\subsection{International journal papers}
+\begin{itemize}
+    \item \underline{D. Pernes$^*$}, K. Fernandes$^*$, and J. S. Cardoso, “Directional support vectormachines,” Applied Sciences, vol. 9, no. 4, 2019. [unrelated contribution]
+    \item P. M. Ferreira$^*$, \underline{D. Pernes$^*$}, A. Rebelo, and J. S. Cardoso, “DeSIRe: Deep signer-invariant representations for sign language recognition,” IEEE Transactions on Systems, Man, and Cybernetics: Systems, 2019.
+    \item A. Allahdadi, \underline{D. Pernes}, J. S. Cardoso, and R. Morla, “Hidden Markov models ona self-organizing map for anomaly detection in 802.11 wireless networks,” NeuralComputing and Applications, 2021.
+    \item P. M. Ferreira, \underline{D. Pernes}, A. Rebelo, and J. S. Cardoso, “Signer-independent sign language recognition with adversarial neural networks,” International Journal of Machine Learning and Computing, vol. 11, no. 2, 2021.
+    \item \underline{D. Pernes} and J. S. Cardoso, “Tackling unsupervised multi-source domain adaptation with optimism and consistency,” Expert Systems With Applications\todo{Should I cite the arXiv version instead?}, 2021. [submitted, waiting for decision]
+\end{itemize}
+\subsection{International conference papers}
+\begin{itemize}
+    \item \underline{D. Pernes} and J. S. Cardoso, “SpaMHMM: Sparse mixture of hidden Markov models for graph connected entities,” in 2019 International Joint Conference on Neural Networks (IJCNN), IEEE 2019.
+    \item P. M. Ferreira, A. F. Sequeira, \underline{D. Pernes}, A. Rebelo, and J. S. Cardoso, “Adversariallearning for a robust iris presentation attack detection method against unseen attackpresentations,” in 2019 International Conference of the Biometrics Special Interest Group
+    (BIOSIG), IEEE 2019.
+    \item P. M. Ferreira$^*$, \underline{D. Pernes$^*$}, A. Rebelo, and J. S. Cardoso, “Learning signer-invariant representations with adversarial training,” in Twelfth International Conference on Machine Vision (ICMV 2019), vol. 11433. International Society for Optics and Photonics, 2020.
+    \item J. A. Pereira, A. F. Sequeira, \underline{D. Pernes}, and J. S. Cardoso, “A robust fingerprint presentation attack detection method against unseen attacks through adversarial learning,” in 2020 International Conference of the Biometrics Special Interest Group
+    (BIOSIG), IEEE 2020.
+\end{itemize}
+\vspace{11pt}
+$^*$ equal contribution
