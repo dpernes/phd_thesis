@@ -15,6 +15,14 @@
 % Use \subsection and \subsubsection to organize text
 
 \section{Summary of contributions}
-This thesis addressed the problem of multi-entity and multi-domain learning under various settings, motivated by a wide variety of applications and using multiple data modalities, from Wi-Fi data streams to video.
+This thesis addressed the problem of multi-entity and multi-domain learning under various settings, motivated by a wide variety of applications and using multiple data modalities, from Wi-Fi data streams to video. Its outcomes have been published in international conference and journals and, in many cases, benefited from joint efforts with other members of our research group at INESC TEC. These collaborations enhanced the focus of this work on more application-oriented topics which further demonstrate the practical relevance of multi-entity learning. Our contributions are summarized as follows:
+\begin{itemize}
+    \item We showed how the self-organizing hidden Markov model map (\Secref{sec:sohmmm}) and its learning algorithm could be generalized to other types of data. In particular, we demonstrated the effectiveness of this approach in the problem of anomaly detection on Wi-Fi networks with multiple access points.
+    \item We presented the sparse mixture of hidden Markov models (\Secref{sec:spamhmm}) as a more flexible, general, and expressive model to learn the generative distribution of multi-entity data streams. Unlike SOHMMM, SpaMHMM learns a many-to-many relationship between network entities and atoms in the dictionary. We have also shown how to incorporate prior knowledge about inter-entity similarity into the learning algorithm. The model was experimentally validated in different applications, confirming its effectiveness and versatility.
+    \item We discussed how the SpaMHMM framework could be generalized (\Secref{sec:generalizing_spamhmm}), showing that this model is a particular realization of a broad family that can be used to learn the generative distribution of multi-entity streams. Just like SpaMHMM, this meta-model comprises an entity-dependent latent distribution and a shared conditional distribution of observations given latent codes.
+    \item We then started addressing out-of-distribution generalization in the context of multi-source domain adaptation. A deep neural network for multi-source domain adaptation and another one for object counting in videos were combined in several different and meaningful ways (\Secref{sec:da_sensors}). Their performance was then compared in two different tasks related to object counting in videos captured by multiple cameras.
+    \item A novel model for unsupervised multi-source domain adaptation was then proposed (\Secref{sec:modafm}). This model overcomes some of the major limitations of previous state-of-the-art approaches, namely the overly pessimistic weighting of source domains and the curse of domain-invariant representations. The proposed approach beats the state of the art in most benchmark datasets for multi-source domain adaptation.
+    \item
+\end{itemize}
 
 \section{Future work}

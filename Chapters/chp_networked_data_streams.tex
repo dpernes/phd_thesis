@@ -781,6 +781,7 @@ However, major differences arise when we examine how the two models associate en
 Another apparent difference between the two models is the fact that SOHMMM was conceived to be learned online and SpaMHMM was presented with an offline learning algorithm. These were mere design choices, though. For instance, it is straightforward to replace SOHMMM stochastic gradient descent (SGD) algorithm with a batch version and SGD for SpaMHMM could also be derived following the same principles that were used in its derivation for SOHMMM.
 
 \subsection{Generalizing SpaMHMM}
+\label{sec:generalizing_spamhmm}
 
 Two obvious limitations of SpaMHMM are its inherent dependency on hidden Markov models, which have limited expressiveness, and the fact that its learning algorithm was conceived to an offline and non-distributed setting. In this section, we discuss how these two drawbacks could be overcome by an extended and generalized framework, of which SpaMHMM is a particular case. Specifically, we consider again the setting where each entity $\ry$ in a set $\gY$ produces sequences $\rmX = \left(\rvx^{(1)}, ...,\rvx^{(T)} \right)$. The prior knowledge about the pairwise affinity degrees between entities in $\gY$ at time $t$ is summarized in an undirected weighted graph $\gG$, where each entity corresponds to a graph node. The ultimate goal is to find the distribution of the observed sequences given the corresponding node, that is, to model the generative distribution $p(\rmX \mid \ry)$. For this purpose, we shall consider models of the form:
 \begin{equation}
