@@ -380,7 +380,7 @@ In every experiment, assume we have $k+1$ domains $\gD_1, \gD_2,...,\gD_{k+1}$. 
 
 For each dataset, we ran a total of $5$ experiments for the DA models, where we varied the value of hyperparameter $\mu_d$ in the range $[10^{-5}, 10^{-1}]$. Recall that $\mu_d$ controls the weight to give to the domain discrimination loss, relative to the task execution loss.
 
-In all experiments, we train the model for $50$ epochs, using Adam optimizer (\citet{Kingma2014}) with a learning rate of $10^{-4}$. The adopted evaluation metric is the Mean Absolute Error (MAE) between the predicted object count and the ground truth for each frame.
+In all experiments, we train the model for $50$ epochs, using Adam optimizer (\citet{Kingma2014}) with a learning rate of $10^{-4}$. The adopted evaluation metric is the mean absolute error (MAE) between the predicted object count and the ground truth for each frame.
 
 \subsubsection{UCSDPeds dataset}
 \label{sec:da_sensors_ucsdpeds}

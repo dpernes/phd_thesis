@@ -13,27 +13,12 @@
 %-------------------------------------------------------------------------
 \begin{acknowledgements}
 
-Acknowledge ALL the people!
+Esta tese foi financiada pela Fundação para a Ciência e a Tecnologia (FCT), no âmbito da bolsa de doutoramento SFRH/BD/129600/2017.
 
 \end{acknowledgements}
 
 \addvspacetoc{0.3cm} % Add a gap in the Contents, for aesthetics
 
-
-%-------------------------------------------------------------------------
-%	ABSTRACT PAGE
-%-------------------------------------------------------------------------
-\begin{abstract}
-
-Most machine learning algorithms, and particularly those conceived for supervised classification, assume that the data they will be trained on are independent and identically distributed (i.i.d.). This assumption ignores the fact that, in many circumstances, the available training data is a collection of subdatasets, each one being originated at a distinct data source and hence being sampled from its own distribution. Furthermore, the data observed at test time often suffers from the same distribution shift problem, again violating the i.i.d.\ assumption.
-
-In this thesis, we address the problem of learning from multiple data distributions under various settings. First, we consider the case where multiple data sources are spread over a given medium and produce sequential data streams. We show that, despite the data distributions for each of the sources are different, inter-source correlations can be exploited to learn a better-performing model for the generative distribution of each source.
-
-Afterwards, we focus on out-of-distribution generalization, i.e.\ to the setting where the test distribution is unknown or only partially known at training time. Initially, we consider the problem of multi-source domain adaptation. Here, annotated data from multiple data sources is combined to learn a classification model for a fixed target distribution, for which no labeled data is available at training time. We research several possible deep neural network architectures for the problem of object counting in videos from multiple cameras and we propose a novel algorithm for multi-source domain adaptation for non-sequential data that achieves state-of-the-art results.
-
-Finally, we address domain generalization. This problem differs from domain adaptation in the fact that the target domain is not known, and therefore no data from this distribution is available at training time, neither labeled nor unlabeled. Sign language recognition is the main application considered here, since a truly useful automatic sign language recognition system should be able to perform accurately regardless of the signer that is using it. We propose two algorithms to learn a signer-independent sign classifier. The first one is an improvement over an existing method based on adversarial neural networks and the second and best-performing one uses a variational autoencoder to learn highly discriminative signer-invariant representations.
-
-\end{abstract}
 
 %-------------------------------------------------------------------------
 %	ABSTRACT PAGE (PORTUGUESE)
@@ -45,9 +30,31 @@ Finally, we address domain generalization. This problem differs from domain adap
 	nameconnector={por}]
 \begin{otherlanguage}{portuguese}
 
-Este tese é sobre alguma coisa
+A maioria dos algoritmos de aprendizagem automática e, em particular, os concebidos para classificação supervisionada, assumem que os dados nos quais irão ser treinados resultam de um processo de amostragem independente e identicamente distribuída. Este pressuposto ignora o facto de que, em muitos casos, o conjunto de treino disponível consiste numa coleção de subconjuntos, cada um deles proveniente da sua própria distribuição. O mesmo se aplica aos dados utilizados para teste e inferência, cuja distribuição associada difere frequentemente da observada durante o treino do modelo.
+
+Nesta tese, abordamos, sob várias perspetivas, o problema de aprendizagem a partir de múltiplas distribuições. Em primeiro lugar, consideramos a situação em que várias fontes de dados coabitam no mesmo meio e originam sequências de dados. Neste contexto, demonstramos que é possível tirar partido das correlações existentes entre as várias fontes, obtendo-se um modelo generativo para estes dados cujo desempenho é superior ao resultante da aprendizagem a partir de cada uma das fontes separadamente.
+
+Posteriormente, dedicamo-nos ao problema da generalização fora da distribuição de treino, isto é, ao desenvolvimento de modelos robustos quando testados em distribuições substancialmente diferentes da observada durante o treino. Inicialmente, consideramos o problema da adaptação de domínio a partir de múltiplas distribuições-fonte. Neste cenário, assume-se que, na fase de treino, estão disponíveis dados anotados provenientes de múltiplas distribuições-fonte e que se pretende obter um modelo de classificação com bom desempenho numa distribuição-alvo, fixa à partida, mas diferente de todas as distribuições-fonte e para a qual apenas estão disponíveis dados não anotados. No âmbito deste tema, investigamos diversas arquiteturas de redes neuronais para contagem de objetos em vídeos provenientes de múltiplas câmaras e propomos um novo algoritmo de adaptação de domínio para dados não sequenciais cujo desempenho supera o do estado da arte.
+
+Finalmente, focamo-nos na generalização de domínio. Este problema difere da adapta-\allowbreak ção de domínio no sentido em que, desta vez, o domínio-alvo não é definido \emph{a priori}, pelo que, na fase de treino, não estão disponíveis quaisquer dados provenientes da distribuição-\allowbreak-alvo. O reconhecimento de língua gestual é a principal aplicação que utilizamos para motivar o problema e os algoritmos desenvolvidos, visto que um sistema de reconhecimento gestual realmente útil deve apresentar um bom desempenho independentemente do gestuante que o utiliza. Para este efeito, propomos dois algoritmos que permitem a obtenção de um classificador de gestos robusto a novos gestuantes. O primeiro destes consiste numa melhoria de um método pré-existente, baseado em redes neuronais adversárias. O segundo, que é também o que apresenta o melhor desempenho, utiliza um codificador automático variacional, que permite a aprendizagem de representações latentes independentes do gestuante e altamente discriminativas para a tarefa de classificação pretendida.
+
 
 \end{otherlanguage}
+\end{abstract}
+
+%-------------------------------------------------------------------------
+%	ABSTRACT PAGE
+%-------------------------------------------------------------------------
+\begin{abstract}
+
+    Most machine learning algorithms, and particularly those conceived for supervised classification, assume that the data they will be trained on are independent and identically distributed (i.i.d.). This assumption ignores the fact that, in many circumstances, the available training data is a collection of sub-datasets, each one being originated at a distinct data source and hence being sampled from its own distribution. Furthermore, the data observed at test time often suffer from the same distribution shift problem, again violating the i.i.d.\ assumption.
+
+    In this thesis, we address the problem of learning from multiple data distributions under various settings. First, we consider the case where multiple data sources are spread over a given medium and produce sequential data streams. Although the data distributions for each of the sources are different, we show that inter-source correlations can be exploited to learn a better-performing model for the generative distribution of each source.
+
+    Afterward, we focus on out-of-distribution generalization, i.e.\ to the setting where the test distribution is unknown or only partially known at training time. Initially, we consider the problem of multi-source domain adaptation. Here, annotated data from multiple data sources are combined to learn a classification model for a fixed target distribution, for which no labeled data is available at training time. We research several possible deep neural network architectures for the problem of object counting in videos from multiple cameras and we propose a novel algorithm for multi-source domain adaptation for non-sequential data that achieves state-of-the-art results.
+
+    Finally, we address domain generalization. This problem differs from domain adaptation in the fact that the target domain is not known, and therefore no data from this distribution is available at training time, neither labeled nor unlabeled. Sign language recognition is the main application considered here since a truly useful automatic sign language recognition system should be able to perform accurately regardless of the signer that is using it. We propose two algorithms to learn a signer-independent sign classifier. The first one is an improvement over an existing method based on adversarial neural networks and the second and best-performing one uses a variational autoencoder to learn highly discriminative signer-invariant representations.
+
 \end{abstract}
 
 %-------------------------------------------------------------------------
@@ -107,9 +114,48 @@ Este tese é sobre alguma coisa
 %	ABBREVIATIONS
 %-------------------------------------------------------------------------
 
-%\begin{glossary}
-%	\abbrev{QM}{Quantum Mechanics}
-%\end{glossary}
+\begin{glossary}
+    \abbrev{AP}{access point}
+    \abbrev{CNN}{convolutional neural network}
+    \abbrev{CPD}{conditional probability distribution}
+    \abbrev{CVAE}{conditional variational autoencoder}
+    \abbrev{DA}{domain adaptation}
+    \abbrev{DeSIRe}{deep signer invariant representations (model name)}
+    \abbrev{DG}{domain generalization}
+    \abbrev{DL}{deep learning}
+    \abbrev{ELBO}{evidence lower bound}
+    \abbrev{EM}{expectation-maximization}
+    \abbrev{HMM}{hidden Markov model}
+    \abbrev{LSTM}{long short-term memory}
+    \abbrev{KL}{Kullback-Leibler}
+    \abbrev{MAE}{mean absolute error}
+    \abbrev{MAP}{maximum a posteriori}
+    \abbrev{MDAN}{multi-source domain adversarialnetworks}
+    \abbrev{ME}{movement of epenthesis}
+    \abbrev{MHMM}{mixture of hidden Markov models}
+    \abbrev{MKLM}{Microsoft Kinect and Leap Motion (dataset)}
+    \abbrev{MLP}{multi-layer perceptron}
+    \abbrev{MODA}{multi-source mildly optimistic domain adaptation (model name)}
+    \abbrev{MODA-FM}{MODA with FixMatch regularization (model name)}
+    \abbrev{OOD}{out-of-distribution}
+    \abbrev{PAD}{presentation attack detection}
+    \abbrev{PAI}{presentation attack instrument}
+    \abbrev{PAIS}{presentation attack instrument species}
+    \abbrev{ReLU}{rectifier linear unit}
+    \abbrev{RNN}{recurrent neural network}
+    \abbrev{SOHMMM}{self-organizing hidden Markov model map}
+    \abbrev{SOM}{self-organizing map}
+    \abbrev{SpaMHMM}{sparse mixture of hidden Markov models}
+    \abbrev{SLR}{sign language recognition}
+    \abbrev{SSL}{self-supervised learning}
+    \abbrev{SVM}{support vector machine}
+    \abbrev{t-SNE}{t-distributed stochastic neighbor embeddings}
+    \abbrev{UBM}{universal background model}
+    \abbrev{UDA}{unsupervised domain adaptation}
+    \abbrev{VAE}{variational autoencoder}
+    \abbrev{VSIA}{Visible Spectrum Iris Artefact (dataset)}
+    \abbrev{wLBP}{weighted local binary pattern}
+\end{glossary}
 
 
 %-------------------------------------------------------------------------

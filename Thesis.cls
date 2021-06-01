@@ -619,10 +619,10 @@
 
 \newenvironment{acknowledgements}
 {
-  \btypeout{Acknowledgements}
-  \addtotoc{Acknowledgements}
+  \btypeout{Agradecimentos}
+  \addtotoc{Agradecimentos}
   \pagestyle{empty}
-  \begin{center}{\huge{\textit{Acknowledgements}} \par}\end{center}
+  \begin{center}{\huge{\textit{Agradecimentos}} \par}\end{center}
   \vspace{0.3cm}
   \normalsize\normalfont
 }
