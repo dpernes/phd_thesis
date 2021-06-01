@@ -25,7 +25,13 @@ Acknowledge ALL the people!
 %-------------------------------------------------------------------------
 \begin{abstract}
 
-This thesis is about something, I guess.
+Most machine learning algorithms, and particularly those conceived for supervised classification, assume that the data they will be trained on are independent and identically distributed (i.i.d.). This assumption ignores the fact that, in many circumstances, the available training data is a collection of subdatasets, each one being originated at a distinct data source and hence being sampled from its own distribution. Furthermore, the data observed at test time often suffers from the same distribution shift problem, again violating the i.i.d.\ assumption.
+
+In this thesis, we address the problem of learning from multiple data distributions under various settings. First, we consider the case where multiple data sources are spread over a given medium and produce sequential data streams. We show that, despite the data distributions for each of the sources are different, inter-source correlations can be exploited to learn a better-performing model for the generative distribution of each source.
+
+Afterwards, we focus on out-of-distribution generalization, i.e.\ to the setting where the test distribution is unknown or only partially known at training time. Initially, we consider the problem of multi-source domain adaptation. Here, annotated data from multiple data sources is combined to learn a classification model for a fixed target distribution, for which no labeled data is available at training time. We research several possible deep neural network architectures for the problem of object counting in videos from multiple cameras and we propose a novel algorithm for multi-source domain adaptation for non-sequential data that achieves state-of-the-art results.
+
+Finally, we address domain generalization. This problem differs from domain adaptation in the fact that the target domain is not known, and therefore no data from this distribution is available at training time, neither labeled nor unlabeled. Sign language recognition is the main application considered here, since a truly useful automatic sign language recognition system should be able to perform accurately regardless of the signer that is using it. We propose two algorithms to learn a signer-independent sign classifier. The first one is an improvement over an existing method based on adversarial neural networks and the second and best-performing one uses a variational autoencoder to learn highly discriminative signer-invariant representations.
 
 \end{abstract}
 
@@ -33,7 +39,7 @@ This thesis is about something, I guess.
 %	ABSTRACT PAGE (PORTUGUESE)
 %-------------------------------------------------------------------------
 \begin{abstract}[
-	thesistitle={Titulo da Tese em Português},
+	thesistitle={Aprendizagem a partir de dados multi-entidade},
 	title={Resumo},
 	degree={Doutoramento em Ciência de Computadores},
 	nameconnector={por}]
