@@ -12,9 +12,26 @@
 %	ACKNOWLEDGEMENTS PAGE
 %-------------------------------------------------------------------------
 \begin{acknowledgements}
-
+\begin{otherlanguage}{portuguese}
 Esta tese foi financiada pela Fundação para a Ciência e a Tecnologia (FCT), no âmbito da bolsa de doutoramento SFRH/BD/129600/2017.
 
+Gostaria de expressar o meu agradecimento ao INESC TEC, instituição de acolhimento do meu doutoramento, à Faculdade de Ciências da Universidade do Porto, pela oferta do programa doutoral, e à Faculdade de Engenharia da Universidade do Porto, por me ter proporcionado a honra e o enorme prazer de lecionar duas unidades curriculares de um dos seus planos de estudos.
+
+A nível pessoal, manifesto a minha profunda gratidão ao meu orientador, Prof.\ Jaime S.\ Cardoso, inexcedível no apoio, disponibilidade, supervisão, paciência e compreensão em momentos difíceis, qualidades que alia a uma excelência científica inquestionável e amplamente reconhecida. Não posso também esquecer os meus professores Paula Malonek e Pedro Guedes de Oliveira, que muito me ajudaram e inspiraram no meu percurso académico anterior e me apoiaram e aconselharam na fase complicada que antecedeu o meu doutoramento.
+
+Todos os atuais e anteriores membros do VCMI merecem a minha maior consideração e, em muitos casos, inestimável amizade. Trabalhar ao vosso lado e conviver convosco fez de mim uma pessoa melhor, tanto no plano profissional como pessoal. Um agradecimento especial aos coautores das minhas publicações, cujo contributo para esta tese foi absolutamente fundamental. Entre estes, tenho de destacar o Pedro Ferreira, não só pelo extenso trabalho que desenvolvemos em conjunto, mas também e sobretudo por ser um amigo insubstituível em todos os momentos.
+
+Agradeço a todos os meus estudantes na FEUP, em particular àqueles que hoje tenho como amigos. Todas as horas que passámos, em aula e fora dela, ensinaram-me muito mais do que aquilo que vos lecionei. Espero que continuem a contar comigo e poder continuar a contar convosco.
+
+Aos meus amigos de sempre e que nunca me falham, estando perto ou longe.
+
+À Rita, por estar sempre comigo e me fazer desejar que assim seja para sempre. À minha família, o meu grande suporte. À minha mãe, pelo seu amor infinito e recíproco.
+
+\vspace{11pt}
+
+Ao meu pai e avós, com saudade imensa.
+
+\end{otherlanguage}
 \end{acknowledgements}
 
 \addvspacetoc{0.3cm} % Add a gap in the Contents, for aesthetics
@@ -30,7 +47,7 @@ Esta tese foi financiada pela Fundação para a Ciência e a Tecnologia (FCT), n
 	nameconnector={por}]
 \begin{otherlanguage}{portuguese}
 
-A maioria dos algoritmos de aprendizagem automática e, em particular, os concebidos para classificação supervisionada, assumem que os dados nos quais irão ser treinados resultam de um processo de amostragem independente e identicamente distribuída. Este pressuposto ignora o facto de que, em muitos casos, o conjunto de treino disponível consiste numa coleção de subconjuntos, cada um deles proveniente da sua própria distribuição. O mesmo se aplica aos dados utilizados para teste e inferência, cuja distribuição associada difere frequentemente da observada durante o treino do modelo.
+A maioria dos algoritmos de aprendizagem automática, e, em particular, os concebidos para classificação supervisionada, assume que os dados nos quais irão ser treinados resultam de um processo de amostragem independente e identicamente distribuída. Este pressuposto ignora o facto de que, em muitos casos, o conjunto de treino disponível consiste numa coleção de subconjuntos, cada um deles proveniente da sua própria distribuição. O mesmo se aplica aos dados utilizados para teste e inferência, cuja distribuição associada difere frequentemente da observada durante o treino do modelo.
 
 Nesta tese, abordamos, sob várias perspetivas, o problema de aprendizagem a partir de múltiplas distribuições. Em primeiro lugar, consideramos a situação em que várias fontes de dados coabitam no mesmo meio e originam sequências de dados. Neste contexto, demonstramos que é possível tirar partido das correlações existentes entre as várias fontes, obtendo-se um modelo generativo para estes dados cujo desempenho é superior ao resultante da aprendizagem a partir de cada uma das fontes separadamente.
 
@@ -130,10 +147,12 @@ Finalmente, focamo-nos na generalização de domínio. Este problema difere da a
     \abbrev{KL}{Kullback-Leibler}
     \abbrev{MAE}{mean absolute error}
     \abbrev{MAP}{maximum a posteriori}
-    \abbrev{MDAN}{multi-source domain adversarialnetworks}
+    \abbrev{MDAN}{multi-source domain adversarial
+networks}
     \abbrev{ME}{movement of epenthesis}
     \abbrev{MHMM}{mixture of hidden Markov models}
     \abbrev{MKLM}{Microsoft Kinect and Leap Motion (dataset)}
+    \abbrev{MLLR}{maximum likelihood linear regression}
     \abbrev{MLP}{multi-layer perceptron}
     \abbrev{MODA}{multi-source mildly optimistic domain adaptation (model name)}
     \abbrev{MODA-FM}{MODA with FixMatch regularization (model name)}
@@ -148,6 +167,7 @@ Finalmente, focamo-nos na generalização de domínio. Este problema difere da a
     \abbrev{SpaMHMM}{sparse mixture of hidden Markov models}
     \abbrev{SLR}{sign language recognition}
     \abbrev{SSL}{self-supervised learning}
+    \abbrev{STA}{wireless station}
     \abbrev{SVM}{support vector machine}
     \abbrev{t-SNE}{t-distributed stochastic neighbor embeddings}
     \abbrev{UBM}{universal background model}

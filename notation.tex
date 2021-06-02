@@ -22,7 +22,6 @@ In this section, we describe the notation adopted in this thesis. We mostly foll
 		$\displaystyle a$ & A scalar (integer or real)\\
 		$\displaystyle \va$ & A vector\\
 		$\displaystyle \mA$ & A matrix\\
-		$\displaystyle \tA$ & A tensor\\
 		$\displaystyle \mI_n$ & Identity matrix with $n$ rows and $n$ columns\\
 		$\displaystyle \mI$ & Identity matrix with dimensionality implied by context\\
 		$\displaystyle \text{diag}(\va)$ & A square, diagonal matrix with diagonal entries given by $\va$\\
@@ -87,9 +86,9 @@ In this section, we describe the notation adopted in this thesis. We mostly foll
 	\def\arraystretch{1.5}
 	\begin{tabular}{cp{3.25in}}
 		$\displaystyle \mA \transp$ & Transpose of matrix $\mA$ \\
-		$\displaystyle \mA \odot \mB $ & Element-wise (Hadamard) product of $\mA$ and $\mB$ \\
 		% Wikipedia uses \circ for element-wise multiplication but this could be confused with function composition
 		$\displaystyle \mathrm{det}(\mA)$ & Determinant of $\mA$ \\
+        $\displaystyle \va \odot \vb $ & Element-wise product of $\va$ and $\vb$ \\
 	\end{tabular}
 	\egroup
 	\index{Transpose}
@@ -127,13 +126,10 @@ In this section, we describe the notation adopted in this thesis. We mostly foll
 	\bgroup
 	\def\arraystretch{1.5}
 	\begin{tabular}{cp{3.25in}}
-		$\displaystyle \ra \bot \rb$ & The random variables $\ra$ and $\rb$ are independent\\
-		$\displaystyle \ra \bot \rb \mid \rc $ & They are conditionally independent given $\rc$\\
 		$\displaystyle p(\rx)$ & A probability distribution over the random variable $\rx$\\
 		$\displaystyle \rx \sim p$ & Random variable $\rx$ has distribution $p$\\% so thing on left of \sim should always be a random variable, with name beginning with \r
         $\displaystyle \mathrm{Supp}(\rx)$ & Support of the random variable $\rx$\\
 		$\displaystyle  \E_{\rx\sim p} [ f(\rx) ]$ & Expectation of $f(\rx)$ with respect to $p(\rx)$ \\
-		$\displaystyle H(\rx) $ & Shannon entropy of the random variable $\rx$\\
 		$\displaystyle \KL ( p \Vert q ) $ & Kullback-Leibler divergence of p and q \\
 		$\displaystyle \mathcal{N} ( \rvx ; \vmu , \mSigma)$ & Gaussian distribution %
 		over $\rvx$ with mean $\vmu$ and covariance $\mSigma$ \\
@@ -162,7 +158,6 @@ In this section, we describe the notation adopted in this thesis. We mostly foll
 		$\displaystyle || \vx ||_p $ & $\normlp$ norm of vector $\vx$ \\
 		$\displaystyle || \vx || $ & $\normltwo$ norm of vector $\vx$ \\
         $\displaystyle || \mX || $ & Frobenius norm of matrix $\mX$ \\
-		$\displaystyle x^+$ & Positive part of $x$, i.e.\ $\max(0,x)$\\
 		$\displaystyle \1_\mathrm{condition}$ & is 1 if the condition is true, 0 otherwise\\
 	\end{tabular}
 	\egroup

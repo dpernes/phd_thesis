@@ -351,7 +351,7 @@ Maximizing the ELBO with respect to $q$ is obviously equivalent to the minimizat
 \begin{equation}
     J(\Theta^{(-)}) - \mathrm{ELBO}(q, \Theta^{(-)}) = \sum_{i=1}^n \E_{\rvz \sim q} \left[ \log \frac{q(\rvz)}{p(\rvz \mid \vx_i; \Theta^{(-)})} \right] = \KL(q(\rvz) \Vert p(\rvz \mid \vx_i; \Theta^{(-)})),
 \end{equation}
-where $\KL(q(\rvz) \Vert p(\rvz \mid \vx_i; \Theta^{(-)}))$ denotes the Kullback-Leibler divergence between the distributions $q(\rvz)$ and $p(\rvz \mid \vx_i; \Theta^{(-)})$. This quantity is always non-negative, being zero if and only if the two distributions coincide. Thus, the optimal $q$ is $q^*(\rvz) = p(\rvz \mid \vx_i; \Theta^{(-)})$.
+where $\KL(q(\rvz) \Vert p(\rvz \mid \vx_i; \Theta^{(-)}))$ denotes the Kullback-Leibler (KL) divergence between the distributions $q(\rvz)$ and $p(\rvz \mid \vx_i; \Theta^{(-)})$. This quantity is always non-negative, being zero if and only if the two distributions coincide. Thus, the optimal $q$ is $q^*(\rvz) = p(\rvz \mid \vx_i; \Theta^{(-)})$.
 
 \subsubsection{M-step}
 \label{sec:m_step}
@@ -447,7 +447,7 @@ Therefore, in principle, this model can be trained using the maximum likelihood 
 Note that the network $q(\rz \mid \rmX; \vtheta_e)$ defines a stochastic mapping from input images to latent codes and the network $p(\rmX \mid \rvz; \vtheta_d)$ defines its inverse mapping. Hence, the former is an \emph{encoder}, the latter is a \emph{decoder}, and the model itself is called a \emph{variational autoencoder} (VAE, \citet{Kingma2013}). Regarding the choice of prior $p(\rvz)$ and approximate posterior $q(\rvz \mid \rmX; \vtheta_e)$, both are often set as Gaussian, specifically:
 \begin{align}
     &p(\rvz) \triangleq \mathcal{N}(\rvz; 0, \mI), \\
-    &q(\rvz \mid \mX; \vtheta_e) \triangleq \mathcal{N}(\rvz; \vmu_e(\mX; \vtheta_e), \mathrm{diag}(\vsigma_e(\mX; \vtheta_e))^2),
+    &q(\rvz \mid \mX; \vtheta_e) \triangleq \mathcal{N}(\rvz; \vmu_e(\mX; \vtheta_e), \mathrm{diag}(\vsigma_e^2(\mX; \vtheta_e)),
 \end{align}
 where, in the latter, $\vmu_e(\mX; \vtheta_e)$ and $\vsigma_e^2(\mX; \vtheta_e)$ are the two outputs of the encoder network. The conditional likelihood $p(\rmX \mid \rvz; \vtheta_d)$ is usually a Bernoulli distribution, for black and white images, or a Gaussian, for grayscale and color images. In the latter case,
 \begin{equation}
