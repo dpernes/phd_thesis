@@ -59,7 +59,7 @@ for discrete and continuous $\rx$, respectively.
 Given $m$ random variables $\rx_1, \rx_2, \dots, \rx_m$, the \emph{chain rule of probability} allows the factorization of their joint distribution as a product of conditional distributions:\footnote{The expression on the right-hand side of \eqref{eq:chain_rule} is not well defined outside the support of $p(\rx^{(1)}), p(\rx^{(1)}, \rx^{(2)}), \dots, p(\rx^{(1)}, \rx^{(2)}, \dots, \rx^{(m-1)})$. For those values, one has $p(\rx^{(1)}, \rx^{(2)}, \dots, \rx^{(m)})=0$.}
 \begin{equation}
     \label{eq:chain_rule}
-    p(\rx^{(1)},\rx^{(2)},\dots,\rx^{(m)}) = p(\rx^{(1)}) \prod_{j=1}^m p(\rx^{(j)} \mid \rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-1})).
+    p(\rx^{(1)},\rx^{(2)},\dots,\rx^{(m)}) = p(\rx^{(1)}) \prod_{j=1}^m p(\rx^{(j)} \mid \rx^{(1)}, \rx^{(2)}, \dots, \rx^{(j-1)}).
 \end{equation}
 Starting from a factorization of a joint distribution into conditionals, we may build a directed graph $\gG$ with $m$ vertices, one for each random variable, where there exists an edge $i \rightarrow j$ if and only if there is a factor where $\rx^{(j)}$ is conditioned on $\rx^{(i)}$. Such a graph is known as a \emph{Bayesian network}. From its definition, we see that the factorization in \eqref{eq:chain_rule} corresponds to the graph in \Figref{fig:complete_bayesian_net}. Clearly, a Bayesian network defines a bijection between random variables and graph nodes, so with a slight abuse of terminology we represent and refer to nodes by the random variable they are associated with, rather than by their index.
 
@@ -339,7 +339,7 @@ Now, let $q(\rz)$ be an arbitrary distribution such that $\mathrm{Supp}(q(\rvz))
     &\geq \sum_{i=1}^n \E_{\rvz \sim q} \left[ \log  \frac{p(\vx_i, \rvz; \Theta)}{q(\rvz)} \right] \triangleq \mathrm{ELBO}(q,\Theta),
 \end{align}
 \endgroup
-where the inequality is a particular case of Jensen's inequality. The EM algorithm proceeds maximizes this \emph{evidence lower bound} (ELBO) in the following block coordinate ascent manner, until a convergence criterion is satisfied:
+where the inequality is a particular case of Jensen's inequality. The EM algorithm maximizes this \emph{evidence lower bound} (ELBO) in the following block coordinate ascent manner, until a convergence criterion is satisfied:
 \begin{itemize}
     \item Keep $\Theta = \Theta^{(-)}$ (fixed) and find $q^* = \argmax_q \mathrm{ELBO}(q, \Theta^{(-)})$ --- \emph{E-step}.
     \item Keep $q = q^{(-)}$ (fixed) and find $\Theta^* = \argmax_\Theta \mathrm{ELBO}(q^{(-)}, \Theta)$ --- \emph{M-step}.
