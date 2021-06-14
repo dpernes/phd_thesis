@@ -14,8 +14,8 @@
 \begin{align}
 	&M(z,y) = \sum_{i=1}^{n} p(y, z \mid \vx_i, y_i) = \sum_{i=1}^{n} p(z \mid \vx_i, y_i) \1_{y_i=y}, \\
 	&M(y) = \sum_{i=1}^{n} p(y \mid \vx_i, y_i) = \sum_{i=1}^{n} \1_{y_i=y}, \\
-	&M(\rh^{(0)}=h, z) = \sum_{i=1}^{n} p(\rh^{(0)}=h, z \mid \vx_i, y_i) = \sum_{i=1}^{n} p(\rh^{(0)}=h \mid \vx_i, y_i, z) p(z \mid \vx_i, y_i) \nonumber\\
-	&\hphantom{M(\rh^{(0)}=h,z)} = \sum_{i=1}^{n} p(\rh^{(0)}=h \mid \vx_i, y_i) p(z \mid \vx_i, y_i), \\
+	&M(\rh^{(1)}=h, z) = \sum_{i=1}^{n} p(\rh^{(1)}=h, z \mid \vx_i, y_i) = \sum_{i=1}^{n} p(\rh^{(1)}=h \mid \vx_i, y_i, z) p(z \mid \vx_i, y_i) \nonumber\\
+	&\hphantom{M(\rh^{(1)}=h,z)} = \sum_{i=1}^{n} p(\rh^{(1)}=h \mid \vx_i, y_i) p(z \mid \vx_i, y_i), \\
 	&M(z) = \sum_{i=1}^{n} p(z \mid \vx_i, y_i), \\
 	&M(\rh^{(t)}=h', \rh^{(t-1)}=h, z) = \sum_{i=1}^{n} p(\rh^{(t)}=h', \rh^{(t-1)}=h, z \mid \vx_i, y_i) \nonumber\\
 	&\hphantom{M(\rh^{(t-1)}=h, } = \sum_{i=1}^{n} p(\rh^{(t)}=h' \mid \rh^{(t-1)}=h, \vx_i, z) p(\rh^{(t-1)}=h \mid \vx_i, z) p(z \mid \vx_i, y_i), \\
@@ -25,11 +25,11 @@
 \endgroup
 These equations allow us to compute the following updates in the M-step:
 \begin{align}
-	\evalpha^{(y)}_z = \frac{M(y,z)}{M(y)} \quad \text{and} \quad \evpi^{(z)}_h = \frac{M(\rh^{(0)}=h, z)}{M(z)}.
+	\evalpha^{(y)}_z = \frac{M(y,z)}{M(y)} \quad \text{and} \quad \evpi^{(z)}_h = \frac{M(\rh^{(1)}=h, z)}{M(z)}.
 \end{align}
 For the state transition matrices update, the same idea applies after summing over the sequence length:
 \begin{equation}
-	\emA^{(z)}_{h,h'} = \frac{\sum_{t=1}^T M(\rh^{(t)}=h', \rh^{(t-1)}=h, z)}{\sum_{t=1}^T M(\rh^{(t-1)}=h, z)}.
+	\emA^{(z)}_{h,h'} = \frac{\sum_{t=2}^T M(\rh^{(t)}=h', \rh^{(t-1)}=h, z)}{\sum_{t=2}^T M(\rh^{(t-1)}=h, z)}.
 \end{equation}
 Now, defining $n_y$, $\eta^{(z)}_i$, $\gamma^{(z)}_{i,h}(t)$, and $\xi^{(z)}_{i,h,h'}(t)$ as in \Algref{alg:mhmm}, the update formulas for $\evalpha^{(y)}_z$, $\evpi^{(z)}_h$, and $\emA^{(z)}_{h,h'}$ become as defined in that algorithm.
 
@@ -41,7 +41,7 @@ Deriving the update equations for the means and covariances of the Gaussian emis
 where $q(\rvh_i,\rz_i) = p(\rvh_i, \rz_i \mid \vx_i, y_i; \Theta^{(-)})$, being $\Theta^{(-)}$ the set of current values for all parameters. We are solely interested in maximizing the ELBO with respect to the parameters $\vmu^{(z)}_h$ and $\vsigma^{(z)}_h$, so we can plug in the expression for the joint $p(\vx_i, \rvh_i, \rz_i \mid y_i; \Theta)$ and ignore all terms that do not depend on these parameters:
 \begin{align}
 	\label{eq:mhmm_elbo_gaussian_params}
-	\mathrm{ELBO} &= \sum_{i=1}^n \sum_{\rvh_i, \rz_i} q(\rvh_i,\rz_i) \log \left[p(\rz_i \mid y_i) p(\rh^{(0)}_i \mid \rz_i) \prod_t p(\rh^{(t)}_i \mid \rh^{(t-1)}_i, \rz_i) p(\vx^{(t)}_i \mid \rh^{(t)}_i, \rz_i) \right] \nonumber\\
+	\mathrm{ELBO} &= \sum_{i=1}^n \sum_{\rvh_i, \rz_i} q(\rvh_i,\rz_i) \log \left[p(\rz_i \mid y_i) \prod_t p(\rh^{(t)}_i \mid \rh^{(t-1)}_i, \rz_i) p(\vx^{(t)}_i \mid \rh^{(t)}_i, \rz_i) \right] \nonumber\\
 	&= \sum_{i=1}^n \sum_{\rh^{(t)}_i, \rz_i} \sum_{t=1}^{T_i} q(\rh^{(t)}_i, \rz_i) \log p(\vx^{(t)}_i \mid \rh^{(t)}_i, \rz_i) + \text{const}.
 \end{align}
 Now, all that remains is computing the gradient of the ELBO with respect to the parameters and solving for the critical points:
@@ -118,14 +118,14 @@ where the last equality follows from the fact that the observations $\rmX$ are c
 \begin{equation}
 p(\rz \mid \mX_\text{pref}, y) \propto p(\mX_\text{pref} \mid \rz)p(\rz \mid y).
 \end{equation}
-We now focus on the computation of $p(\rmX \mid \mX_\text{pref}, \rz)$. Let $\rvh_\text{pref} \triangleq \left(\rh^{(-t_\text{pref}+1)}, ...,\rh^{(-1)}\right)$ and $\rvh \triangleq \left(\rh^{(0)}, ...,\rh^{(t)}\right)$, then:
+We now focus on the computation of $p(\rmX \mid \mX_\text{pref}, \rz)$. Let $\rvh_\text{pref} \triangleq \left(\rh^{(-t_\text{pref}+1)}, ...,\rh^{(0)}\right)$ and $\rvh \triangleq \left(\rh^{(1)}, ...,\rh^{(t)}\right)$, then:
 \begin{align}
 p(\rmX \mid \mX_\text{pref}, \rz) &= \sum_{\rvh_\text{pref}, \rvh} p(\rmX, \rvh_\text{pref}, \rvh \mid \mX_\text{pref}, \rz) \nonumber\\
 &= \sum_{\rvh_\text{pref}, \rvh} p(\rmX \mid \rvh_\text{pref}, \rvh, \mX_\text{pref}, \rz) p(\rvh_\text{pref}, \rvh \mid \mX_\text{pref}, \rz) \nonumber\\
 &= \sum_{\rvh_\text{pref}, \rvh} p(\rmX \mid \rvh, \rz) p(\rvh_\text{pref} \mid \rvh, \mX_\text{pref}, \rz) p(\rvh \mid \mX_\text{pref}, \rz) \nonumber\\
 &= \sum_{\rvh} p(\rmX \mid \rvh, \rz) p(\rvh \mid \mX_\text{pref}, \rz) \nonumber\\
-&= \sum_{\rvh} p(\rh^{(0)} \mid \mX_\text{pref}, \rz) \prod_{\tau=1}^{t} p(\rh^{(\tau)} \mid \rh^{(\tau-1)}, \rz) p(\rvx^{(\tau)} \mid \rh^{(\tau)}, \rz),
+&= \sum_{\rvh} p(\rh^{(1)} \mid \mX_\text{pref}, \rz) p(\rvx^{(1)} \mid \rh^{(1)}, \rz) \prod_{\tau=2}^{t} p(\rh^{(\tau)} \mid \rh^{(\tau-1)}, \rz) p(\rvx^{(\tau)} \mid \rh^{(\tau)}, \rz),
 \end{align}
-where we have used the independence assumptions that characterize the HMM. Here, the initial state posteriors $p(\rh^{(0)} \mid \mX_\text{pref}, \rz)$ are actually the final state posteriors for the sequence $\mX_\text{pref}$ for each HMM in the mixture, so they can be computed as in \Algref{alg:forward_backward}.
+where we have used the independence assumptions that characterize the HMM. Here, the initial state posteriors $p(\rh^{(1)} \mid \mX_\text{pref}, \rz)$ are actually the final state posteriors for the sequence $\mX_\text{pref}$ for each HMM in the mixture, so they can be computed as in \Algref{alg:forward_backward}.
 
-Thus, we conclude that inference in the posterior model $p(\rmX \mid \mX_\text{pref}, y)$ corresponds to inference in a (Spa)MHMM where the original mixture coefficients and initial state probabilites are replaced with their respective posteriors, $p(\rz \mid \mX_\text{pref}, y)$ and $p(\rh^{(0)} \mid \mX_\text{pref}, \rz)$. All remaining parameters are unchanged.
+Thus, we conclude that inference in the posterior model $p(\rmX \mid \mX_\text{pref}, y)$ corresponds to inference in a (Spa)MHMM where the original mixture coefficients and initial state probabilites are replaced with their respective posteriors, $p(\rz \mid \mX_\text{pref}, y)$ and $p(\rh^{(1)} \mid \mX_\text{pref}, \rz)$. All remaining parameters are unchanged.
