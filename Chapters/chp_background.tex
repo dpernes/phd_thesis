@@ -127,7 +127,7 @@ An important property of Bayesian networks is the fact that they are always dire
 \begin{equation}
     p(\rx^{(1)}, \rx^{(2)}, \dots, \rx^{(m)}) = \prod_{j=1}^m p(\rx^{(j)} \mid \parents_\gG(\rx^{(j)})),
 \end{equation}
-where $\parents_\gG(\rx^{(j)})$ are the parents of node $\rx^{(j)}$ in $\gG$. It is important to highlight that, although there is a one-to-one correspondence between a factorization of a joint distribution into conditional distributions and a Bayesian network, the same joint distribution can sometimes be factorized in multiple different but equivalent forms, each one corresponding to a different Bayesian network. Note, for instance, that \eqref{eq:chain_rule} is just one out of $m!$ possible ways of factorizing $p(\rx^{(1)},\rx^{(2)},\dots,\rx^{(m)})$ using the chain rule and any of those factorizations would yield a different graph. This is also the case for chains and \emph{forks}, which we discuss next.
+where $\parents_\gG(\rx^{(j)})$ are the parents of node $\rx^{(j)}$ in $\gG$. It is important to highlight that, although there is a one-to-one correspondence between a factorization of a joint distribution into conditional distributions and a Bayesian network, the same joint distribution can sometimes be factorized in multiple different but equivalent forms, each one corresponding to a different Bayesian network. Note, for instance, that \eqref{eq:chain_rule} is just one out of $m!$ possible ways of factorizing $p(\rx^{(1)},\rx^{(2)},\dots,\rx^{(m)})$ using the chain rule and any of those factorizations would yield a different graph. This is also the case for chains and \emph{forks}, which we discuss next. The set of all Bayesian networks that imply a given set of conditional independencies is called a \emph{Markov equivalence class}. 
 
 \subsection{Chains and forks}
 \label{sec:chains_forks}
@@ -137,7 +137,7 @@ Let us consider the case where we have three random variables $\rx^{(1)}, \rx^{(
     &= p(\rx^{(2)}) p(\rx^{(1)} \mid \rx^{(2)}) p(\rx^{(3)} \mid \rx^{(2)}) \label{eq:fork}\\
     &= p(\rx^{(3)}) p(\rx^{(2)} \mid \rx^{(3)}) p(\rx^{(1)} \mid \rx^{(2)}) \label{eq:reversed_chain}
 \end{align}
-The three equivalent factorizations \plaineqref{eq:chain} -- \plaineqref{eq:reversed_chain} correspond to the three Bayesian networks in \Figref{fig:equiv_bayesian_nets}, respectively from left to right.
+The three equivalent factorizations \plaineqref{eq:chain} -- \plaineqref{eq:reversed_chain} correspond to the three Bayesian networks in \Figref{fig:equiv_bayesian_nets}, respectively from left to right, and constitute a Markov equivalence class.
 
 \begin{figure}
     \centering
