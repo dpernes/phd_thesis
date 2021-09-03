@@ -9,7 +9,7 @@
 \label{sec:desire_arch}
 As shown in \Figref{fig:desire_arch}, the architecture of DeSIRe comprises a CVAE and a classifier.
 
-\input{Figures/ChapterFour/fig_desire_arch.tex}
+\input{Figures/ChapterFive/fig_desire_arch.tex}
 
 \subsection{CVAE}
 The CVAE consists of an encoder and a decoder. The encoder network attempts to learn a stochastic mapping from an input image $\mX$, its class label $y$, and signer identity $s$ to a latent representation $\vz$. We condition the encoder on $y$ and $s$ by simply concatenating the class and signer identity as extra channels in the input image. In this case, both $y$ and $s$ are represented categorically using one-hot encoding. The encoder network then consists of a sequence of several $3\times 3$ convolutional layers with batch normalization and leaky rectified linear units (LeakyReLUs) as non-linearities. For downsampling, the stride length of every convolution is set to 2. On top of that, there are two output fully connected (a.k.a.\ dense) layers, with linear activation functions, describing the mean $\vmu_e(\rmX,\ry,\rs; \vtheta_e)$ and the log-variance $\log \vsigma_e^2(\rmX,\ry,\rs; \vtheta_e)$ of the latent space distribution $q(\rvz \mid \rmX, \ry, \rs; \vtheta_e)$.
@@ -111,21 +111,21 @@ In this section, we present a 2-D visualization of the learned embedding via t-S
         \begin{subfigure}{0.325\textwidth}
             \centering
             \subcaption[short for lof]{CNN (baseline 1)}
-            \includegraphics[width=\linewidth]{ChapterFour/cnn_tsne_3.png}
+            \includegraphics[width=\linewidth]{ChapterFive/cnn_tsne_3.png}
             \caption{accuracy: 95.50 \%}
         \end{subfigure}
         \hfill
         \begin{subfigure}{0.325\textwidth}
             \centering
             \subcaption[short for lof]{CNN with triplet loss (baseline 2)}
-            \includegraphics[width=\linewidth]{ChapterFour/triplet_tsne_3.png}
+            \includegraphics[width=\linewidth]{ChapterFive/triplet_tsne_3.png}
             \caption{accuracy: 96.50 \%}
         \end{subfigure}
         \hfill
         \begin{subfigure}{0.325\textwidth}
             \centering
             \subcaption[short for lof]{DeSIRe}
-            \includegraphics[width=\linewidth]{ChapterFour/desire_tsne_3.png}
+            \includegraphics[width=\linewidth]{ChapterFive/desire_tsne_3.png}
             \caption{accuracy: 98.50 \%}
         \end{subfigure}
     \end{minipage}
@@ -137,19 +137,19 @@ In this section, we present a 2-D visualization of the learned embedding via t-S
         \captionsetup[subfigure]{labelformat=empty}
         \begin{subfigure}{0.325\textwidth}
             \centering
-            \includegraphics[width=\linewidth]{ChapterFour/cnn_tsne_2.png}
+            \includegraphics[width=\linewidth]{ChapterFive/cnn_tsne_2.png}
             \caption{accuracy: 73.00 \%}
         \end{subfigure}
         \hfill
         \begin{subfigure}{0.325\textwidth}
             \centering
-            \includegraphics[width=\linewidth]{ChapterFour/triplet_tsne_2.png}
+            \includegraphics[width=\linewidth]{ChapterFive/triplet_tsne_2.png}
             \caption{accuracy: 86.50 \%}
         \end{subfigure}
         \hfill
         \begin{subfigure}{0.325\textwidth}
             \centering
-            \includegraphics[width=\linewidth]{ChapterFour/desire_tsne_2.png}
+            \includegraphics[width=\linewidth]{ChapterFive/desire_tsne_2.png}
             \caption{accuracy: 98.50 \%}
         \end{subfigure}
     \end{minipage}
@@ -171,21 +171,21 @@ The test split~2, depicted in the bottom row of Figures~\ref{fig:desire_tsne_a} 
         \begin{subfigure}{0.325\textwidth}
             \centering
             \subcaption[short for lof]{DANN \cite{Ganin2015}}
-            \includegraphics[width=\linewidth]{ChapterFour/ganin_tsne_3.png}
+            \includegraphics[width=\linewidth]{ChapterFive/ganin_tsne_3.png}
             \caption{accuracy: 95.50 \%}
         \end{subfigure}
         \hfill
         \begin{subfigure}{0.325\textwidth}
             \centering
             \subcaption[short for lof]{DTML \cite{Hu2016}}
-            \includegraphics[width=\linewidth]{ChapterFour/hu_tsne_3.png}
+            \includegraphics[width=\linewidth]{ChapterFive/hu_tsne_3.png}
             \caption{accuracy: 97.50 \%}
         \end{subfigure}
         \hfill
         \begin{subfigure}{0.325\textwidth}
             \centering
             \subcaption[short for lof]{DeSIRe}
-            \includegraphics[width=\linewidth]{ChapterFour/desire_tsne_3.png}
+            \includegraphics[width=\linewidth]{ChapterFive/desire_tsne_3.png}
             \caption{accuracy: 98.50 \%}
         \end{subfigure}
     \end{minipage}
@@ -197,19 +197,19 @@ The test split~2, depicted in the bottom row of Figures~\ref{fig:desire_tsne_a} 
         \captionsetup[subfigure]{labelformat=empty}
         \begin{subfigure}{0.325\textwidth}
             \centering
-            \includegraphics[width=\linewidth]{ChapterFour/ganin_tsne_2.png}
+            \includegraphics[width=\linewidth]{ChapterFive/ganin_tsne_2.png}
             \caption{accuracy: 91.50 \%}
         \end{subfigure}
         \hfill
         \begin{subfigure}{0.325\textwidth}
             \centering
-            \includegraphics[width=\linewidth]{ChapterFour/hu_tsne_2.png}
+            \includegraphics[width=\linewidth]{ChapterFive/hu_tsne_2.png}
             \caption{accuracy: 87.00 \%}
         \end{subfigure}
         \hfill
         \begin{subfigure}{0.325\textwidth}
             \centering
-            \includegraphics[width=\linewidth]{ChapterFour/desire_tsne_2.png}
+            \includegraphics[width=\linewidth]{ChapterFive/desire_tsne_2.png}
             \caption{accuracy: 98.50 \%}
         \end{subfigure}
     \end{minipage}
@@ -266,21 +266,21 @@ In this subsection, we further analyze the training process of the proposed DeSI
     \centering
     \begin{subfigure}{0.325\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{ChapterFour/desire_signer_inv_loss.png}
+        \includegraphics[width=\linewidth]{ChapterFive/desire_signer_inv_loss.png}
         \caption{}
         \label{fig:signer_inv_curve}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.325\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{ChapterFour/desire_emb_loss.png}
+        \includegraphics[width=\linewidth]{ChapterFive/desire_emb_loss.png}
         \caption{}
         \label{fig:emb_loss_curve}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.325\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{ChapterFour/desire_class_loss.png}
+        \includegraphics[width=\linewidth]{ChapterFive/desire_class_loss.png}
         \caption{}
         \label{fig:class_loss_curve}
     \end{subfigure}
@@ -298,21 +298,21 @@ This subsection presents a sensitivity analysis of three key hyperparameters of 
     \centering
     \begin{subfigure}{0.325\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{ChapterFour/desire_hyper_lambda1.png}
+        \includegraphics[width=\linewidth]{ChapterFive/desire_hyper_lambda1.png}
         \caption{}
         \label{fig:desire_hyper_lambda1}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.325\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{ChapterFour/desire_hyper_alpha2.png}
+        \includegraphics[width=\linewidth]{ChapterFive/desire_hyper_alpha2.png}
         \caption{}
         \label{fig:desire_hyper_alpha2}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.325\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{ChapterFour/desire_hyper_rho.png}
+        \includegraphics[width=\linewidth]{ChapterFive/desire_hyper_rho.png}
         \caption{}
         \label{fig:desire_hyper_rho}
     \end{subfigure}

@@ -97,7 +97,7 @@ where $\lambda > 0$ is a hyperparameter controlling the rate of the decay.
 Following the idea of SOMs, the SOHMMM algorithm aims to minimize an \newterm{energy function}, defined below:
 \begin{equation}
     \label{eq:sohmmm_energy}
-    E(\vx; \Theta) \triangleq -\sum_{\rz} p(\vx \mid \rz, \Theta)v(\rz, z^*),
+    E(\vx; \Theta) \triangleq -\sum_{\rz} p(\vx \mid \rz; \Theta)v(\rz, z^*),
 \end{equation}
 where $\Theta$ summarizes all parameters of the HMMs, $\rz$ indexes the $m$ HMMs in the lattice, and $p(\rvx \mid \rz)$ is the marginal distribution of observations of a standard HMM:
 \begin{equation}
@@ -107,7 +107,7 @@ where $\Theta$ summarizes all parameters of the HMMs, $\rz$ indexes the $m$ HMMs
 where $\rvh = \left(\rh^{(1)},\dots,\rh^{(T)}\right)$ is the sequence of hidden states of the HMM and $\rh^{(t)} \in \{1, \dots, s\}$, being $s$ the number of hidden states. Finally, $z^*$ corresponds to the index of the \newterm{winner node} for the observation $\vx$:
 \begin{equation}
     \label{eq:sohmmm_winner}
-    z^* \triangleq \argmax_{z' \in \{1,\dots,m\}} \sum_{\rz} p(\vx \mid \rz, \Theta)v(\rz, z').
+    z^* \triangleq \argmax_{z' \in \{1,\dots,m\}} \sum_{\rz} p(\vx \mid \rz; \Theta)v(\rz, z').
 \end{equation}
 
 The set $\Theta$ consists of the following parameters:
@@ -259,7 +259,7 @@ In this experiment, we generate observations from two reference HMMs, with one t
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.65]{ChapterTwo/lattice-rect.png}
+    \includegraphics[scale=0.65]{ChapterThree/lattice-rect.png}
     \caption{$2 \times 3$ rectangular lattice.}
     \label{fig:sohmmm_lattice}
 \end{figure}
@@ -279,7 +279,7 @@ Our main goal in analyzing the aforementioned distance is to examine how the obs
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.25]{ChapterTwo/hmm_ref.png}
+    \includegraphics[scale=0.25]{ChapterThree/hmm_ref.png}
     \caption{Monte Carlo approximation of the Kullback-Leibler divergence between the random and reference HMMs before and after applying the SOHMMM algorithm.}
     \label{fig:sohmmm_distances}
 \end{figure}
@@ -294,7 +294,7 @@ We repeated the experiment for various sequence lengths and different types of n
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.8]{ChapterTwo/KL.png}
+    \includegraphics[scale=0.8]{ChapterThree/KL.png}
     \caption{Monte Carlo approximation of the Kullback-Leibler divergence between the random and reference HMMs with different neighborhood sizes and sequence lengths.}
     \label{fig:sohmmm_dist_neig}
 \end{figure}
@@ -327,7 +327,7 @@ Equivalent amounts of normal and anomalous data were used to initialize the HMM-
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.8]{ChapterTwo/wifi_network.png}
+    \includegraphics[scale=0.8]{ChapterThree/wifi_network.png}
     \caption{Wireless network simulated in OMNeT++/INET.}
     \label{fig:sohmmm_wifi_network}
 \end{figure}
@@ -624,7 +624,7 @@ The bad performance of k-HMM likely results mostly from the small amount of data
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\linewidth]{ChapterTwo/roc.png}
+    \includegraphics[width=0.8\linewidth]{ChapterThree/roc.png}
     \caption{ROC curves for each model on the Wi-Fi dataset, for one of the 10 runs.}
     \label{fig:spamhmm_wifi_roc}
 \end{figure}
@@ -632,7 +632,7 @@ The bad performance of k-HMM likely results mostly from the small amount of data
 \begin{table}
     \centering
     \begin{tabular}{l|r|r r}
-        \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{|c}{Average log-likelihood} \\
+        \multicolumn{1}{c}{} & \multicolumn{1}{c|}{} & \multicolumn{2}{c}{Average log-likelihood} \\
         & \multicolumn{1}{c|}{AUC} & Normal data & Anomalous data \\
         \hline
         1-HMM & $0.806~(\pm 0.01)$ & $-6.36~(\pm 0.66)$ & $-129.40~(\pm 22.22)$ \\
@@ -751,11 +751,11 @@ where $C_y$ is, therefore, the cluster assigned to joint $y$. The results are in
     \centering
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.8\linewidth]{ChapterTwo/mhmm_clusters}
+        \includegraphics[width=0.8\linewidth]{ChapterThree/mhmm_clusters}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.8\linewidth]{ChapterTwo/spamhmm_clusters}
+        \includegraphics[width=0.8\linewidth]{ChapterThree/spamhmm_clusters}
     \end{minipage}
     \caption{Assignments of joints to clusters in MHMM (left) and SpaMHMM (right). The different colors (blue, green, orange, red) and the respective symbols (`$\circ$', `\SmallTriangleUp', `x', `+') on each joint represent the cluster that the joint was assigned to. on each joint represent the cluster that the joint was assigned to.}
     \label{fig:clusters}

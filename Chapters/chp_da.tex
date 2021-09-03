@@ -292,7 +292,7 @@ Although each video frame should contain all the information required to identif
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.9\linewidth]{ChapterThree/fcn_rlstm.png}
+    \includegraphics[width=0.9\linewidth]{ChapterFour/fcn_rlstm.png}
     \caption{Architecture of the FCN-rLSTM model (reprinted from \citet{Zhang2017}).}
     \label{fig:fcn_rlstm}
 \end{figure}
@@ -314,7 +314,7 @@ The Non-Temporal model uses a subnetwork of the FCN-rLSTM model as its backbone.
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=1.0\textwidth]{ChapterThree/non_temporal.png}
+    \includegraphics[width=1.0\textwidth]{ChapterFour/non_temporal.png}
     \caption{Non-Temporal model. Reprinted from \citet{ThesisFrancisco}.}
     \label{fig:non_temporal_model}
 \end{figure}
@@ -328,7 +328,7 @@ The SingleLSTM model uses the whole FCN-rLSTM model for the desired regression t
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1.0\textwidth]{ChapterThree/temporal_regress.png}
+    \includegraphics[width=1.0\textwidth]{ChapterFour/temporal_regress.png}
     \caption{Temporal regression model. Reprinted from \citet{ThesisFrancisco}.}
     \label{fig:temporal_regress_model}
 \end{figure}
@@ -338,7 +338,7 @@ The DoubleLSTM model overcomes the limitations of the SingleLSTM model by incorp
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=1.0\textwidth]{ChapterThree/double_temporal.png}
+    \includegraphics[width=1.0\textwidth]{ChapterFour/double_temporal.png}
     \caption{Double-Temporal model. Reprinted from \citet{ThesisFrancisco}.}
     \label{fig:double_temporal_model}
 \end{figure}
@@ -348,7 +348,7 @@ An alternative to the DoubleLSTM model is to extract temporal features that are 
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=1.0\textwidth]{ChapterThree/common_temporal.png}
+    \includegraphics[width=1.0\textwidth]{ChapterFour/common_temporal.png}
     \caption{CommonLSTM model. Reprinted from \citet{ThesisFrancisco}.}
     \label{fig:common_temporal_model}
 \end{figure}
@@ -392,13 +392,13 @@ Each camera point of view corresponds to a domain in our experiments, named \tex
 \begin{figure}[!ht]
     \centering
     \begin{minipage}[b]{0.4\textwidth}
-        \includegraphics[width=\textwidth]{ChapterThree/vidd_example.png}
+        \includegraphics[width=\textwidth]{ChapterFour/vidd_example.png}
         \caption{Domain \textit{vidd} from the UCSDPeds dataset.}
         \label{fig:ucsdpeds_vidd}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.4\textwidth}
-        \includegraphics[width=\textwidth]{ChapterThree/vidf_example.png}
+        \includegraphics[width=\textwidth]{ChapterFour/vidf_example.png}
         \caption{Domain \textit{vidf} from the UCSDPeds dataset.}
         \label{fig:ucsdpeds_vidf}
     \end{minipage}
@@ -422,7 +422,7 @@ For each frame, the density map was computed by placing a $15 \times 8$ Gaussian
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.75\textwidth]{ChapterThree/ucsdpeds_density_map.png}
+    \includegraphics[width=0.75\textwidth]{ChapterFour/ucsdpeds_density_map.png}
     \caption{Sample density map for the UCSDPeds dataset.}
     \label{fig:ucsdpeds_density_map}
 \end{figure}
@@ -439,25 +439,25 @@ Figures \ref{fig:webcamt_511}-\ref{fig:webcamt_846} show examples of frames in e
 \begin{figure}[!ht]
     \centering
     \begin{minipage}[b]{0.4\textwidth}
-        \includegraphics[width=\textwidth]{ChapterThree/511_example.png}
+        \includegraphics[width=\textwidth]{ChapterFour/511_example.png}
         \caption{Domain \textit{511} from WebCamT dataset.}
         \label{fig:webcamt_511}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.4\textwidth}
-        \includegraphics[width=\textwidth]{ChapterThree/551_example.png}
+        \includegraphics[width=\textwidth]{ChapterFour/551_example.png}
         \caption{Domain \textit{551} from the WebCamT dataset.}
         \label{fig:webcamt_551}
     \end{minipage} \\
     \vspace{1cm}
     \begin{minipage}[b]{0.4\textwidth}
-        \includegraphics[width=\textwidth]{ChapterThree/691_example.png}
+        \includegraphics[width=\textwidth]{ChapterFour/691_example.png}
         \caption{Domain \textit{691} from the WebCamT dataset.}
         \label{fig:webcamt_691}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.4\textwidth}
-        \includegraphics[width=\textwidth]{ChapterThree/846_example.png}
+        \includegraphics[width=\textwidth]{ChapterFour/846_example.png}
         \caption{Domain \textit{846} from the WebCamT dataset.}
         \label{fig:webcamt_846}
     \end{minipage}
@@ -481,7 +481,7 @@ After extracting each frame from the videos, we computed its density map by plac
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.75\textwidth]{ChapterThree/webcamt_density_map.png}
+    \includegraphics[width=0.75\textwidth]{ChapterFour/webcamt_density_map.png}
     \caption{Sample density map for the WebCamT dataset.}
     \label{fig:webcamt_density_map}
 \end{figure}
@@ -544,12 +544,12 @@ Results regarding the sensitivity to the hyperparameter $\mu_d$ are shown in \Fi
 \begin{figure}[!ht]
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[width=0.95\textwidth]{ChapterThree/ucsdpeds_unsupervised.png}
+        \includegraphics[width=0.95\textwidth]{ChapterFour/ucsdpeds_unsupervised.png}
         \caption{UCSDPeds}
     \end{subfigure}
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[width=0.95\textwidth]{ChapterThree/webcamt_unsupervised.png}
+        \includegraphics[width=0.95\textwidth]{ChapterFour/webcamt_unsupervised.png}
         \caption{WebCamT}
     \end{subfigure}
     \caption{Average MAE count across domains for each $\mu_d$ in the unsupervised setting in UCSDPeds and WebCamT datasets.}
@@ -657,9 +657,9 @@ We first address the problem of casting the objective~\plaineqref{eq:formal_obj}
 \end{equation}
 where
 \begin{align}
-    &\gL_\text{class}(\alpha, \vtheta_g, \vtheta_h) = -\sum_{j=1}^M \alpha_j\E_{\rvz \sim \gS_j^g} \left[\log p(\ry=f_{\gS_j^g}(\rvz) \mid \rvz, \vtheta_h)\right], \\
+    &\gL_\text{class}(\alpha, \vtheta_g, \vtheta_h) = -\sum_{j=1}^M \alpha_j\E_{\rvz \sim \gS_j^g} \left[\log p(\ry=f_{\gS_j^g}(\rvz) \mid \rvz; \vtheta_h)\right], \\
     %
-    &\gL_\text{disc}(\alpha, \vtheta_g, \vtheta_d) = -\E_{\rvz \sim \gS_{\valpha}^g} \left[ \log p(\rd=0 \mid \rvz, \theta_d) \right] - \E_{\rvz \sim \gT^g} \left[ \log p(\rd=1 \mid \rvz, \vtheta_d) \right].
+    &\gL_\text{disc}(\alpha, \vtheta_g, \vtheta_d) = -\E_{\rvz \sim \gS_{\valpha}^g} \left[ \log p(\rd=0 \mid \rvz; \vtheta_d) \right] - \E_{\rvz \sim \gT^g} \left[ \log p(\rd=1 \mid \rvz; \vtheta_d) \right].
 \end{align}
 Here, $\vtheta_h$ and $\vtheta_d$ are the parameters of the classifier and domain discriminator networks, respectively, $\mu_d, \mu_s > 0$ are hyperparameters, $\ry \in \gY$ is the categorical random variable associated with the class label, $f_{\gS_j^g}: \gZ \mapsto \gY$ is the true (multiclass) labeling function for the $j$-th source domain, $\rd$ is a Bernoulli random variable that discriminates source and target domains and the function $g = g(\cdot, \vtheta_g): \gX \mapsto \gZ$ is a neural network, parameterized by $\vtheta_g$, mapping input samples to features. By linearity of expectations and using the fact that $\rvz = g(\rvx, \vtheta_g)$, for input samples $\rvx \in \gX$, we have:
 \begin{align}
@@ -692,7 +692,7 @@ Specifically, consider a target sample $\vx \in \widehat{\gT}$ and a parametric 
 
 \begin{figure}[h]
     \centering
-    \fbox{\includegraphics[width=0.75\linewidth]{ChapterThree/consistency.pdf}}
+    \fbox{\includegraphics[width=0.75\linewidth]{ChapterFour/consistency.pdf}}
     \caption{Toy illustration of the desired effect of the consistency regularization, where images are represented as lying on a 2-D space. Green and orange circles represent (labeled) samples from two distinct source domains; blue and purple x-markers represent original and augmented (unlabeled) target samples, respectively. Colored ellipses enclose pairs of augmented and source samples that are close to each other and therefore are likely to share the same label.}
     \label{fig:consistency}
 \end{figure}

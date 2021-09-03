@@ -38,7 +38,7 @@ Proving our result is now straightforward. We can apply Lemma \ref{lemma:bound_s
 \begin{figure}[h!]
 	\centering
 	\hspace*{-0.30in}
-	\scalebox{.69}{\input{Figures/ChapterThree/model_diagram}}
+	\scalebox{.69}{\input{Figures/ChapterFour/model_diagram}}
 	\caption{Block diagram representing the proposed model (MODA-FM).}
 	\label{fig:model_diagram}
 \end{figure}
@@ -57,25 +57,25 @@ In the digits datasets~(\Figref{fig:digits_dist}, \Tableref{tab:digits_js}), MNI
 	\centering
 	\begin{subfigure}[b]{0.24\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{ChapterThree/mnist_dist}
+		\includegraphics[width=\textwidth]{ChapterFour/mnist_dist}
 		\caption{MNIST}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}[b]{0.24\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{ChapterThree/mnist_m_dist}
+		\includegraphics[width=\textwidth]{ChapterFour/mnist_m_dist}
 		\caption{MNIST-M}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}[b]{0.24\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{ChapterThree/svhn_dist}
+		\includegraphics[width=\textwidth]{ChapterFour/svhn_dist}
 		\caption{SVHN}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}[b]{0.24\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{ChapterThree/synthdigits_dist}
+		\includegraphics[width=\textwidth]{ChapterFour/synthdigits_dist}
 		\caption{SynthDigits}
 	\end{subfigure}
 	\caption{Label distributions in the digits datasets.}
@@ -101,19 +101,19 @@ In the digits datasets~(\Figref{fig:digits_dist}, \Tableref{tab:digits_js}), MNI
 	\centering
 	\begin{subfigure}[b]{0.35\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{ChapterThree/amazon_dist}
+		\includegraphics[width=\textwidth]{ChapterFour/amazon_dist}
 		\caption{Amazon}
 	\end{subfigure}
 	\;%\hspace{-0.5cm}
 	\begin{subfigure}[b]{0.35\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{ChapterThree/dslr_dist}
+		\includegraphics[width=\textwidth]{ChapterFour/dslr_dist}
 		\caption{DSLR}
 	\end{subfigure}
 	\vskip\baselineskip
 	\begin{subfigure}[b]{0.35\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{ChapterThree/webcam_dist}
+		\includegraphics[width=\textwidth]{ChapterFour/webcam_dist}
 		\caption{Webcam}
 	\end{subfigure}
 	\caption{Label distributions in Office-31.}
@@ -138,25 +138,25 @@ In the digits datasets~(\Figref{fig:digits_dist}, \Tableref{tab:digits_js}), MNI
 	\centering
 	\begin{subfigure}[b]{0.24\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{ChapterThree/books_dist}
+		\includegraphics[width=\textwidth]{ChapterFour/books_dist}
 		\caption{Books}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}[b]{0.24\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{ChapterThree/dvd_dist}
+		\includegraphics[width=\textwidth]{ChapterFour/dvd_dist}
 		\caption{DVD}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}[b]{0.24\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{ChapterThree/electronics_dist}
+		\includegraphics[width=\textwidth]{ChapterFour/electronics_dist}
 		\caption{Electronics}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}[b]{0.24\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{ChapterThree/kitchen_dist}
+		\includegraphics[width=\textwidth]{ChapterFour/kitchen_dist}
 		\caption{Kitchen}
 	\end{subfigure}
 	\caption{Label distributions in Amazon Reviews.}
@@ -214,20 +214,20 @@ In this experiment, we want to evaluate if the increased robustness of the featu
 		ylabel=\huge accuracy, ymin=0.55, ymax=0.75, ytick={0.55,0.6,0.65,0.7,0.75},
 		grid=both, grid style={line width=.1pt, draw=gray!10},
 		]
-		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MDAN, col sep=comma]{Figures/ChapterThree/amazon_long.txt};
+		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MDAN, col sep=comma]{Figures/ChapterFour/amazon_long.txt};
 		\addlegendentry{MDAN ($\pgfmathprintnumber{\slopeMDAN}$)}
 
-		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MixMDAN, col sep=comma]{Figures/ChapterThree/amazon_long.txt};
+		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MixMDAN, col sep=comma]{Figures/ChapterFour/amazon_long.txt};
 		\addlegendentry{MODA ($\pgfmathprintnumber{\slopeMODA}$)}
 
-		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=Ours, col sep=comma]{Figures/ChapterThree/amazon_long.txt};
+		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=Ours, col sep=comma]{Figures/ChapterFour/amazon_long.txt};
 		\addlegendentry{MODA-FM ($\pgfmathprintnumber{\slopeMODAFM}$)}
 
-		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=1}},skip first n=2]{Figures/ChapterThree/amazon_long.txt};
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=1}},skip first n=2]{Figures/ChapterFour/amazon_long.txt};
 		\xdef\slopeMDAN{\pgfplotstableregressiona}
-		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=2}},skip first n=2]{Figures/ChapterThree/amazon_long.txt};
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=2}},skip first n=2]{Figures/ChapterFour/amazon_long.txt};
 		\xdef\slopeMODA{\pgfplotstableregressiona}
-		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=3}},skip first n=2]{Figures/ChapterThree/amazon_long.txt};
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=3}},skip first n=2]{Figures/ChapterFour/amazon_long.txt};
 		\xdef\slopeMODAFM{\pgfplotstableregressiona}
 		\end{axis}
 		\end{tikzpicture}
@@ -245,20 +245,20 @@ In this experiment, we want to evaluate if the increased robustness of the featu
 		ylabel=\huge accuracy, ymin=0.8, ymax=1, ytick={0.8,0.85,0.9,0.95,1},
 		grid=both, grid style={line width=.1pt, draw=gray!10},
 		]
-		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MDAN, col sep=comma]{Figures/ChapterThree/dslr_long.txt};
+		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MDAN, col sep=comma]{Figures/ChapterFour/dslr_long.txt};
 		\addlegendentry{MDAN ($\pgfmathprintnumber{\slopeMDAN}$)}
 
-		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MixMDAN, col sep=comma]{Figures/ChapterThree/dslr_long.txt};
+		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MixMDAN, col sep=comma]{Figures/ChapterFour/dslr_long.txt};
 		\addlegendentry{MODA ($\pgfmathprintnumber{\slopeMODA}$)}
 
-		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=Ours, col sep=comma]{Figures/ChapterThree/dslr_long.txt};
+		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=Ours, col sep=comma]{Figures/ChapterFour/dslr_long.txt};
 		\addlegendentry{MODA-FM ($\pgfmathprintnumber{\slopeMODAFM}$)}
 
-		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=1}},skip first n=2]{Figures/ChapterThree/dslr_long.txt};
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=1}},skip first n=2]{Figures/ChapterFour/dslr_long.txt};
 		\xdef\slopeMDAN{\pgfplotstableregressiona}
-		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=2}},skip first n=2]{Figures/ChapterThree/dslr_long.txt};
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=2}},skip first n=2]{Figures/ChapterFour/dslr_long.txt};
 		\xdef\slopeMODA{\pgfplotstableregressiona}
-		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=3}},skip first n=2]{Figures/ChapterThree/dslr_long.txt};
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=3}},skip first n=2]{Figures/ChapterFour/dslr_long.txt};
 		\xdef\slopeMODAFM{\pgfplotstableregressiona}
 		\end{axis}
 		\end{tikzpicture}
@@ -276,20 +276,20 @@ In this experiment, we want to evaluate if the increased robustness of the featu
 		ylabel=\huge accuracy, ymin=0.8, ymax=1, ytick={0.8,0.85,0.9,0.95,1},
 		grid=both, grid style={line width=.1pt, draw=gray!10},
 		]
-		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MDAN, col sep=comma]{Figures/ChapterThree/webcam_long.txt};
+		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MDAN, col sep=comma]{Figures/ChapterFour/webcam_long.txt};
 		\addlegendentry{MDAN ($\pgfmathprintnumber{\slopeMDAN}$)}
 
-		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MixMDAN, col sep=comma]{Figures/ChapterThree/webcam_long.txt};
+		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MixMDAN, col sep=comma]{Figures/ChapterFour/webcam_long.txt};
 		\addlegendentry{MODA ($\pgfmathprintnumber{\slopeMODA}$)}
 
-		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=Ours, col sep=comma]{Figures/ChapterThree/webcam_long.txt};
+		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=Ours, col sep=comma]{Figures/ChapterFour/webcam_long.txt};
 		\addlegendentry{MODA-FM ($\pgfmathprintnumber{\slopeMODAFM}$)}
 
-		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=1}},skip first n=2]{Figures/ChapterThree/webcam_long.txt};
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=1}},skip first n=2]{Figures/ChapterFour/webcam_long.txt};
 		\xdef\slopeMDAN{\pgfplotstableregressiona}
-		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=2}},skip first n=2]{Figures/ChapterThree/webcam_long.txt};
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=2}},skip first n=2]{Figures/ChapterFour/webcam_long.txt};
 		\xdef\slopeMODA{\pgfplotstableregressiona}
-		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=3}},skip first n=2]{Figures/ChapterThree/webcam_long.txt};
+		\addplot[color=gray,dashed] table [col sep = comma,y={create col/linear regression={y=3}},skip first n=2]{Figures/ChapterFour/webcam_long.txt};
 		\xdef\slopeMODAFM{\pgfplotstableregressiona}
 		\end{axis}
 		\end{tikzpicture}
@@ -327,13 +327,13 @@ The effect of varying $\mu_c$ is plotted in \Figref{fig:hyperparam_mu_c}. Values
 		legend style={at={(0.65,0.1)},anchor=south west,font=\normalsize},
 		grid=both, grid style={line width=.1pt, draw=gray!10}]
 
-		\addplot[color=myblue,only marks,sharp plot,mark=*]table[x index={0}, y index={1}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_s.txt};
+		\addplot[color=myblue,only marks,sharp plot,mark=*]table[x index={0}, y index={1}, col sep=comma, skip first n=2]{Figures/ChapterFour/mu_s.txt};
 		\addlegendentry{MNIST}
 
-		\addplot[color=myorange,only marks,sharp plot,mark=*]table[x index={0}, y index={2}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_s.txt};
+		\addplot[color=myorange,only marks,sharp plot,mark=*]table[x index={0}, y index={2}, col sep=comma, skip first n=2]{Figures/ChapterFour/mu_s.txt};
 		\addlegendentry{MNIST-M}
 
-		\addplot[color=mygreen,only marks,sharp plot,mark=*]table[x index={0}, y index={3}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_s.txt};
+		\addplot[color=mygreen,only marks,sharp plot,mark=*]table[x index={0}, y index={3}, col sep=comma, skip first n=2]{Figures/ChapterFour/mu_s.txt};
 		\addlegendentry{SVHN}
 		\end{semilogxaxis}
 		\end{tikzpicture}
@@ -358,13 +358,13 @@ The effect of varying $\mu_c$ is plotted in \Figref{fig:hyperparam_mu_c}. Values
 		legend style={at={(0.65,0.1)},anchor=south west,font=\normalsize},
 		grid=both, grid style={line width=.1pt, draw=gray!10}]
 
-		\addplot[color=myblue,only marks,sharp plot,mark=*]table[x index={0}, y index={1}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_c.txt};
+		\addplot[color=myblue,only marks,sharp plot,mark=*]table[x index={0}, y index={1}, col sep=comma, skip first n=2]{Figures/ChapterFour/mu_c.txt};
 		\addlegendentry{MNIST}
 
-		\addplot[color=myorange,only marks,sharp plot,mark=*]table[x index={0}, y index={2}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_c.txt};
+		\addplot[color=myorange,only marks,sharp plot,mark=*]table[x index={0}, y index={2}, col sep=comma, skip first n=2]{Figures/ChapterFour/mu_c.txt};
 		\addlegendentry{MNIST-M}
 
-		\addplot[color=mygreen,only marks,sharp plot,mark=*]table[x index={0}, y index={3}, col sep=comma, skip first n=2]{Figures/ChapterThree/mu_c.txt};
+		\addplot[color=mygreen,only marks,sharp plot,mark=*]table[x index={0}, y index={3}, col sep=comma, skip first n=2]{Figures/ChapterFour/mu_c.txt};
 		\addlegendentry{SVHN}
 		\end{semilogxaxis}
 		\end{tikzpicture}
@@ -394,13 +394,13 @@ For MNIST, where the lowest $\mu_s$ is used, we observe that the mixture coeffic
 		grid=both, grid style={line width=.1pt, draw=gray!10},
 		title=\text{\huge $\mu_s=0.1$}
 		]
-		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MNIST_M, col sep=comma]{Figures/ChapterThree/mnist_coef.txt};
+		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MNIST_M, col sep=comma]{Figures/ChapterFour/mnist_coef.txt};
 		\addlegendentry{MNIST-M}
 
-		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=SVHN, col sep=comma]{Figures/ChapterThree/mnist_coef.txt};
+		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=SVHN, col sep=comma]{Figures/ChapterFour/mnist_coef.txt};
 		\addlegendentry{SVHN}
 
-		\addplot[color=myred,smooth,thick]table[x=Epoch, y=SynthDigits, col sep=comma]{Figures/ChapterThree/mnist_coef.txt};
+		\addplot[color=myred,smooth,thick]table[x=Epoch, y=SynthDigits, col sep=comma]{Figures/ChapterFour/mnist_coef.txt};
 		\addlegendentry{SynthDigits}
 		\end{axis}
 		\end{tikzpicture}
@@ -418,13 +418,13 @@ For MNIST, where the lowest $\mu_s$ is used, we observe that the mixture coeffic
 		grid=both, grid style={line width=.1pt, draw=gray!10},
 		title=\text{\huge$\mu_s=0.2$}
 		]
-		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MNIST, col sep=comma]{Figures/ChapterThree/mnist_m_coef.txt};
+		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MNIST, col sep=comma]{Figures/ChapterFour/mnist_m_coef.txt};
 		\addlegendentry{MNIST}
 
-		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=SVHN, col sep=comma]{Figures/ChapterThree/mnist_m_coef.txt};
+		\addplot[color=mygreen,smooth,thick]table[x=Epoch, y=SVHN, col sep=comma]{Figures/ChapterFour/mnist_m_coef.txt};
 		\addlegendentry{SVHN}
 
-		\addplot[color=myred,smooth,thick]table[x=Epoch, y=SynthDigits, col sep=comma]{Figures/ChapterThree/mnist_m_coef.txt};
+		\addplot[color=myred,smooth,thick]table[x=Epoch, y=SynthDigits, col sep=comma]{Figures/ChapterFour/mnist_m_coef.txt};
 		\addlegendentry{SynthDigits}
 		\end{axis}
 		\end{tikzpicture}
@@ -442,13 +442,13 @@ For MNIST, where the lowest $\mu_s$ is used, we observe that the mixture coeffic
 		grid=both, grid style={line width=.1pt, draw=gray!10},
 		title=\text{\huge$\mu_s=0.9$}
 		]
-		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MNIST, col sep=comma]{Figures/ChapterThree/svhn_coef.txt};
+		\addplot[color=myblue,smooth,thick]table[x=Epoch, y=MNIST, col sep=comma]{Figures/ChapterFour/svhn_coef.txt};
 		\addlegendentry{MNIST}
 
-		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MNIST_M, col sep=comma]{Figures/ChapterThree/svhn_coef.txt};
+		\addplot[color=myorange,smooth,thick]table[x=Epoch, y=MNIST_M, col sep=comma]{Figures/ChapterFour/svhn_coef.txt};
 		\addlegendentry{MNIST-M}
 
-		\addplot[color=myred,smooth,thick]table[x=Epoch, y=SynthDigits, col sep=comma]{Figures/ChapterThree/svhn_coef.txt};
+		\addplot[color=myred,smooth,thick]table[x=Epoch, y=SynthDigits, col sep=comma]{Figures/ChapterFour/svhn_coef.txt};
 		\addlegendentry{SynthDigits}
 		\end{axis}
 		\end{tikzpicture}
@@ -528,17 +528,17 @@ The list of image transformations used in RandAugment is provided in~\Tableref{t
 We present sample images from all image datasets used in our experiments in Figures \ref{fig:digits_samples}, \ref{fig:office_samples}, and \ref{fig:domainnet_samples}. The result of the RandAugment transformation is also shown for various values of the parameter $m$.
 
 \begin{figure}[h!]
-	\includegraphics[width=\linewidth]{ChapterThree/digits}
+	\includegraphics[width=\linewidth]{ChapterFour/digits}
 	\caption{Sample original and transformed images from the digits datasets. The ground-truth label is in brackets.}
 	\label{fig:digits_samples}
 \end{figure}
 \begin{figure}[h!]
-	\includegraphics[width=\linewidth]{ChapterThree/office}
+	\includegraphics[width=\linewidth]{ChapterFour/office}
 	\caption{Sample original and transformed images from each domain in the Office-31 dataset. The ground-truth label is in brackets.}
 	\label{fig:office_samples}
 \end{figure}
 \begin{figure}[h!]
-	\includegraphics[width=\linewidth]{ChapterThree/domainnet}
+	\includegraphics[width=\linewidth]{ChapterFour/domainnet}
 	\caption{Sample original and transformed images from each domain in the DomainNet dataset. The ground-truth label is in brackets.}
 	\label{fig:domainnet_samples}
 \end{figure}

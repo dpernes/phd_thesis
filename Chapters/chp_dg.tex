@@ -68,17 +68,17 @@ Although the appearance of manual signs is well-defined in sign language diction
 
 \begin{figure}[t]
     \centering
-    \subfloat{\includegraphics[width=0.15\textwidth]{ChapterFour/1.png}}
+    \subfloat{\includegraphics[width=0.15\textwidth]{ChapterFive/1.png}}
     \hfill
-    \subfloat{\includegraphics[width=0.15\textwidth]{ChapterFour/4.png}}
+    \subfloat{\includegraphics[width=0.15\textwidth]{ChapterFive/4.png}}
     \hfill
-    \subfloat{\includegraphics[width=0.15\textwidth]{ChapterFour/3.png}}
+    \subfloat{\includegraphics[width=0.15\textwidth]{ChapterFive/3.png}}
     \\\vspace{0.4cm}
-    \subfloat{\includegraphics[width=0.15\textwidth]{ChapterFour/2.png}}
+    \subfloat{\includegraphics[width=0.15\textwidth]{ChapterFive/2.png}}
     \hfill
-    \subfloat{\includegraphics[width=0.15\textwidth]{ChapterFour/5.png}}
+    \subfloat{\includegraphics[width=0.15\textwidth]{ChapterFive/5.png}}
     \hfill
-    \subfloat{\includegraphics[width=0.15\textwidth]{ChapterFour/6.png}}
+    \subfloat{\includegraphics[width=0.15\textwidth]{ChapterFive/6.png}}
     \caption{Inter-signer variability: it is possible to observe not only phonological variations (e.g.\ different handshapes, palm orientations, and sign locations) but also a large physical variability (e.g.\ different hand sizes) when six signers are performing the same sign.}
     \label{fig:inter_signer_variations}
 \end{figure}
@@ -127,7 +127,7 @@ Taking the latent representations $\vz$ as input, the sign-classifier block is c
 
 The signer-classifier network has exactly the same topology as the sign-classifier. However, it maps the latent representations $\vz$ to the predicted signer identity $\hat{s} \triangleq d(\vz; \vtheta_d)$. Therefore, the number of nodes of the output layer equals the number of signers in the training set.
 
-\input{Figures/ChapterFour/fig_adv_signer_inv.tex}
+\input{Figures/ChapterFive/fig_adv_signer_inv.tex}
 
 \subsubsection{Adversarial training}
 By definition, signer-invariant representations discard all signer-specific information and, as such, no function (i.e.\ classifier) exists that maps such representations into the correct signer identity. This naturally leads to an adversarial problem, in which: i) a signer-classifier network $d(\cdot; \vtheta_d)$ receives latent representations $\vz \triangleq g(\mX;\vtheta_g)$ from an encoder network $g(\cdot;\vtheta_g)$ and tries to predict the signer identity $s$ corresponding to image $\mX$ and ii) the encoder network tries to fool the signer-classifier network while still providing good representations for the sign-classifier network $h(\cdot; \vtheta_h)$, which in turn receives the same representations $\vz$ and aims to predict the sign label $y$ corresponding to image $\mX$.
@@ -205,15 +205,15 @@ In order to extract the manual signs from the noisy background of the images, th
     \begin{subfigure}{0.45\textwidth}
         \centering
         \setlength{\fboxsep}{0pt}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_1.png}}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_2.png}}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_3.png}} \\\vspace{3px}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_4.png}}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_5.png}}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_6.png}} \\\vspace{3px}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_7.png}}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_8.png}}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/triesch_9.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/triesch_1.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/triesch_2.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/triesch_3.png}} \\\vspace{3px}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/triesch_4.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/triesch_5.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/triesch_6.png}} \\\vspace{3px}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/triesch_7.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/triesch_8.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/triesch_9.png}}
         \caption{Jochen-Triesch}
         \label{fig:jochen_triesch}
     \end{subfigure}
@@ -221,15 +221,15 @@ In order to extract the manual signs from the noisy background of the images, th
     \begin{subfigure}{0.45\textwidth}
         \centering
         \setlength{\fboxsep}{0pt}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_1.png}}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_2.png}}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_3.png}} \\\vspace{3px}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_4.png}}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_6.png}}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_7.png}} \\\vspace{3px}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_8.png}}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_9.png}}
-        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFour/MKLM_10.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/MKLM_1.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/MKLM_2.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/MKLM_3.png}} \\\vspace{3px}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/MKLM_4.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/MKLM_6.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/MKLM_7.png}} \\\vspace{3px}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/MKLM_8.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/MKLM_9.png}}
+        \fbox{\includegraphics[height=\altura\textheight, keepaspectratio]{ChapterFive/MKLM_10.png}}
         \caption{MKLM}
         \label{fig:mklm}
     \end{subfigure}
@@ -314,19 +314,19 @@ To further demonstrate the effectiveness of the proposed model in promoting sign
 \begin{figure}
     \centering
     \begin{subfigure}[t]{0.32\textwidth}
-        \includegraphics[width=\textwidth]{ChapterFour/tsne_baseline.png}
+        \includegraphics[width=\textwidth]{ChapterFive/tsne_baseline.png}
         \caption{CNN -- baseline 1}
         \label{fig:adv_signer_inv_tsne_a}
     \end{subfigure}
     %\hfill%
     \begin{subfigure}[t]{0.32\textwidth}
-        \includegraphics[width=\textwidth]{ChapterFour/tsne_triplet.png}
+        \includegraphics[width=\textwidth]{ChapterFive/tsne_triplet.png}
         \caption{CNN with triplet loss -- baseline 2}
         \label{fig:adv_signer_inv_tsne_b}
     \end{subfigure}
     %\hfill%
     \begin{subfigure}[t]{0.32\textwidth}
-        \includegraphics[width=\textwidth]{ChapterFour/tsne_proposed.png}
+        \includegraphics[width=\textwidth]{ChapterFive/tsne_proposed.png}
         \caption{Proposed model}
         \label{fig:adv_signer_inv_tsne_c}
     \end{subfigure}
@@ -376,7 +376,7 @@ The approach adopted here coincides in most aspects with the one described in \S
 
 In this problem, we are solely interested in classifying samples as bona fide or attack, thus $h(\cdot;\vtheta_h)$ (formerly designated as sign-classifier) is now a binary classifier. More importantly, we want to obtain latent representations that are invariant to the PAI species, but the latent representations of bona fide examples should be easily separable from these. Thus, now, only the attack samples are fed through adversarial classifier $d(\cdot;\vtheta_d)$ (formerly designated as signer-classifier) and used for the adversarial training routine. For the same reason, the transfer loss $L_{\text{transfer}}$ approximating first-order statistics only applies to these samples too. \Figref{fig:adv_iris_model} presents the model architecture and hopefully makes the differences between this and our previous model even clearer.
 
-\input{Figures/ChapterFour/fig_adv_iris.tex}
+\input{Figures/ChapterFive/fig_adv_iris.tex}
 
 \subsection{Experiments}
 \label{sec:adv_iris_attack_experiments}
@@ -521,42 +521,42 @@ CorSiL is a dataset for Portuguese sign language and expressiveness recognition.
     \centering
     \begin{minipage}[t]{0.3\columnwidth}
         \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
-            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/1_psl.png}};
+            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFive/1_psl.png}};
             \spy on (0.05,0.23) in node [left] at (1.6,0.9);
         \end{tikzpicture}
     \end{minipage}
     \hspace{0.00mm}
     \begin{minipage}[t]{0.3\columnwidth}
         \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
-            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/2_psl.png}};
+            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFive/2_psl.png}};
             \spy on (0.16,0.07) in node [left] at (1.6,0.9);
         \end{tikzpicture}
     \end{minipage}
     \hspace{0.00mm}
     \begin{minipage}[t]{0.3\columnwidth}
         \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
-            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/3_psl.png}};
+            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFive/3_psl.png}};
             \spy on (0.02,0.08) in node [left] at (1.6,0.9);
         \end{tikzpicture}
     \end{minipage}
     \\
     \begin{minipage}[t]{0.3\columnwidth}
         \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
-            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/4_psl.png}};
+            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFive/4_psl.png}};
             \spy on (0.04,0.05) in node [left] at (1.6,0.9);
         \end{tikzpicture}
     \end{minipage}
     \hspace{0.00mm}
     \begin{minipage}[t]{0.3\columnwidth}
         \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
-            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/5_psl.png}};
+            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFive/5_psl.png}};
             \spy on (0.001,-0.05) in node [left] at (1.6,0.9);
         \end{tikzpicture}
     \end{minipage}
     \hspace{0.00mm}
     \begin{minipage}[t]{0.3\columnwidth}
         \begin{tikzpicture}[spy using outlines={circle,red,magnification=4,size=1.4cm, connect spies}]
-            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFour/6_psl.png}};
+            \node {\includegraphics[interpolate=true, height=0.50\columnwidth]{ChapterFive/6_psl.png}};
             \spy on (0.02,0.17) in node [left] at (1.6,0.9);
         \end{tikzpicture}
     \end{minipage}
