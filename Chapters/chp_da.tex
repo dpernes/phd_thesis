@@ -329,7 +329,7 @@ The SingleLSTM model uses the whole FCN-rLSTM model for the desired regression t
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1.0\textwidth]{ChapterFour/temporal_regress.png}
-    \caption{Temporal regression model. Reprinted from \citet{ThesisFrancisco}.}
+    \caption{SingleLSTM model. Reprinted from \citet{ThesisFrancisco}.}
     \label{fig:temporal_regress_model}
 \end{figure}
 
@@ -598,7 +598,7 @@ It should also be noted that the results showed inconsistency in the performance
 
 All the previous considerations prove the difficulty of the DA problem, especially when the domain shift is large as was the case for the two datasets we have used in these experiments. This discussion provides a good starting point for the next section, where a novel algorithm for unsupervised multi-source DA is presented.
 
-\section{Tackling multi-source domain adaptation with optimism and consistency}
+\section{Tackling unsupervised multi-source domain adaptation with optimism and consistency}
 \label{sec:modafm}
 
 \subsection{Introduction}
@@ -653,21 +653,21 @@ Given the discussion in the previous section, we now present our method in detai
 We first address the problem of casting the objective~\plaineqref{eq:formal_obj} into a computationally treatable surrogate. As in many recent works in DA, we resort to neural networks to implement $g$ and $h$ and the empirical $\gH \Delta \gH$-divergence is implemented with a domain discriminator network, which aims to distinguish between samples of $\gS_\alpha^g$ and $\gT^g$.\footnote[1]{Theoretically, some care should be taken while designing the architecture of the discriminator to make sure that it parameterizes hypotheses in $\gH \Delta \gH$, but in practice this constraint is dropped. There are similar bounds using the $\gH$-divergence instead \citep{Sebag2019}.} Taking the previous considerations and replacing the intractable empirical risks by the usual classification losses, the objective~\plaineqref{eq:formal_obj} is cast as:
 \begin{equation}
 	\label{eq:moda_obj}
-    \min_{\valpha \in \Delta, \vtheta_g, \vtheta_h} \max_{\theta_d} \; \Big\{ \gL(\valpha, \vtheta_g, \vtheta_h, \vtheta_d) = \gL_\text{class}(\valpha, \vtheta_g, \vtheta_h) - \mu_d \gL_\text{disc}(\valpha, \vtheta_g, \vtheta_d) + \mu_s ||\valpha||^2 \Big\},
+    \min_{\valpha \in \Delta, \vtheta_g, \vtheta_h} \max_{\theta_d} \; \Big\{ L(\valpha, \vtheta_g, \vtheta_h, \vtheta_d) = L_\text{class}(\valpha, \vtheta_g, \vtheta_h) - \mu_d L_\text{disc}(\valpha, \vtheta_g, \vtheta_d) + \mu_s ||\valpha||^2 \Big\},
 \end{equation}
 where
 \begin{align}
-    &\gL_\text{class}(\alpha, \vtheta_g, \vtheta_h) = -\sum_{j=1}^M \alpha_j\E_{\rvz \sim \gS_j^g} \left[\log p(\ry=f_{\gS_j^g}(\rvz) \mid \rvz; \vtheta_h)\right], \\
+    &L_\text{class}(\alpha, \vtheta_g, \vtheta_h) \triangleq -\sum_{j=1}^M \alpha_j\E_{\rvz \sim \gS_j^g} \left[\log p(\ry=f_{\gS_j^g}(\rvz) \mid \rvz; \vtheta_h)\right], \\
     %
-    &\gL_\text{disc}(\alpha, \vtheta_g, \vtheta_d) = -\E_{\rvz \sim \gS_{\valpha}^g} \left[ \log p(\rd=0 \mid \rvz; \vtheta_d) \right] - \E_{\rvz \sim \gT^g} \left[ \log p(\rd=1 \mid \rvz; \vtheta_d) \right].
+    &L_\text{disc}(\alpha, \vtheta_g, \vtheta_d) \triangleq -\E_{\rvz \sim \gS_{\valpha}^g} \left[ \log p(\rd=0 \mid \rvz; \vtheta_d) \right] - \E_{\rvz \sim \gT^g} \left[ \log p(\rd=1 \mid \rvz; \vtheta_d) \right].
 \end{align}
 Here, $\vtheta_h$ and $\vtheta_d$ are the parameters of the classifier and domain discriminator networks, respectively, $\mu_d, \mu_s > 0$ are hyperparameters, $\ry \in \gY$ is the categorical random variable associated with the class label, $f_{\gS_j^g}: \gZ \mapsto \gY$ is the true (multiclass) labeling function for the $j$-th source domain, $\rd$ is a Bernoulli random variable that discriminates source and target domains and the function $g = g(\cdot, \vtheta_g): \gX \mapsto \gZ$ is a neural network, parameterized by $\vtheta_g$, mapping input samples to features. By linearity of expectations and using the fact that $\rvz = g(\rvx, \vtheta_g)$, for input samples $\rvx \in \gX$, we have:
 \begin{align}
     \label{eq:loss_class}
-    \gL_\text{class}(\valpha, \vtheta_g, \vtheta_h) &\triangleq -\sum_{j=1}^k \alpha_j\E_{\rvx \sim \gS_j} \left[ \log p(\ry=f_{\gS_j}(\rvx) \mid \rvx; \vtheta_g, \vtheta_h) \right], \\
+    L_\text{class}(\valpha, \vtheta_g, \vtheta_h) &= -\sum_{j=1}^k \alpha_j\E_{\rvx \sim \gS_j} \left[ \log p(\ry=f_{\gS_j}(\rvx) \mid \rvx; \vtheta_g, \vtheta_h) \right], \\
     \allowdisplaybreaks
     \label{eq:loss_disc}
-    \gL_\text{disc}(\valpha, \vtheta_g, \vtheta_d) &\triangleq -\sum_{j=1}^k \alpha_j\E_{\rvx \sim \gS_j} \left[ \log p(\rd=0 \mid \rvx; \vtheta_g, \vtheta_d) \right] - \E_{\rvx \sim \gT} \left[ \log p(\rd=1 \mid \rvx; \vtheta_g, \vtheta_d) \right] .
+    L_\text{disc}(\valpha, \vtheta_g, \vtheta_d) &= -\sum_{j=1}^k \alpha_j\E_{\rvx \sim \gS_j} \left[ \log p(\rd=0 \mid \rvx; \vtheta_g, \vtheta_d) \right] - \E_{\rvx \sim \gT} \left[ \log p(\rd=1 \mid \rvx; \vtheta_g, \vtheta_d) \right] .
 \end{align}
 In order to satisfy the constraint $\valpha \in \Delta$, we reparameterize the model using $\valpha = \softmax(\vbeta)$, for an unconstrained parameter $\vbeta \in \sR^k$. Finally, since we assume to have access to labeled datasets $\widehat{\gS}_1,\widehat{\gS}_2,\dots,\widehat{\gS}_k$ from each source domain and to a unlabeled dataset $\widehat{\gT}$ from the target, we may compute empirical estimates of losses \plaineqref{eq:loss_class} and \plaineqref{eq:loss_disc}:
 \begin{equation}
@@ -705,7 +705,7 @@ The particular type of consistency regularization we adopt here is FixMatch (\ci
 where $\tilde{y} \triangleq \argmax_{\ry \in \gY} p(\ry \mid \vx; \vtheta_g, \vtheta_h)$ is the pseudo-label, $\xi$ is chosen randomly for each $\vx$, and $\tau \geq 0$ is a hyperparameter defining the minimum confidence threshold for the loss to be active. This threshold prevents the loss to be applied too early in the training process and, in our setting, may discard augmented samples that fall too far from the source distributions. The overall objective is then written as follows:
 \begin{equation}
 	\label{eq:modafm_obj}
-    \min_{\valpha \in \Delta, \vtheta_g, \vtheta_h}\max_{\vtheta_d} \Big\{ L \triangleq L_\text{class}(\valpha, \vtheta_g, \vtheta_h) + \mu_c \gL_\text{cons}(\vtheta_g, \vtheta_h) - \mu_d \gL_\text{disc}(\valpha, \vtheta_g, \vtheta_d) + \mu_s ||\valpha||_2^2 \Big\},
+    \min_{\valpha \in \Delta, \vtheta_g, \vtheta_h}\max_{\vtheta_d} \Big\{ L \triangleq L_\text{class}(\valpha, \vtheta_g, \vtheta_h) + \mu_c L_\text{cons}(\vtheta_g, \vtheta_h) - \mu_d L_\text{disc}(\valpha, \vtheta_g, \vtheta_d) + \mu_s ||\valpha||_2^2 \Big\},
 \end{equation}
 where $\mu_c > 0$ controls the relative weight of the consistency loss. A full schematic of our model is provided in Appendix \ref{sec:model_overview}.
 
