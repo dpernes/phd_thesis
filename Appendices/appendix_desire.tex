@@ -30,7 +30,7 @@ Following \citet{Bowman2015} and in order to stabilize the training of the CVAE,
 
 \section{Implementation details}
 \label{sec:desire_imp_details}
-All deep models were implemented in PyTorch and trained with the Adam optimization algorithm using a batch size of 32 samples. For reproducibility purposes, the source code as well as the weights of the trained models are publicly available online\footnote{URL will be made available after the decision.}.
+All deep models were implemented in PyTorch and trained with the Adam optimization algorithm using a batch size of 32 samples. For reproducibility purposes, the source code as well as the weights of the trained models are publicly available online\footnote{https://github.com/pmmf/desire}.
 
 The hyperparameters that are common to all the implemented models (i.e.\ the learning rate and the $\normltwo$ regularization coefficient) as well as some hyperparameters that are specific to the DeSIRe model (i.e.\ $\lambda_{1}$, $\lambda_{2}$, $\alpha_{1}$ and $\alpha_{2}$) and to the implemented baseline 2 (i.e.\ $\gamma$) were optimized by means of a grid search approach and cross-validation on the training set. The hyperparameter $\rho$ in $w(\rs \mid s_{i})$, defined for the proposed sampling scheme of the signer identity, was set to $\rho=0.5$. The dropout rate was empirically set to 0.5 for all the experiments. The set of values of the adopted hyperparameters grid search is presented in \Tableref{tab:desire_hyperparam}.
 
